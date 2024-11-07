@@ -1,0 +1,105 @@
+{
+  "properties": [
+    {
+      "name": "flyway.enabled",
+      "type": "java.lang.String",
+      "description": "Enable or disable Flyway migrations."
+    },
+    {
+      "name": "spring.flyway.mongodb.enabled",
+      "type": "java.lang.String",
+      "description": "Enable or disable MongoDB migrations in Flyway."
+    },
+    {
+      "name": "spring.flyway.mongodb.locations",
+      "type": "java.lang.String",
+      "description": "Locations of MongoDB migration scripts for Flyway."
+    },
+    {
+      "name": "spring.flyway.oracle.baseline-on-migrate",
+      "type": "java.lang.String",
+      "description": "Whether to baseline the Oracle database on migration."
+    },
+    {
+      "name": "spring.flyway.oracle.locations",
+      "type": "java.lang.String",
+      "description": "Locations of Oracle migration scripts for Flyway."
+    },
+    {
+      "name": "spring.flyway.oracle.enabled",
+      "type": "java.lang.String",
+      "description": "Enable or disable Oracle migrations in Flyway."
+    },
+    {
+      "name": "influxdb.username",
+      "type": "java.lang.String",
+      "description": "Username for connecting to InfluxDB."
+    },
+    {
+      "name": "influxdb.password",
+      "type": "java.lang.String",
+      "description": "Password for connecting to InfluxDB."
+    },
+    {
+      "name": "influxdb.url",
+      "type": "java.lang.String",
+      "description": "URL for connecting to InfluxDB."
+    },
+    {
+      "name": "influxdb.database",
+      "type": "java.lang.String",
+      "description": "Database name for connecting to InfluxDB."
+    },
+    {
+      "name": "spring.data.neo4j.migrations.location",
+      "type": "java.lang.String",
+      "description": "Location of migration scripts for Neo4j database."
+    },
+    {
+      "name": "flyway.locations",
+      "type": "java.lang.String",
+      "description": "Location of migration scripts for Flyway."
+    },
+    {
+      "name": "flyway.cassandra.user",
+      "type": "java.lang.String",
+      "description": "Username for connecting to Cassandra database using Flyway."
+    },
+    {
+      "name": "flyway.cassandra.password",
+      "type": "java.lang.String",
+      "description": "Password for connecting to Cassandra database using Flyway."
+    },
+    {
+      "name": "flyway.cassandra.url",
+      "type": "java.lang.String",
+      "description": "JDBC URL for connecting to Cassandra database using Flyway."
+    },
+    {
+      "name": "pinecone.environment",
+      "type": "java.lang.String",
+      "description": "Environment for Pinecone (e.g., 'us-west1-gcp')."
+    },
+    {
+      "name": "pinecone.apiKey",
+      "type": "java.lang.String",
+      "description": "API key for accessing Pinecone service."
+    },
+    {
+      "name": "cloud.aws.region.static",
+      "type": "java.lang.String",
+      "description": "AWS region for static configuration."
+    },
+    {
+      "name": "cloud.aws.credentials.access-key",
+      "type": "java.lang.String",
+      "description": "AWS access key for authentication."
+    },
+    {
+      "name": "cloud.aws.credentials.secret-key",
+      "type": "java.lang.String",
+      "description": "AWS secret key for authentication."
+    }
+  ],
+  "description": "This object contains configuration properties for Flyway, InfluxDB, and Neo4j migrations, including support for Cassandra, Pinecone, and AWS."
+}
