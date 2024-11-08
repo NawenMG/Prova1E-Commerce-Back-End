@@ -185,11 +185,11 @@
 		</dependency>
 
 		<!-- Dipendenza per PostgreSQL (necessaria per Redshift), per implementare flyway -->
-        <dependency>
+        <!-- <dependency>
            <groupId>org.postgresql</groupId>
            <artifactId>postgresql</artifactId>
-           <version>42.2.23</version> <!-- Verifica di usare la versione più recente -->
-        </dependency>
+           <version>42.2.23</version> Verifica di usare la versione più recente 
+        </dependency> -->
 		
 
 
@@ -272,6 +272,14 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 			<version>3.2.4</version>
+		</dependency>
+
+
+		<!-- Faker -->
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>1.0.2</version> 
 		</dependency>
 		
 		
