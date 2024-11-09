@@ -11,8 +11,8 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 public interface ProdottiRep {
 
     List<Prodotti> query(ParamQuery parmQuery, Prodotti prodotti);
-    void saveAll(int number);
-    void insertProduct(Prodotti prodotti);
-    void updateProduct(int productID, Prodotti prodotti);
-    void deleteProduct(int productID);
+    String saveAll(int number);
+    String insertProduct(Prodotti prodotti);
+    String updateProduct(int productID, Prodotti prodotti);
+    String deleteProduct(int productID);
 }

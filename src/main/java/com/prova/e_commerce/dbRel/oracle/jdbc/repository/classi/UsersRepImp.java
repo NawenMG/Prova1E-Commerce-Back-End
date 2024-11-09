@@ -125,7 +125,7 @@ public class UsersRepImp implements UsersRep {
     }
 
     // Per implementare il faker
-    public void saveAll(int number) {
+    public String saveAll(int number) {
         String sql = "INSERT INTO Users (ID, Nome, Cognome, Ruolo, Nome_Utente, Email, Password, Immagine) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         UsersFaker usersFaker = new UsersFaker();
     
@@ -136,10 +136,11 @@ public class UsersRepImp implements UsersRep {
             // Salva la categoria nel database
             jdbcTemplate.update(sql, users);
         }
+        return "Dati generati con successo";
     }
 
     // Insert
-    public void insertUser(Users users) {
+    public String insertUser(Users users) {
         String sql = "INSERT INTO Users (ID, Nome, Cognome, Ruolo, Nome_Utente, Email, Password, Immagine) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
         users.getUsersID(),
@@ -151,10 +152,11 @@ public class UsersRepImp implements UsersRep {
         users.getPassword(), 
         users.getImmagine()         
         );
+        return "Dati inseriti con successo";
     }
 
     // Update
-    public void updateUser(int userID, Users users) {
+    public String updateUser(int userID, Users users) {
         String sql = "UPDATE Users SET Nome = ?, Cognome = ?, Ruolo = ?, Nome_Utente = ?, Email = ?, Password = ?, Immagine = ?, Posizione = ?  WHERE ID = ?";
         jdbcTemplate.update(sql, 
         users.getNome(),
@@ -166,11 +168,13 @@ public class UsersRepImp implements UsersRep {
         users.getImmagine(),  
         userID
         );
+        return "Dati aggiornati con successo";
     }
 
     // Delete
-    public void deleteUser(int userID) {
+    public String deleteUser(int userID) {
         String sql = "DELETE FROM Users WHERE ID = ?";
         jdbcTemplate.update(sql, userID);
+        return "Dati eliminati con successo";
     }
 }

@@ -125,7 +125,7 @@ public class ProdottiRepImp implements ProdottiRep {
     }
 
     // Per implementare il faker
-    public void saveAll(int number) {
+    public String saveAll(int number) {
         String sql = "INSERT INTO Prodotti (ID, Nome, Prezzo, Descrizione, Immagine, Quantità_Disponibile, Categoria, Data_di_inserimento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         ProdottiFaker prodottiFaker = new ProdottiFaker();
     
@@ -136,10 +136,11 @@ public class ProdottiRepImp implements ProdottiRep {
             // Salva la categoria nel database
             jdbcTemplate.update(sql, prodotti);
         }
+        return "Dati generati con successo";
     }
 
     // Insert
-    public void insertProduct(Prodotti prodotti) {
+    public String insertProduct(Prodotti prodotti) {
         String sql = "INSERT INTO Prodotti (ID, Nome, Prezzo, Descrizione, Immagine, Quantità_Disponibile, Categoria, Data_di_inserimento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
         prodotti.getProductId(),
@@ -151,10 +152,11 @@ public class ProdottiRepImp implements ProdottiRep {
         prodotti.getCategoria(), 
         prodotti.getDataDiInserimento()        
         );
+        return "Dati inseriti con successo";
     }
 
     // Update
-    public void updateProduct(int productID, Prodotti prodotti) {
+    public String updateProduct(int productID, Prodotti prodotti) {
         String sql = "UPDATE Prodotti SET Nome = ?, Prezzo = ?, Descrizione = ?, Immagine = ?, Quantità_Disponibile = ?, Categoria = ?, Posizione = ?  WHERE ID = ?";
         jdbcTemplate.update(sql, 
         prodotti.getNome(),
@@ -166,11 +168,13 @@ public class ProdottiRepImp implements ProdottiRep {
         prodotti.getDataDiInserimento(), 
         productID
         );
+        return "Dati aggiornati con successo";
     }
 
     // Delete
-    public void deleteProduct(int productID) {
+    public String deleteProduct(int productID) {
         String sql = "DELETE FROM Prodotti WHERE ID = ?";
         jdbcTemplate.update(sql, productID);
+        return "Dati eliminati con successo";
     }
 }

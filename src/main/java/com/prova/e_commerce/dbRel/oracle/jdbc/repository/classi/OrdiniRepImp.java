@@ -130,7 +130,7 @@ public class OrdiniRepImp implements OrdiniRep {
     }
 
     // Per implementare il faker
-    public void saveAll(int number) {
+    public String saveAll(int number) {
         String sql = "INSERT INTO Ordini (ID, User_id, Stato_spedizione, Data_di_consegna, Data_di_richiesta, Accettazione_ordine, Status, Corriere, Posizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         OrdiniFaker ordiniFaker = new OrdiniFaker();
     
@@ -141,10 +141,11 @@ public class OrdiniRepImp implements OrdiniRep {
             // Salva la categoria nel database
             jdbcTemplate.update(sql, ordini);
         }
+        return "Dati generati con successo";
     }
 
     // Insert
-    public void insertOrdini(Ordini ordini) {
+    public String insertOrdini(Ordini ordini) {
         String sql = "INSERT INTO Ordini (ID, User_id, Stato_spedizione, Data_di_consegna, Data_di_richiesta, Accettazione_ordine, Status, Corriere, Posizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
         ordini.getOrderID(),
@@ -156,12 +157,12 @@ public class OrdiniRepImp implements OrdiniRep {
         ordini.getStatus(), 
         ordini.getCorriere(),
         ordini.getPosizione()
-         
         );
+        return "Dati generati con successo";
     }
 
     // Update
-    public void updateOrdini(int orderID, Ordini ordini) {
+    public String updateOrdini(int orderID, Ordini ordini) {
         String sql = "UPDATE Ordini SET User_id = ?, Stato_spedizione = ?, Data_di_consegna = ?, Data_di_richiesta = ?, Accettazione_ordine = ?, Status = ?, Corriere = ?, Posizione = ?  WHERE ID = ?";
         jdbcTemplate.update(sql, 
         ordini.getUsersID(),
@@ -174,11 +175,13 @@ public class OrdiniRepImp implements OrdiniRep {
         ordini.getPosizione(), 
         orderID
         );
+        return "Dati aggiornati con successo";
     }
 
     // Delete
-    public void deleteOrdini(int orderID) {
+    public String deleteOrdini(int orderID) {
         String sql = "DELETE FROM Ordini WHERE ID = ?";
         jdbcTemplate.update(sql, orderID);
+        return "Dati eliminati con successo";
     }
 }

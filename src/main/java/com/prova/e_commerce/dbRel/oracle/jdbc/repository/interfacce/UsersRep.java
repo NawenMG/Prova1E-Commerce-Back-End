@@ -11,8 +11,8 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 public interface UsersRep {
 
     List<Users> query(ParamQuery parmQuery, Users users);
-    void saveAll(int number);
-    void insertUser(Users users);
-    void updateUser(int userID, Users users);
-    void deleteUser(int userID);
+    String saveAll(int number);
+    String insertUser(Users users);
+    String updateUser(int userID, Users users);
+    String deleteUser(int userID);
 }

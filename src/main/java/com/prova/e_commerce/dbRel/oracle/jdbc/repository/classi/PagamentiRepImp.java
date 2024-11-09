@@ -113,7 +113,7 @@ public class PagamentiRepImp implements PagamentiRep {
     }
 
     // Per implementare il faker
-    public void saveAll(int number) {
+    public String saveAll(int number) {
         String sql = "INSERT INTO Pagamenti (ID, Type, Data, Status, Total) VALUES (?, ?, ?, ?, ?)";
         PagamentiFaker pagamentiFaker = new PagamentiFaker();
     
@@ -124,10 +124,11 @@ public class PagamentiRepImp implements PagamentiRep {
             // Salva la categoria nel database
             jdbcTemplate.update(sql, pagamenti);
         }
+        return "Dati generati con successo";
     }
 
     // Insert
-    public void insertPayment(Pagamenti pagamenti) {
+    public String insertPayment(Pagamenti pagamenti) {
         String sql = "INSERT INTO Pagamenti (ID, Type, Data, Status, Total) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
         pagamenti.getPaymentsID(),
@@ -136,10 +137,11 @@ public class PagamentiRepImp implements PagamentiRep {
         pagamenti.getStatus(),
         pagamenti.getTotal()
         );
+        return "Dati inseriti con successo";
     }
 
     // Update
-    public void updatePayment(int paymentID, Pagamenti pagamenti) {
+    public String updatePayment(int paymentID, Pagamenti pagamenti) {
         String sql = "UPDATE Pagamenti SET Type = ?, Data = ?, Status = ?, Total = ? WHERE ID = ?";
         jdbcTemplate.update(sql, 
         pagamenti.getType(),
@@ -148,12 +150,14 @@ public class PagamentiRepImp implements PagamentiRep {
         pagamenti.getTotal(),
         paymentID
         );
+        return "Dati aggiornati con successo";
     }
 
     // Delete
-    public void deletePayment(int paymentID) {
+    public String deletePayment(int paymentID) {
         String sql = "DELETE FROM Pagamenti WHERE ID = ?";
         jdbcTemplate.update(sql, paymentID);
+        return "Dati eliminati con successo";
     }
 
     

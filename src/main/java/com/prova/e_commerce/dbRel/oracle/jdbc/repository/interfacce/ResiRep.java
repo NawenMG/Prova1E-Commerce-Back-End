@@ -10,8 +10,8 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 @Repository
 public interface ResiRep {
     List<Resi> query(ParamQuery parmQuery, Resi resi);
-    void saveAll(int number);
-    void insertReturn(Resi resi);
-    void updateReturn(int returnID, Resi resi);
-    void deleteReturn(int returnID);
+    String saveAll(int number);
+    String insertReturn(Resi resi);
+    String updateReturn(int returnID, Resi resi);
+    String deleteReturn(int returnID);
 }

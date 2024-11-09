@@ -113,7 +113,7 @@ public class ResiRepImp implements ResiRep {
     }
 
     // Per implementare il faker
-    public void saveAll(int number) {
+    public String saveAll(int number) {
         String sql = "INSERT INTO Resi (ID, User_id, Status, Accetazione_reso, Data_di_richiesta) VALUES (?, ?, ?, ?, ?)";
         ResiFaker resiFaker = new ResiFaker();
     
@@ -124,10 +124,11 @@ public class ResiRepImp implements ResiRep {
             // Salva la categoria nel database
             jdbcTemplate.update(sql, resi);
         }
+        return "Dati generati con successo";
     }
 
     // Insert
-    public void insertReturn(Resi resi) {
+    public String insertReturn(Resi resi) {
         String sql = "INSERT INTO Resi (ID, User_id, Status, Accetazione_reso, Data_di_richiesta) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
         resi.getReturnsID(),
@@ -136,10 +137,11 @@ public class ResiRepImp implements ResiRep {
         resi.isAccettazioneReso(),
         resi.getDataRichiesta()
         );
+        return "Dati inseriti con successo";
     }
 
     // Update
-    public void updateReturn(int returnID, Resi resi) {
+    public String updateReturn(int returnID, Resi resi) {
         String sql = "UPDATE Resi SET User_id = ?, Status = ?, Accetazione_reso = ?, Data_di_richiesta = ? WHERE ID = ?";
         jdbcTemplate.update(sql,    
         resi.getUsersID(),
@@ -148,11 +150,13 @@ public class ResiRepImp implements ResiRep {
         resi.getDataRichiesta(), 
         returnID
         );
+        return "Dati aggiornati con successo";
     }
 
     // Delete
-    public void deleteReturn(int returnID) {
+    public String deleteReturn(int returnID) {
         String sql = "DELETE FROM Resi WHERE ID = ?";
         jdbcTemplate.update(sql, returnID);
+        return "Dati eliminati con successo";
     }
 }

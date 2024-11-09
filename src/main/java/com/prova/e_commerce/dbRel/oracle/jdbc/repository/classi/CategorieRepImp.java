@@ -101,7 +101,7 @@ public class CategorieRepImp implements CategorieRep {
     }
 
     // Per implementare il faker
-    public void saveAll(int number) {
+    public String saveAll(int number) {
         String sql = "INSERT INTO Categorie (ID, Nome) VALUES (?, ?)";
         CategorieFaker categorieFaker = new CategorieFaker();
     
@@ -112,29 +112,33 @@ public class CategorieRepImp implements CategorieRep {
             // Salva la categoria nel database
             jdbcTemplate.update(sql, categorie);
         }
+        return "Dati generati con successo";
     }
 
     // Insert
-    public void insertCategory(Categorie categorie) {
+    public String insertCategory(Categorie categorie) {
         String sql = "INSERT INTO Categorie (ID, Nome) VALUES (?, ?)";
         jdbcTemplate.update(sql,
         categorie.getCategoryID(),
         categorie.getName()
         );
+        return "Dati inseriti con successo";
     }
 
     //Update
-     public void updateCategory(int categoryID, Categorie categorie) {
+     public String updateCategory(int categoryID, Categorie categorie) {
         String sql = "UPDATE Categorie SET Nome = ?  WHERE ID = ?";
         jdbcTemplate.update(sql, 
         categorie.getName(),
         categoryID
         );
+        return "Dati aggiornati con successo";
     }
 
     // Delete
-    public void deleteCategory(int categoryID) {
+    public String deleteCategory(int categoryID) {
         String sql = "DELETE FROM Categorie WHERE ID = ?";
         jdbcTemplate.update(sql, categoryID);
+        return "Dati eliminati con successo";
     }
 }

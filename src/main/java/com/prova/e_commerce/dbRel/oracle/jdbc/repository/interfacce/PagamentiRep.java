@@ -11,8 +11,8 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 public interface PagamentiRep {
     
     List<Pagamenti> query(ParamQuery parmQuery, Pagamenti pagamenti);
-    void saveAll(int number);
-    void insertPayment(Pagamenti pagamenti);
-    void updatePayment(int paymentID, Pagamenti pagamenti);
-    void deletePayment(int paymentID);
+    String saveAll(int number);
+    String insertPayment(Pagamenti pagamenti);
+    String updatePayment(int paymentID, Pagamenti pagamenti);
+    String deletePayment(int paymentID);
 }

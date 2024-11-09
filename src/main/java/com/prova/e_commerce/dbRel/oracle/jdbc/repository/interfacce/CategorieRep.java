@@ -11,8 +11,8 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 public interface CategorieRep {
 
     List<Categorie> query(ParamQuery parmQuery, Categorie categorie);
-    void saveAll(int number);
-    void insertCategory(Categorie category);
-    void updateCategory(int categoryID, Categorie category);
-    void deleteCategory(int categoryID);
+    String saveAll(int number);
+    String insertCategory(Categorie category);
+    String updateCategory(int categoryID, Categorie category);
+    String deleteCategory(int categoryID);
 }
