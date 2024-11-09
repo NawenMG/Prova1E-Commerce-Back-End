@@ -10,7 +10,7 @@ public class OrdiniFaker {
 
     private Faker faker = new Faker();
 
-    public Ordini generateFakeOrder() {
+    public Ordini generateFakeOrder(int number) {
         Ordini order = new Ordini();
 
         // Genera un ID ordine casuale come stringa

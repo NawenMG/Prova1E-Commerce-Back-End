@@ -10,7 +10,7 @@ public class ProdottiFaker {
 
     private Faker faker = new Faker();
 
-    public Prodotti generateFakeProduct() {
+    public Prodotti generateFakeProduct( int number) {
         Prodotti product = new Prodotti();
 
         // Genera un ID prodotto come stringa "PROD1234"

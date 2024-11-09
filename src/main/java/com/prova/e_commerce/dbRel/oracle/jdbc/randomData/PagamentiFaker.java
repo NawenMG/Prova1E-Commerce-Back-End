@@ -10,7 +10,7 @@ public class PagamentiFaker {
 
     private Faker faker = new Faker();
 
-    public Pagamenti generateFakePayment() {
+    public Pagamenti generateFakePayment(int number) {
         Pagamenti payment = new Pagamenti();
 
         // Genera un ID pagamento casuale come stringa (esempio: "PAY1234")

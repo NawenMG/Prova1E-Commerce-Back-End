@@ -8,6 +8,7 @@ public class ParamQuery {
     
     // Variabili di configurazione per le query
     private boolean distinct = false;
+    private boolean all = false;
     private Optional<String> condizioneWhere = Optional.empty();
     private Optional<String> valoriWhere = Optional.empty();
     private Optional<String> boleani = Optional.empty();
@@ -135,6 +136,14 @@ public class ParamQuery {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public boolean getAll() {
+        return all;
+    }
+
+    public void setAll(boolean all) {
+        this.all = all;
     }
 
     // Metodo per costruire la clausola WHERE

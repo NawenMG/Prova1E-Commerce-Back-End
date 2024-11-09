@@ -7,7 +7,7 @@ public class CategorieFaker {
 
     private Faker faker = new Faker();
 
-    public Categorie generateFakeCategory() {
+    public Categorie generateFakeCategory(int number) {
         Categorie category = new Categorie();
 
         // Genera un ID casuale come stringa (ad esempio un UUID o una stringa numerica)
