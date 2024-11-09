@@ -1,0 +1,59 @@
+# Tipo per rappresentare gli Ordini
+type Ordini {
+    orderID: String
+    usersID: String
+    statoDiSpedizione: String
+    dataDiConsegna: String
+    dataDiRichiesta: String
+    accettazioneOrdine: Boolean
+    status: String
+    corriere: String
+    posizione: String
+}
+
+# Input per creare o aggiornare un Ordine
+input OrdiniInput {
+    orderID: String
+    usersID: String
+    statoDiSpedizione: String
+    dataDiConsegna: String
+    dataDiRichiesta: String
+    accettazioneOrdine: Boolean
+    status: String
+    corriere: String
+    posizione: String
+}
+
+# Tipo di input per ParamQuery (configurazione della query)
+input ParamQueryInput {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationType
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione
+enum AggregationType {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Query per ottenere una lista di ordini con parametri dinamici
+type Query {
+    ordini(paramQuery: ParamQueryInput, ordini: OrdiniInput): [Ordini]
+}
+

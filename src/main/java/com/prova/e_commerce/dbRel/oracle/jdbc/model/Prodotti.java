@@ -11,7 +11,7 @@ public class Prodotti {
 
     /* @NotBlank(message = "Obbligatorio")
     @Size(max = 50, message = "L'ID del prodotto non può superare i 50 caratteri") */
-    private String productId;  // chiave primaria (modificato in String per corrispondere a VARCHAR2(50))
+    private String productID;  // chiave primaria (modificato in String per corrispondere a VARCHAR2(50))
 
     /* @NotBlank(message = "Obbligatorio")
     @Size(max = 100, message = "Il nome del prodotto non può superare i 100 caratteri") */
@@ -40,11 +40,11 @@ public class Prodotti {
 
     // Getter e Setter
     public String getProductId() {
-        return productId;
+        return productID;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setProductId(String productID) {
+        this.productID = productID;
     }
 
     public String getNome() {

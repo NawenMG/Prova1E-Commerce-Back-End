@@ -1,0 +1,58 @@
+# Tipo per rappresentare un Prodotto
+type Prodotti {
+    productID: String
+    nome: String
+    prezzo: Float
+    descrizione: String
+    immagine: String 
+    amountAvailable: Int
+    categoria: String
+    dataDiInserimento: String 
+}
+
+# Tipo di input per creare o aggiornare un Prodotto
+input ProdottiInput {
+    productID: String
+    nome: String
+    prezzo: Float
+    descrizione: String
+    immagine: String 
+    amountAvailable: Int
+    categoria: String
+    dataDiInserimento: String 
+}
+
+# Tipo di input per ParamQuery (configurazione della query)
+input ParamQueryInput {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationType
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione
+enum AggregationType {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Query per ottenere un prodotto
+type Query {
+    prodotti(paramQuery: ParamQueryInput, prodotti: ProdottiInput): [Prodotti]
+}
+
+
