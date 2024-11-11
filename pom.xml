@@ -33,20 +33,24 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+			<version>3.3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<version>3.3.5</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.34</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<version>3.3.5</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -87,7 +91,6 @@
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc8</artifactId>
-			<version>23.5.0.24.07</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -143,21 +146,21 @@
 		 <dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb</artifactId>
-			<version>2.29.7</version>
+			<version>2.29.9</version>
 		</dependency>
 	
 		<!-- Dipendenza per Spring Data DynamoDB -->
 		<dependency>
 			<groupId>com.github.derjust</groupId>
 			<artifactId>spring-data-dynamodb</artifactId>
-			<version>5.0.3</version>
+			<version>5.1.0</version>
 		</dependency>
 	
 		<!-- Dipendenza per la configurazione del client DynamoDB -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>aws-sdk-java</artifactId>
-			<version>2.29.7</version>
+			<version>2.29.9</version>
 		</dependency>
 		
 
@@ -167,14 +170,14 @@
         <dependency> <!--Per oracle sql usa questa versione precisa di flyway-->
            <groupId>org.flywaydb</groupId>
            <artifactId>flyway-database-oracle</artifactId>
-		   <version>10.20.1</version>
+		   <version>10.21.0</version>
         </dependency>
 
 		 <!--Per mongodb usa il core di default-->
 		 <dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
-			<version>10.20.1</version>
+			<version>10.21.0</version>
 		</dependency>
 
 		<!-- Neo4j-Migrations -->
@@ -279,36 +282,43 @@
 		<dependency>
 			<groupId>com.github.javafaker</groupId>
 			<artifactId>javafaker</artifactId>
-			<version>1.0.2</version> 
+			<version>1.0.2</version>
 		</dependency>
 
 
 		<!-- Graphql -->
 		 <!-- Dipendenze per GraphQL -->
-		 <dependency>
+		 <!-- GraphQL Java -->
+		 <!-- <dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-java</artifactId>
 			<version>22.3</version>
 		</dependency>
+	
+		<dependency>
+			<groupId>com.graphql-java-kickstart</groupId>
+			<artifactId>graphql-java-tools</artifactId>
+			<version>14.0.0</version>
+		</dependency>		
+
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>java-dataloader</artifactId>
+			<version>3.3.0</version>
+		</dependency>		
+	
+		GraphQL Spring Boot Starter (per l'integrazione di GraphQL con Spring Boot) 
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-spring-boot-starter</artifactId>
 			<version>5.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphql-java-tools</artifactId>
-			<version>5.2.4</version>
-		</dependency>
-		
-		
-		
-		
-		
-		
-	
-		
+		</dependency> -->
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-graphql</artifactId>
+		</dependency>
+		
 		
 	</dependencies>
 

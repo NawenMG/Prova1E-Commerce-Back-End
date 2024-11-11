@@ -1,0 +1,19 @@
+# schema.graphqls
+
+# Importa i singoli tipi da ciascun file schema
+#import "./schemas/categorie.graphql"
+#import "./schemas/ordini.graphql"
+#import "./schemas/pagamenti.graphql"
+#import "./schemas/prodotti.graphql"
+#import "./schemas/resi.graphql"
+#import "./schemas/users.graphql"
+
+# Tipo Query con tutte le query unificate
+type Query {
+    categorie(paramQuery: ParamQueryInputCategorie, categorie: CategorieInput): Categorie
+    ordini(paramQuery: ParamQueryInputOrdini, ordini: OrdiniInput): Ordini
+    pagamenti(paramQuery: ParamQueryInputPagamenti, pagamenti: PagamentiInput): Pagamenti
+    prodotti(paramQuery: ParamQueryInputProdotti, prodotti: ProdottiInput): Prodotti
+    resi(paramQuery: ParamQueryInputResi, resi: ResiInput): Resi
+    users(paramQuery: ParamQueryInputUsers, users: UsersInput): Users
+}

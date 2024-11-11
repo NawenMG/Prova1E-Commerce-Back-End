@@ -15,7 +15,7 @@ input PagamentiInput {
 }
 
 # Tipo di input per ParamQuery (configurazione della query)
-input ParamQueryInput {
+input ParamQueryInputPagamenti {
     distinct: Boolean
     all: Boolean
     condizioneWhere: String
@@ -23,7 +23,7 @@ input ParamQueryInput {
     boleani: String
     orderBy: Boolean
     top: Int
-    aggregationType: AggregationType
+    aggregationType: AggregationTypePagamenti
     like: String
     in: [String]
     between: [String]
@@ -33,7 +33,7 @@ input ParamQueryInput {
 }
 
 # Enum per rappresentare i vari tipi di aggregazione
-enum AggregationType {
+enum AggregationTypePagamenti {
     NONE
     MIN
     MAX
@@ -42,7 +42,7 @@ enum AggregationType {
     SUM
 }
 
-type Query {
-    pagamenti(paramQuery: ParamQueryInput, pagamenti: PagamentiInput): [Pagamenti]
+# Query per ottenere una lista di pagamenti con parametri dinamici
+type QueryPagamenti {
+    pagamenti(paramQuery: ParamQueryInputPagamenti, pagamenti: PagamentiInput): Pagamenti
 }
-

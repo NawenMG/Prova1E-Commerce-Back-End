@@ -1,10 +1,7 @@
-# src/main/resources/schema.graphqls
-
 type Categorie {
     categoryID: String
     name: String
 }
-
 
 input CategorieInput {
     categoryID: String
@@ -12,7 +9,7 @@ input CategorieInput {
 }
 
 # Tipo di input per ParamQuery (configurazione della query)
-input ParamQueryInput {
+input ParamQueryInputCategorie {
     distinct: Boolean
     all: Boolean
     condizioneWhere: String
@@ -20,7 +17,7 @@ input ParamQueryInput {
     boleani: String
     orderBy: Boolean
     top: Int
-    aggregationType: AggregationType
+    aggregationType: AggregationTypeCategorie
     like: String
     in: [String]
     between: [String]
@@ -30,7 +27,7 @@ input ParamQueryInput {
 }
 
 # Enum per rappresentare i vari tipi di aggregazione
-enum AggregationType {
+enum AggregationTypeCategorie {
     NONE
     MIN
     MAX
@@ -39,6 +36,6 @@ enum AggregationType {
     SUM
 }
 
-type Query {
-    categorie(paramQuery: ParamQueryInput, categorie: CategorieInput): [Categorie]
+type QueryCategorie {
+     categorie(paramQuery: ParamQueryInputCategorie, categorie: CategorieInput): Categorie
 }

@@ -1,39 +1,48 @@
 package com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.Config;
 
-import com.coxautodev.graphql.tools.SchemaParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.graphql.execution.RuntimeWiringConfigurer;
+
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.CategorieControllerGraphql;
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.OrdiniControllerGraphql;
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.PagamentiControllerGraphql;
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.ProdottiControllerGraphql;
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.ResiControllerGraphql;
+import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.UsersControllerGraphql;
 
-import graphql.GraphQL;
-import graphql.schema.GraphQLSchema;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import graphql.schema.idl.TypeRuntimeWiring;
 
 @Configuration
 public class GraphQLConfig {
 
-    @Bean
-    public GraphQL graphQL() {
-        // Unire più schemi e resolver
-        GraphQLSchema graphQLSchema = SchemaParser.newParser()
-                .file("graphql/schema/Categorie.graphqls")  // Schema per le categorie
-                .file("graphql/schema/Ordini.graphqls")   // Schema per gli ordini
-                .file("graphql/schema/Pagamenti.graphqls")    // Schema per i pagamenti
-                .file("graphql/schema/Prodotti.graphqls")  //Schema per i prodotti
-                .file("graphql/schema/Resi.graphqls")  //Schema per i resi
-                .file("graphql/schema/Users.graphqls") //Schema per Users
-                .resolvers(new CategorieControllerGraphql())  // Resolver per categorie
-                .resolvers(new OrdiniControllerGraphql())   // Resolver per ordini
-                .resolvers(new PagamentiControllerGraphql()) // Resolver per pagamenti
-                .resolvers(new ProdottiControllerGraphql()) // Resolver per prodotti
-                .resolvers(new ResiControllerGraphql()) //Resolver per resi
-                .resolvers(new UsersControllerGraphql()) //Resolver per users
-                .build()
-                .makeExecutableSchema();
+    @Autowired
+    private CategorieControllerGraphql categorieController;
+    @Autowired
+    private OrdiniControllerGraphql ordiniController;
+    @Autowired
+    private PagamentiControllerGraphql pagamentiController;
+    @Autowired
+    private ProdottiControllerGraphql prodottiController;
+    @Autowired
+    private ResiControllerGraphql resiController;
+    @Autowired
+    private UsersControllerGraphql usersController;
 
-        return GraphQL.newGraphQL(graphQLSchema).build();
+    // Definisce la configurazione del wiring tra lo schema GraphQL e i metodi dei controller
+    @Bean
+    public RuntimeWiringConfigurer runtimeWiringConfigurer() {
+        return wiringBuilder -> {
+            wiringBuilder
+                // Configura la query principale
+                .type(TypeRuntimeWiring.newTypeWiring("Query")
+                    .dataFetcher("categorie", categorieController::categorie) // Funzione per la query "categorie"
+                    .dataFetcher("ordini", ordiniController::ordini)           // Funzione per la query "ordini"
+                    .dataFetcher("pagamenti", pagamentiController::pagamenti)   // Funzione per la query "pagamenti"
+                    .dataFetcher("prodotti", prodottiController::prodotti)     // Funzione per la query "prodotti"
+                    .dataFetcher("resi", resiController::resi)                 // Funzione per la query "resi"
+                    .dataFetcher("users", usersController::users));            // Funzione per la query "users"
+        };
     }
 }

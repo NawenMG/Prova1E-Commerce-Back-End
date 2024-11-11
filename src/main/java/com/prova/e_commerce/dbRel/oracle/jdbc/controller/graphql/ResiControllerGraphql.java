@@ -1,22 +1,23 @@
 package com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Resi;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.ResiService;
+import graphql.schema.DataFetchingEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Component
-public class ResiControllerGraphql implements GraphQLQueryResolver{
-
+@Controller
+public class ResiControllerGraphql {
     @Autowired
     private ResiService resiService;
 
-    // Query per ottenere ordini
-    public List<Resi> resi(ParamQuery paramQuery, Resi resi) {
+    public List<Resi> resi(DataFetchingEnvironment env) {
+        // Estrazione degli argomenti dal DataFetchingEnvironment
+        ParamQuery paramQuery = env.getArgument("paramQuery");
+        Resi resi = env.getArgument("resi");
         return resiService.queryResi(paramQuery, resi);
     }
 }

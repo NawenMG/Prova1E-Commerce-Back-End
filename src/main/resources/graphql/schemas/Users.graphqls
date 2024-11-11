@@ -19,11 +19,11 @@ input UsersInput {
     nomeUtente: String
     email: String
     password: String
-    immagine: String 
+    immagine: String
 }
 
 # Tipo di input per ParamQuery (configurazione della query)
-input ParamQueryInput {
+input ParamQueryInputUsers {
     distinct: Boolean
     all: Boolean
     condizioneWhere: String
@@ -31,7 +31,7 @@ input ParamQueryInput {
     boleani: String
     orderBy: Boolean
     top: Int
-    aggregationType: AggregationType
+    aggregationType: AggregationTypeUsers
     like: String
     in: [String]
     between: [String]
@@ -41,7 +41,7 @@ input ParamQueryInput {
 }
 
 # Enum per rappresentare i vari tipi di aggregazione
-enum AggregationType {
+enum AggregationTypeUsers {
     NONE
     MIN
     MAX
@@ -51,7 +51,6 @@ enum AggregationType {
 }
 
 # Query per ottenere un utente
-type Query {
-    users(paramQuery: ParamQueryInput, users: UsersInput): [Users]
+type QueryUsers {
+    users(paramQuery: ParamQueryInputUsers, users: UsersInput): Users
 }
-

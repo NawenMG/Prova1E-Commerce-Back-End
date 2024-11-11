@@ -25,7 +25,7 @@ input OrdiniInput {
 }
 
 # Tipo di input per ParamQuery (configurazione della query)
-input ParamQueryInput {
+input ParamQueryInputOrdini {
     distinct: Boolean
     all: Boolean
     condizioneWhere: String
@@ -33,7 +33,7 @@ input ParamQueryInput {
     boleani: String
     orderBy: Boolean
     top: Int
-    aggregationType: AggregationType
+    aggregationType: AggregationTypeOrdini
     like: String
     in: [String]
     between: [String]
@@ -43,7 +43,7 @@ input ParamQueryInput {
 }
 
 # Enum per rappresentare i vari tipi di aggregazione
-enum AggregationType {
+enum AggregationTypeOrdini {
     NONE
     MIN
     MAX
@@ -53,7 +53,6 @@ enum AggregationType {
 }
 
 # Query per ottenere una lista di ordini con parametri dinamici
-type Query {
-    ordini(paramQuery: ParamQueryInput, ordini: OrdiniInput): [Ordini]
+type QueryOrdini {
+    ordini(paramQuery: ParamQueryInputOrdini, ordini: OrdiniInput): Ordini
 }
-

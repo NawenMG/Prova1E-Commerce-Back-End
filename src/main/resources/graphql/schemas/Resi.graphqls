@@ -17,7 +17,7 @@ input ResiInput {
 }
 
 # Tipo di input per ParamQuery (configurazione della query)
-input ParamQueryInput {
+input ParamQueryInputResi {
     distinct: Boolean
     all: Boolean
     condizioneWhere: String
@@ -25,7 +25,7 @@ input ParamQueryInput {
     boleani: String
     orderBy: Boolean
     top: Int
-    aggregationType: AggregationType
+    aggregationType: AggregationTypeResi
     like: String
     in: [String]
     between: [String]
@@ -35,7 +35,7 @@ input ParamQueryInput {
 }
 
 # Enum per rappresentare i vari tipi di aggregazione
-enum AggregationType {
+enum AggregationTypeResi {
     NONE
     MIN
     MAX
@@ -45,8 +45,6 @@ enum AggregationType {
 }
 
 # Query per ottenere un reso
-type Query {
-    resi(paramQuery: ParamQueryInput, resi: ResiInput): [Resi]
+type QueryResi {
+    resi(paramQuery: ParamQueryInputResi, resi: ResiInput): Resi
 }
-
-
