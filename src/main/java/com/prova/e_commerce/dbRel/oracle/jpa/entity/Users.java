@@ -1,46 +1,64 @@
-package com.prova.e_commerce.dbRel.oracle.jdbc.model;
+package com.prova.e_commerce.dbRel.oracle.jpa.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 /* import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size; */
 
+@Entity
+@Table(name = "Users")  // Imposta il nome della tabella nel database
 public class Users {
 
-    /* @NotBlank(message = "Obbligatorio") */
-    private String usersID;  // ID, cambiato a String per corrispondere a VARCHAR2(50)
+    @Id
+    @Column(name = "ID")  // Definisce il nome della colonna nel database
+    private String usersID;
 
-    /* @NotBlank(message = "Obbligatorio")
+   /*  @NotBlank(message = "Il nome è obbligatorio")
     @Size(max = 100, message = "Il nome non può superare i 100 caratteri") */
-    private String nome;          // Nome
+    @Column(name = "Nome")
+    private String nome;  // Nome
 
-    /* @NotBlank(message = "Obbligatorio")
+    /* @NotBlank(message = "Il cognome è obbligatorio")
     @Size(max = 100, message = "Il cognome non può superare i 100 caratteri") */
-    private String cognome;       // Cognome
+    @Column(name = "Cognome")
+    private String cognome;  // Cognome
 
-    /* @NotBlank(message = "Obbligatorio")
+    /* @NotBlank(message = "Il ruolo è obbligatorio")
     @Size(max = 50, message = "Il ruolo non può superare i 50 caratteri") */
-    private String ruolo;         // Ruolo
+    @Column(name = "Ruolo")
+    private String ruolo;  // Ruolo
 
-    /* @NotBlank(message = "Obbligatorio")
+   /*  @NotBlank(message = "Il nome utente è obbligatorio")
     @Size(max = 100, message = "Il nome utente non può superare i 100 caratteri") */
-    private String nomeUtente;    // Nome utente (unico)
+    @Column(name = "Nome_Utente", unique = true)  // Imposta "nome_utente" come unico
+    private String nomeUtente;  // Nome utente (unico)
 
-    /* @NotBlank(message = "Obbligatorio")
+    /* @NotBlank(message = "L'email è obbligatoria")
     @Email(message = "L'email non è valida")
     @Size(max = 100, message = "L'email non può superare i 100 caratteri") */
-    private String email;         // Email (unica)
+    @Column(name = "Email", unique = true)  // Imposta "email" come unica
+    private String email;  // Email (unica)
 
-    /* @NotBlank(message = "Obbligatorio")
+   /*  @NotBlank(message = "La password è obbligatoria")
     @Size(min = 10, message = "La password deve essere lunga almeno 10 caratteri") */
-    private String password;      // Password (hash, rimuovere la validazione di lunghezza stretta)
+    @Column(name = "Password")
+    private String password;  // Password (hash)
 
-    private byte[] immagine;      // Immagine (BLOB trattato come byte[])
+    @Lob
+    @Column(name = "Immagine")  // Usa @Lob per il tipo BLOB
+    private byte[] immagine;  // Immagine (BLOB trattato come byte[])
 
-    // Costruttore
+    // Costruttore senza argomenti
     public Users() {
     }
 
     // Getter e Setter
+
     public String getUsersID() {
         return usersID;
     }

@@ -10,7 +10,6 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.OrdiniControlle
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.PagamentiControllerGraphql;
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.ProdottiControllerGraphql;
 import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.ResiControllerGraphql;
-import com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql.UsersControllerGraphql;
 
 import graphql.schema.idl.TypeRuntimeWiring;
 
@@ -27,8 +26,7 @@ public class GraphQLConfig {
     private ProdottiControllerGraphql prodottiController;
     @Autowired
     private ResiControllerGraphql resiController;
-    @Autowired
-    private UsersControllerGraphql usersController;
+   
 
     // Definisce la configurazione del wiring tra lo schema GraphQL e i metodi dei controller
     @Bean
@@ -41,8 +39,7 @@ public class GraphQLConfig {
                     .dataFetcher("ordini", ordiniController::ordini)           // Funzione per la query "ordini"
                     .dataFetcher("pagamenti", pagamentiController::pagamenti)   // Funzione per la query "pagamenti"
                     .dataFetcher("prodotti", prodottiController::prodotti)     // Funzione per la query "prodotti"
-                    .dataFetcher("resi", resiController::resi)                 // Funzione per la query "resi"
-                    .dataFetcher("users", usersController::users));            // Funzione per la query "users"
+                    .dataFetcher("resi", resiController::resi)  );               // Funzione per la query "resi"
         };
     }
 }

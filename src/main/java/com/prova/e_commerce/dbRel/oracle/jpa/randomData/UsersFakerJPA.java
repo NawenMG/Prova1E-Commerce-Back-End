@@ -1,11 +1,19 @@
-package com.prova.e_commerce.dbRel.oracle.jdbc.randomData;
+package com.prova.e_commerce.dbRel.oracle.jpa.randomData;
 
 import com.github.javafaker.Faker;
-import com.prova.e_commerce.dbRel.oracle.jdbc.model.Users;
+import com.prova.e_commerce.dbRel.oracle.jpa.entity.Users;
+import com.prova.e_commerce.dbRel.oracle.jpa.repository.interfacce.UsersRepJPA;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class UsersFaker {
+@Component
+public class UsersFakerJPA {
 
     private Faker faker = new Faker();
+
+    // Autowiring del repository per salvare i dati nel DB
+    @Autowired
+    private UsersRepJPA usersRepository;
 
     public Users generateFakeUser(int number) {
         Users user = new Users(); // Crea un'istanza vuota di Users
@@ -19,6 +27,9 @@ public class UsersFaker {
         user.setEmail(faker.internet().emailAddress());                       // Email casuale
         user.setPassword(faker.internet().password(8, 16));                   // Password casuale tra 8 e 16 caratteri
         user.setImmagine(faker.internet().avatar().getBytes());               // Immagine avatar casuale (byte[])
+
+        // Salva l'utente nel database tramite JPA
+        usersRepository.save(user);
 
         return user; // Restituisce l'oggetto Users con i dati fittizi
     }
