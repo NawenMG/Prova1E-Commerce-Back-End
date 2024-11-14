@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/recensioni")
@@ -30,28 +29,17 @@ public class RecensioniControllerRest {
         return recensioni.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(recensioni);
     }
 
-    // Endpoint per eseguire una ricerca dinamica delle recensioni
-    @GetMapping("/ricerca-dinamica")
-    public ResponseEntity<List<Recensioni>> getByDynamicCriteria(
-            @RequestParam(required = false) String userId,
-            @RequestParam(required = false) String productId,
-            @RequestParam(required = false) Integer votoMin,
-            @RequestParam(required = false) Integer votoMax,
-            @RequestParam(required = false) String titolo,
-            @RequestParam(required = false) String descrizione,
-            @RequestParam(required = false) Map<String, String> parametriAggiuntivi) {
-        
-        List<Recensioni> recensioni = recensioniService.findByDynamicCriteria(
-                userId, productId, votoMin, votoMax, titolo, descrizione, parametriAggiuntivi);
-        
-        return recensioni.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(recensioni);
-    }
-
     // Endpoint per creare una nuova recensione
     @PostMapping
     public ResponseEntity<Recensioni> createRecensione(@RequestBody Recensioni recensione) {
         Recensioni newRecensione = recensioniService.saveRecensione(recensione);
         return ResponseEntity.status(201).body(newRecensione);  // Restituisce il nuovo oggetto con status 201 Created
+    }
+
+    //Generazione di dati randomici
+    @GetMapping("/random/{count}")
+    public List<Recensioni> getRandomRecensioni(@PathVariable int count) {
+        return recensioniService.generateRandomRecensioni(count);
     }
 
     // Endpoint per aggiornare una recensione esistente tramite l'ID

@@ -1,0 +1,336 @@
+# Tipo per rappresentare le Categorie
+type Categorie {
+    categoryID: String
+    name: String
+}
+
+# Input per creare o aggiornare una Categoria
+input CategorieInput {
+    categoryID: String
+    name: String
+}
+
+# Tipo di input per ParamQuery per le Categorie
+input ParamQueryInputCategorie {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeCategorie
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Categorie
+enum AggregationTypeCategorie {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare gli Ordini
+type Ordini {
+    orderID: String
+    usersID: String
+    statoDiSpedizione: String
+    dataDiConsegna: String
+    dataDiRichiesta: String
+    accettazioneOrdine: Boolean
+    status: String
+    corriere: String
+    posizione: String
+}
+
+# Input per creare o aggiornare un Ordine
+input OrdiniInput {
+    orderID: String
+    usersID: String
+    statoDiSpedizione: String
+    dataDiConsegna: String
+    dataDiRichiesta: String
+    accettazioneOrdine: Boolean
+    status: String
+    corriere: String
+    posizione: String
+}
+
+# Tipo di input per ParamQuery per gli Ordini
+input ParamQueryInputOrdini {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeOrdini
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Ordini
+enum AggregationTypeOrdini {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare i Pagamenti
+type Pagamenti {
+    paymentsID: String
+    type: String
+    data: String
+    status: Boolean
+    total: Float
+}
+
+# Input per creare o aggiornare un Pagamento
+input PagamentiInput {
+    paymentsID: String
+    type: String
+    data: String
+    status: Boolean
+    total: Float
+}
+
+# Tipo di input per ParamQuery per i Pagamenti
+input ParamQueryInputPagamenti {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypePagamenti
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Pagamenti
+enum AggregationTypePagamenti {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare i Prodotti
+type Prodotti {
+    productID: String
+    nome: String
+    prezzo: Float
+    descrizione: String
+    immagine: String
+    amountAvailable: Int
+    categoria: String
+    dataDiInserimento: String
+}
+
+# Input per creare o aggiornare un Prodotto
+input ProdottiInput {
+    productID: String
+    nome: String
+    prezzo: Float
+    descrizione: String
+    immagine: String
+    amountAvailable: Int
+    categoria: String
+    dataDiInserimento: String
+}
+
+# Tipo di input per ParamQuery per i Prodotti
+input ParamQueryInputProdotti {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeProdotti
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Prodotti
+enum AggregationTypeProdotti {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare le Recensioni
+type Recensioni {
+    id: String
+    userId: String
+    productId: String
+    voto: Int
+    titolo: String
+    descrizione: String
+    immagine: String
+    video: String
+    like: Int
+    dislike: Int
+    risposte: [RispostaRecensione]
+}
+
+# Tipo per rappresentare una Risposta a una Recensione
+type RispostaRecensione {
+    userId: String
+    testo: String
+    dataRisposta: String
+}
+
+# Input per creare o aggiornare una Recensione
+input RecensioniInput {
+    userId: String
+    productId: String
+    voto: Int
+    titolo: String
+    descrizione: String
+    immagine: String
+    video: String
+    like: Int
+    dislike: Int
+    risposte: [RispostaRecensioneInput]
+}
+
+# Input per inserire una risposta a una recensione
+input RispostaRecensioneInput {
+    userId: String
+    testo: String
+    dataRisposta: String
+}
+
+# Tipo di input per ParamQuery per le Recensioni
+input ParamQueryInputRecensioni {
+    filters: String
+    page: Int
+    size: Int
+    sortBy: String
+    order: String
+}
+
+# Tipo per rappresentare i Resi
+type Resi {
+    returnsID: String
+    usersID: String
+    status: Boolean
+    accettazioneReso: Boolean
+    dataRichiesta: String
+}
+
+# Input per creare o aggiornare un Reso
+input ResiInput {
+    returnsID: String
+    usersID: String
+    status: Boolean
+    accettazioneReso: Boolean
+    dataRichiesta: String
+}
+
+# Tipo di input per ParamQuery per i Resi
+input ParamQueryInputResi {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeResi
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Resi
+enum AggregationTypeResi {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare una SchedaProdotti
+type SchedeProdotti {
+    id: String
+    nome: String
+    prezzo: Float
+    parametriDescrittivi: [ParametriDescrittiviEntry]
+}
+
+# Tipo per rappresentare un singolo parametro descrittivo come coppia chiave-valore
+type ParametriDescrittiviEntry {
+    key: String
+    value: String
+}
+
+# Input per creare o aggiornare una SchedaProdotti
+input SchedeProdottiInput {
+    nome: String
+    prezzo: Float
+    parametriDescrittivi: [ParametriDescrittiviInput]
+}
+
+# Input per rappresentare una coppia chiave-valore nei parametri descrittivi
+input ParametriDescrittiviInput {
+    key: String
+    value: String
+}
+
+# Tipo di input per ParamQuery per le SchedeProdotti
+input ParamQueryInputSchedeProdotti {
+    filters: String
+    page: Int
+    size: Int
+    sortBy: String
+    order: String
+}
+
+# Definizione del tipo Query unificato
+type Query {
+    categorie(paramQuery: ParamQueryInputCategorie, categorie: CategorieInput): [Categorie]
+    ordini(paramQuery: ParamQueryInputOrdini, ordini: OrdiniInput): [Ordini]
+    pagamenti(paramQuery: ParamQueryInputPagamenti, pagamenti: PagamentiInput): [Pagamenti]
+    prodotti(paramQuery: ParamQueryInputProdotti, prodotti: ProdottiInput): [Prodotti]
+    recensioni(paramQuery: ParamQueryInputRecensioni, recensioni: RecensioniInput): [Recensioni]
+    resi(paramQuery: ParamQueryInputResi, resi: ResiInput): [Resi]
+    schedeProdotti(paramQuery: ParamQueryInputSchedeProdotti, schedeProdotti: SchedeProdottiInput): [SchedeProdotti]
+}

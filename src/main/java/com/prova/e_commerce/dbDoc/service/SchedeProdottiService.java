@@ -1,6 +1,8 @@
 package com.prova.e_commerce.dbDoc.service;
 
 import com.prova.e_commerce.dbDoc.entity.SchedeProdotti;
+import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
+import com.prova.e_commerce.dbDoc.randomData.SchedeProdottiFaker;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRepCustom;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -17,6 +19,9 @@ public class SchedeProdottiService {
 
     @Autowired
     private SchedeProdottiRep schedeProdottiRep;
+
+    @Autowired
+    private SchedeProdottiFaker prodottiFaker;
 
     @Autowired
     private SchedeProdottiRepCustom schedeProdottiRepCustom;
@@ -32,17 +37,22 @@ public class SchedeProdottiService {
     }
 
     // Metodo per cercare prodotti con criteri dinamici
-    public List<SchedeProdotti> findByDynamicCriteria(
-            String nome,
-            BigDecimal prezzoMin,
-            BigDecimal prezzoMax,
-            Map<String, String> parametriDescrittivi) {
-        return schedeProdottiRepCustom.findByDynamicCriteria(nome, prezzoMin, prezzoMax, parametriDescrittivi);
+    public List<SchedeProdotti> queryDynamic(ParamQueryDbDoc paramQueryDbDoc, SchedeProdotti schedeProdotti) {
+        return schedeProdottiRepCustom.query(paramQueryDbDoc, schedeProdotti);
     }
 
     // Metodo per inserire un nuovo prodotto
     public SchedeProdotti insert(SchedeProdotti prodotto) {
         return schedeProdottiRep.save(prodotto);
+    }
+
+    //Generazione di una lista fittizia di schede prodotti
+     public List<SchedeProdotti> generateRandomSchedeProdotti(int count) {
+        List<SchedeProdotti> schedeProdottiList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            schedeProdottiList.add(prodottiFaker.generateFakeProduct());
+        }
+        return schedeProdottiList;
     }
 
     // Metodo per aggiornare un prodotto esistente

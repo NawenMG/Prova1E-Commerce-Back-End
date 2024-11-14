@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/schede-prodotti")
@@ -32,22 +31,16 @@ public class SchedeProdottiControllerRest {
         return ResponseEntity.ok(prodotti);
     }
 
-    // Endpoint per cercare prodotti con criteri dinamici
-    @GetMapping("/ricerca-dinamica")
-    public ResponseEntity<List<SchedeProdotti>> getByDynamicCriteria(
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) BigDecimal prezzoMin,
-            @RequestParam(required = false) BigDecimal prezzoMax,
-            @RequestParam(required = false) Map<String, String> parametriDescrittivi) {
-        List<SchedeProdotti> prodotti = schedeProdottiService.findByDynamicCriteria(nome, prezzoMin, prezzoMax, parametriDescrittivi);
-        return ResponseEntity.ok(prodotti);
-    }
-
     // Endpoint per inserire un nuovo prodotto
     @PostMapping
     public ResponseEntity<SchedeProdotti> createSchedaProdotto(@RequestBody SchedeProdotti prodotto) {
         SchedeProdotti nuovoProdotto = schedeProdottiService.insert(prodotto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuovoProdotto);
+    }
+
+     @GetMapping("/random/{count}")
+    public List<SchedeProdotti> getRandomRecensioni(@PathVariable int count) {
+        return schedeProdottiService.generateRandomSchedeProdotti(count);
     }
 
     // Endpoint per aggiornare un prodotto esistente

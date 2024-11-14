@@ -1,13 +1,15 @@
 package com.prova.e_commerce.dbDoc.service;
 
 import com.prova.e_commerce.dbDoc.entity.Recensioni;
+import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
+import com.prova.e_commerce.dbDoc.randomData.RecensioniFaker;
 import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRepCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class RecensioniService {
@@ -17,6 +19,9 @@ public class RecensioniService {
 
     @Autowired
     private RecensioniRepCustom recensioniRepCustom;
+
+    @Autowired
+    private RecensioniFaker recensioniFaker;
 
     // Metodo per trovare recensioni per un determinato productId
     public List<Recensioni> findByProductId(String productId) {
@@ -29,15 +34,8 @@ public class RecensioniService {
     }
 
     // Metodo per trovare recensioni con criteri dinamici
-    public List<Recensioni> findByDynamicCriteria(
-            String userId,
-            String productId,
-            Integer votoMin,
-            Integer votoMax,
-            String titolo,
-            String descrizione,
-            Map<String, String> parametriAggiuntivi) {
-        return recensioniRepCustom.findByDynamicCriteria(userId, productId, votoMin, votoMax, titolo, descrizione, parametriAggiuntivi);
+    public List<Recensioni> queryDynamic(ParamQueryDbDoc paramQueryDbDoc, Recensioni recensioni) {
+        return recensioniRepCustom.query(paramQueryDbDoc, recensioni);
     }
 
     // Metodo per inserire una nuova recensione
@@ -53,6 +51,15 @@ public class RecensioniService {
         } else {
             return null; // Puoi gestire il caso di recensione non trovata
         }
+    }
+
+    //Generazione di una lista fittizia di recensioni
+     public List<Recensioni> generateRandomRecensioni(int count) {
+        List<Recensioni> recensioniList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            recensioniList.add(recensioniFaker.generateFakeReview());
+        }
+        return recensioniList;
     }
 
     // Metodo per eliminare una recensione
