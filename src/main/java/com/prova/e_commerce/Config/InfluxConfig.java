@@ -1,7 +1,7 @@
 package com.prova.e_commerce.Config;
 
-import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.InfluxDBClientFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,22 +9,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InfluxConfig {
 
+    @Value("${influxdb.token}")
+    private String influxToken;  // Token che hai ricevuto
+
     @Value("${influxdb.url}")
-    private String influxDbUrl;
+    private String influxUrl;
 
-    @Value("${influxdb.database}")
-    private String database;
+    @Value("${influxdb.org}")
+    private String influxOrg;
 
-    @Value("${influxdb.username}")
-    private String username;
-
-    @Value("${influxdb.password}")
-    private String password;
+    @Value("${influxdb.bucket}")
+    private String influxBucket;
 
     @Bean
-    public InfluxDB influxDB() {
-        InfluxDB influxDB = InfluxDBFactory.connect(influxDbUrl, username, password);
-        influxDB.setDatabase(database);
-        return influxDB;
+    public InfluxDBClient influxDBClient() {
+        // Creazione del client InfluxDB
+        return InfluxDBClientFactory.create(
+                influxUrl,  // URL di InfluxDB
+                influxToken.toCharArray(),  // Token
+                influxOrg,  // Organization
+                influxBucket  // Bucket
+        );
     }
 }

@@ -1,91 +1,104 @@
-{"properties": [
-  {
-    "name": "flyway.enabled",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "spring.flyway.mongodb.enabled",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "spring.flyway.mongodb.locations",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "spring.flyway.oracle.baseline-on-migrate",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "spring.flyway.oracle.locations",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "spring.flyway.oracle.enabled",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "influxdb.username",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "influxdb.password",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "influxdb.url",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "influxdb.database",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "spring.data.neo4j.migrations.location",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "flyway.locations",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "flyway.cassandra.user",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "flyway.cassandra.password",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "flyway.cassandra.url",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "pinecone.environment",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "pinecone.apiKey",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "cloud.aws.region.static",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "cloud.aws.credentials.access-key",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "cloud.aws.credentials.secret-key",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "pinecone.apiKey",
-    "type": "java.lang.String"
-  },
-  {
-    "name": "spring.graphql.endpoint",
-    "type": "java.lang.String",
-    "description": "A description for 'spring.graphql.endpoint'"
-  }
-]}
+{
+  "properties": [
+    {
+      "name": "flyway.enabled",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.flyway.mongodb.enabled",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.flyway.mongodb.locations",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.flyway.oracle.baseline-on-migrate",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.flyway.oracle.locations",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.flyway.oracle.enabled",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "influxdb.username",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "influxdb.password",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "influxdb.url",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "influxdb.database",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.data.neo4j.migrations.location",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "flyway.locations",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "flyway.cassandra.user",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "flyway.cassandra.password",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "flyway.cassandra.url",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "pinecone.environment",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "pinecone.apiKey",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "cloud.aws.region.static",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "cloud.aws.credentials.access-key",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "cloud.aws.credentials.secret-key",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.graphql.endpoint",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.graphql.endpoint'"
+    },
+    {
+      "name": "influxdb.org",
+      "type": "java.lang.String",
+      "description": "A description for 'influxdb.org'"
+    },
+    {
+      "name": "influxdb.bucket",
+      "type": "java.lang.String",
+      "description": "A description for 'influxdb.bucket'"
+    },
+    {
+      "name": "influxdb.token",
+      "type": "java.lang.String",
+      "description": "A description for 'influxdb.token'"
+    }
+  ]
+}
