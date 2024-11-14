@@ -7,6 +7,9 @@ import com.prova.e_commerce.dbDoc.entity.Recensioni.Risposta;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class RecensioniFaker {
 
     private Faker faker = new Faker();
