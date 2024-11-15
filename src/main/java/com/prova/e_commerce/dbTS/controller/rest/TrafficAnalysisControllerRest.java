@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -37,34 +36,6 @@ public class TrafficAnalysisControllerRest {
         trafficAnalysisService.deleteByUrl(urlPagina);
         return new ResponseEntity<>("Traffic analysis for URL deleted successfully", HttpStatus.OK);
     }
-
-    // Endpoint per recuperare le analisi in un intervallo di tempo
-    @GetMapping("/find-by-time-range")
-    public ResponseEntity<List<TrafficAnalysis>> findByTimeRange(
-            @RequestParam("startTime") String startTime,
-            @RequestParam("endTime") String endTime) {
-        
-        Instant start = Instant.parse(startTime);
-        Instant end = Instant.parse(endTime);
-        
-        List<TrafficAnalysis> analyses = trafficAnalysisService.findByTimeRange(start, end);
-        return new ResponseEntity<>(analyses, HttpStatus.OK);
-    }
-
-    // Endpoint per recuperare le analisi per una URL specifica
-    @GetMapping("/find-by-url")
-    public ResponseEntity<List<TrafficAnalysis>> findByUrl(@RequestParam("url") String urlPagina) {
-        List<TrafficAnalysis> analyses = trafficAnalysisService.findByUrl(urlPagina);
-        return new ResponseEntity<>(analyses, HttpStatus.OK);
-    }
-
-    // Endpoint per recuperare le visite medie per URL
-    @GetMapping("/average-visits")
-    public ResponseEntity<List<TrafficAnalysis>> getAverageVisitsByUrl() {
-        List<TrafficAnalysis> analyses = trafficAnalysisService.getAverageVisitsByUrl();
-        return new ResponseEntity<>(analyses, HttpStatus.OK);
-    }
-
 
      // Endpoint per ottenere una lista di TrafficAnalysis generati casualmente
      @GetMapping("/generateTrafficAnalysis")
