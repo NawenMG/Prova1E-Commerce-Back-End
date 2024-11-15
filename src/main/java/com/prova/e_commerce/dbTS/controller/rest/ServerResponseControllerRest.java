@@ -86,4 +86,11 @@ public class ServerResponseControllerRest {
                 server, endpoint, startTime, endTime);
         return ResponseEntity.ok(result);
     }
+
+     // Endpoint per ottenere una lista di ServerResponse generati casualmente
+     @GetMapping("/generateServerResponse")
+     public List<ServerResponse> generateRandomServerResponse(
+             @RequestParam(value = "count", defaultValue = "5") int count) {
+         return serverResponseService.generateRandomServerResponseList(count);
+     }
 }

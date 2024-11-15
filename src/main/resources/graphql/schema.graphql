@@ -324,8 +324,98 @@ input ParamQueryInputSchedeProdotti {
     order: String
 }
 
+
+##########################
+#InfluxDB
+# Tipo per rappresentare le analisi dell'utente
+type UserAnalysis {
+    utente: String
+    tipoDiDispositivo: String
+    azione: String
+    durataAzione: Float
+    time: String
+}
+
+# Tipo di input per ParamQuery per UserAnalysis
+input ParamQueryInputUserAnalysis {
+    startTime: String
+    endTime: String
+    utente: String
+    tipoDiDispositivo: String
+    azione: String
+}
+
+# Tipo per rappresentare la durata media delle azioni per ogni utente
+type UserAverageDuration {
+    utente: String
+    averageDuration: Float
+}
+
+
+# Tipo per rappresentare l'analisi del traffico
+type TrafficAnalysis {
+    urlPagina: String
+    numeroDiVisite: Int
+    numeroDiVisitatoriUnici: Int
+    durataMediaVisite: Float
+    time: String
+}
+
+# Input per specificare un intervallo temporale
+input TimeRangeInput {
+    startTime: String
+    endTime: String
+}
+
+
+# Tipo per rappresentare le risposte del server
+type ServerResponse {
+    server: String
+    endpoint: String
+    responseTimeAverage: Float
+    numeroDiRequest: Int
+    numeroDiErrori: Int
+    time: String
+}
+
+# Input per specificare un intervallo temporale per ServerResponse
+input TimeRangeInput {
+    startTime: String
+    endTime: String
+}
+
+type AverageResponseTime {
+    server: String
+    averageResponseTime: Float
+}
+
+
+# Tipo per rappresentare il monitoraggio delle vendite
+type SalesMonitoring {
+    prodotto: String
+    categoriaProdotto: String
+    venditore: String
+    numeroOrdini: Int
+    numeroUnitaVendute: Int
+    ricavo: Float
+    time: String
+}
+
+# Tipo per rappresentare il ricavo medio per prodotto
+type AverageRevenueByProduct {
+    prodotto: String
+    ricavoMedio: Float
+}
+
+# Input per specificare un intervallo temporale per le vendite
+input SalesTimeRangeInput {
+    startTime: String
+    endTime: String
+}
+
 # Definizione del tipo Query unificato
 type Query {
+    #Oracle SQL e MongoDB
     categorie(paramQuery: ParamQueryInputCategorie, categorie: CategorieInput): [Categorie]
     ordini(paramQuery: ParamQueryInputOrdini, ordini: OrdiniInput): [Ordini]
     pagamenti(paramQuery: ParamQueryInputPagamenti, pagamenti: PagamentiInput): [Pagamenti]
@@ -333,4 +423,63 @@ type Query {
     recensioni(paramQuery: ParamQueryInputRecensioni, recensioni: RecensioniInput): [Recensioni]
     resi(paramQuery: ParamQueryInputResi, resi: ResiInput): [Resi]
     schedeProdotti(paramQuery: ParamQueryInputSchedeProdotti, schedeProdotti: SchedeProdottiInput): [SchedeProdotti]
+    #Influx
+    # Query per ottenere le analisi in un intervallo temporale
+    findByTimeRange(paramQuery: ParamQueryInputUserAnalysis): [UserAnalysis]
+    # Query per trovare le analisi per un utente specifico
+    findByUser(utente: String): [UserAnalysis]
+    # Query per trovare le analisi per tipo di dispositivo
+    findByDeviceType(tipoDiDispositivo: String): [UserAnalysis]
+    # Query per trovare le analisi per tipo di azione
+    findByAction(azione: String): [UserAnalysis]
+    # Query per ottenere la durata media delle azioni per ogni utente
+    getAverageDurationByUser: [UserAverageDuration]
+    # Query per ottenere le analisi filtrate per utente, dispositivo e intervallo temporale
+    findByUserDeviceAndTimeRange(
+        utente: String, 
+        tipoDiDispositivo: String, 
+        startTime: String, 
+        endTime: String
+    ): [UserAnalysis]
+     # Query per trovare le analisi in un intervallo temporale
+    findByTimeRange(timeRange: TimeRangeInput): [TrafficAnalysis]
+
+    # Query per trovare le analisi per una URL specifica
+    findByUrl(urlPagina: String!): [TrafficAnalysis]
+
+    # Query per ottenere le visite medie per URL
+    getAverageVisitsByUrl: [TrafficAnalysis]
+     # Query per ottenere le risposte in un intervallo temporale
+    findServerResponsesByTimeRange(timeRange: TimeRangeInput): [ServerResponse]
+
+    # Query per trovare le risposte per un server specifico
+    findServerResponsesByServer(server: String!): [ServerResponse]
+
+    # Query per trovare le risposte per un endpoint specifico
+    findServerResponsesByEndpoint(endpoint: String!): [ServerResponse]
+
+    # Query per ottenere il tempo medio di risposta per ogni server
+    getAverageResponseTimeByServer: [AverageResponseTime]
+
+    # Query per ottenere le risposte filtrate per server, endpoint e intervallo temporale
+    findServerResponsesByServerEndpointAndTimeRange(
+        server: String!,
+        endpoint: String!,
+        timeRange: TimeRangeInput
+    ): [ServerResponse]
+
+     # Query per ottenere i monitoraggi delle vendite in un intervallo di tempo
+    findSalesByTimeRange(timeRange: SalesTimeRangeInput): [SalesMonitoring]
+
+    # Query per trovare i monitoraggi delle vendite di un prodotto specifico
+    findSalesByProduct(prodotto: String!): [SalesMonitoring]
+
+    # Query per trovare i monitoraggi delle vendite di un venditore specifico
+    findSalesByVendor(venditore: String!): [SalesMonitoring]
+
+    # Query per trovare i monitoraggi delle vendite per una categoria di prodotto
+    findSalesByCategory(categoriaProdotto: String!): [SalesMonitoring]
+
+    # Query per ottenere il ricavo medio per prodotto
+    getAverageRevenueByProduct: [AverageRevenueByProduct]
 }

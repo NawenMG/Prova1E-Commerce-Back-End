@@ -70,4 +70,11 @@ public class SalesMonitoringControllerRest {
     public Map<String, Double> getAverageRevenueByProduct() {
         return salesMonitoringService.getAverageRevenueByProduct();
     }
+
+    // Endpoint per ottenere una lista di SalesMonitoring generati casualmente
+    @GetMapping("/generateSalesMonitoring")
+    public List<SalesMonitoring> generateRandomSalesMonitoring(
+            @RequestParam(value = "count", defaultValue = "5") int count) {
+        return salesMonitoringService.generateRandomSalesMonitoringList(count);
+    }
 }

@@ -64,4 +64,12 @@ public class TrafficAnalysisControllerRest {
         List<TrafficAnalysis> analyses = trafficAnalysisService.getAverageVisitsByUrl();
         return new ResponseEntity<>(analyses, HttpStatus.OK);
     }
+
+
+     // Endpoint per ottenere una lista di TrafficAnalysis generati casualmente
+     @GetMapping("/generateTrafficAnalysis")
+     public List<TrafficAnalysis> generateRandomTrafficAnalysis(
+             @RequestParam(value = "count", defaultValue = "5") int count) {
+         return trafficAnalysisService.generateRandomTrafficAnalysisList(count);
+     }
 }

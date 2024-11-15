@@ -93,4 +93,12 @@ public class UserAnalysisControllerRest {
                 utente, tipoDiDispositivo, startTime, endTime);
         return ResponseEntity.ok(result);
     }
+
+
+     // Endpoint per ottenere una lista di UserAnalysis generati casualmente
+     @GetMapping("/generateUserAnalysis")
+     public List<UserAnalysis> generateRandomUserAnalysis(
+             @RequestParam(value = "count", defaultValue = "5") int count) {
+         return userAnalysisService.generateRandomUserAnalysisList(count);
+     }
 }

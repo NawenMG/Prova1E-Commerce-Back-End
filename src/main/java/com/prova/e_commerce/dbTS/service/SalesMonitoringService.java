@@ -1,11 +1,13 @@
 package com.prova.e_commerce.dbTS.service;
 
 import com.prova.e_commerce.dbTS.model.SalesMonitoring;
+import com.prova.e_commerce.dbTS.randomData.SalesMonitoringFaker;
 import com.prova.e_commerce.dbTS.repository.interfacce.SalesMonitoringRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,9 @@ public class SalesMonitoringService {
 
     @Autowired
     private SalesMonitoringRep salesMonitoringRepository;
+
+    @Autowired
+    private SalesMonitoringFaker salesMonitoringFaker;
 
     // Inserisci un singolo monitoraggio delle vendite
     public void insert(SalesMonitoring salesMonitoring) {
@@ -58,5 +63,14 @@ public class SalesMonitoringService {
     // Metodo per ottenere il ricavo medio per prodotto
     public Map<String, Double> getAverageRevenueByProduct() {
         return salesMonitoringRepository.getAverageRevenueByProduct();
+    }
+
+    // Metodo per generare una lista di SalesMonitoring casuali
+    public List<SalesMonitoring> generateRandomSalesMonitoringList(int count) {
+        List<SalesMonitoring> list = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            list.add(salesMonitoringFaker.generateRandomSalesMonitoring());
+        }
+        return list;
     }
 }
