@@ -413,6 +413,94 @@ input SalesTimeRangeInput {
     endTime: String
 }
 
+
+##########
+#CASSANDRA
+# Tipo per rappresentare gli Ordini
+type ArchiviazioneOrdini {
+    id: String
+    userId: String
+    orderDate: String
+    status: String
+    importoTotale: Float
+    indirizzoDellaSpedizione: String
+    listaArticoliDellOrdine: [String]
+    consegna: String
+    corriere: String
+}
+
+# Input per creare o aggiornare un Ordine
+input ArchiviazioneOrdiniInput {
+    id: String
+    userId: String
+    orderDate: String
+    status: String
+    importoTotale: Float
+    indirizzoDellaSpedizione: String
+    listaArticoliDellOrdine: [String]
+    consegna: String
+    corriere: String
+}
+
+# Tipo di input per ParamQuery per gli Ordini
+input ParamQueryCassandraInput {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    like: String
+    in: [String]
+    between: [String]
+    orderBy: Boolean
+    orderByColumn: String
+    limit: Int
+    offset: Int
+    allowFiltering: Boolean
+}
+
+
+# Tipo per rappresentare le transizioni archiviate
+type ArchiviazioneTransizioni {
+    id: String                    
+    orderId: String                
+    transizioneDate: String       
+    importoTotale: BigDecimal    
+    metodoDiPagamento: String      
+    status: String                 
+}
+
+input ArchiviazioneTransizioniInput{
+    id: String                    
+    orderId: String                
+    transizioneDate: String       
+    importoTotale: BigDecimal    
+    metodoDiPagamento: String      
+    status: String   
+}
+
+
+# Definiamo il tipo per rappresentare una segnalazione
+type ArchiviazioneSegnalazioni {
+  id: String
+  utente: String
+  riferimento: String
+  data: String
+  titolo: String
+  descrizione: String
+  fileMultimediali: String
+}
+
+input ArchiviazioneSegnalazioniInput{
+    id: String
+  utente: String
+  riferimento: String
+  data: String
+  titolo: String
+  descrizione: String
+  fileMultimediali: String
+}
+
+
 # Definizione del tipo Query unificato
 type Query {
     #Oracle SQL e MongoDB
@@ -443,43 +531,56 @@ type Query {
     ): [UserAnalysis]
      # Query per trovare le analisi in un intervallo temporale
     findByTimeRange(timeRange: TimeRangeInput): [TrafficAnalysis]
-
     # Query per trovare le analisi per una URL specifica
     findByUrl(urlPagina: String!): [TrafficAnalysis]
-
     # Query per ottenere le visite medie per URL
     getAverageVisitsByUrl: [TrafficAnalysis]
      # Query per ottenere le risposte in un intervallo temporale
     findServerResponsesByTimeRange(timeRange: TimeRangeInput): [ServerResponse]
-
     # Query per trovare le risposte per un server specifico
     findServerResponsesByServer(server: String!): [ServerResponse]
-
     # Query per trovare le risposte per un endpoint specifico
     findServerResponsesByEndpoint(endpoint: String!): [ServerResponse]
-
     # Query per ottenere il tempo medio di risposta per ogni server
     getAverageResponseTimeByServer: [AverageResponseTime]
-
     # Query per ottenere le risposte filtrate per server, endpoint e intervallo temporale
     findServerResponsesByServerEndpointAndTimeRange(
         server: String!,
         endpoint: String!,
         timeRange: TimeRangeInput
     ): [ServerResponse]
-
      # Query per ottenere i monitoraggi delle vendite in un intervallo di tempo
     findSalesByTimeRange(timeRange: SalesTimeRangeInput): [SalesMonitoring]
-
     # Query per trovare i monitoraggi delle vendite di un prodotto specifico
     findSalesByProduct(prodotto: String!): [SalesMonitoring]
-
     # Query per trovare i monitoraggi delle vendite di un venditore specifico
     findSalesByVendor(venditore: String!): [SalesMonitoring]
-
     # Query per trovare i monitoraggi delle vendite per una categoria di prodotto
     findSalesByCategory(categoriaProdotto: String!): [SalesMonitoring]
-
     # Query per ottenere il ricavo medio per prodotto
     getAverageRevenueByProduct: [AverageRevenueByProduct]
+
+    #Cassandra
+    # Recupera tutti gli ordini
+    findAllOrdini: [ArchiviazioneOrdini]
+    # Recupera un ordine per ID
+    findOrdineById(id: String!): ArchiviazioneOrdini
+    # Esegui una query dinamica sugli ordini
+    queryDinamica(paramQuery: ParamQueryCassandraInput, ordine: ArchiviazioneOrdiniInput): [ArchiviazioneOrdini]
+    # Query per ottenere tutte le transizioni
+    allTransizioni: [ArchiviazioneTransizioni]
+    # Query per ottenere una transizione specifica tramite ID
+    transizioneById(id: String!): ArchiviazioneTransizioni
+    # Query dinamica per eseguire query personalizzate sulle transizioni
+    queryDinamica(paramQuery: ParamQueryCassandraInput, transizione: ArchiviazioneTransizioniInput): [ArchiviazioneTransizioni]
+    # Recupera tutte le segnalazioni
+    findAllSegnalazioni: [ArchiviazioneSegnalazioni]
+    # Recupera una segnalazione tramite ID
+    findSegnalazioneById(id: String!): ArchiviazioneSegnalazioni
+    # Esegui una query dinamica
+    queryDinamica(paramQuery: ParamQueryCassandraInput, segnalazione: ArchiviazioneSegnalazioniInput): [ArchiviazioneSegnalazioni]
+
+
+
+
 }
