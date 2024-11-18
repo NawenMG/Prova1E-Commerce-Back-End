@@ -363,6 +363,33 @@
 			<artifactId>spring-ws-core</artifactId>
 			<version>4.0.11</version>
 		</dependency> -->
+
+
+		<!--Web Socket -->
+		<!-- Dipendenza di Spring WebSocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+			<version>3.3.5</version>
+		</dependency>
+		
+
+		<!-- Dipendenza di SockJS (necessaria per la connessione WebSocket) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>6.2.0</version>
+		</dependency>
+		
+	
+		<!-- Dipendenza di STOMP (protocollo per il messaggistico su WebSocket) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>6.1.12</version>
+		</dependency>
+		
+	
 		
 		
 		
