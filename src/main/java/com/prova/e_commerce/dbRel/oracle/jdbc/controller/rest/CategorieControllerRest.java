@@ -38,7 +38,7 @@ public class CategorieControllerRest {
      * Endpoint per aggiornare una categoria esistente.
      */
     @PutMapping("/aggiorna/{categoryID}")
-    public ResponseEntity<String> aggiornaCategoria(@PathVariable int categoryID, @RequestBody Categorie categorie) {
+    public ResponseEntity<String> aggiornaCategoria(@PathVariable String categoryID, @RequestBody Categorie categorie) {
         String response = categorieService.aggiornaCategoria(categoryID, categorie);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class CategorieControllerRest {
      * Endpoint per eliminare una categoria in base all'ID.
      */
     @DeleteMapping("/elimina/{categoryID}")
-    public ResponseEntity<String> eliminaCategoria(@PathVariable int categoryID) {
+    public ResponseEntity<String> eliminaCategoria(@PathVariable String categoryID) {
         String response = categorieService.eliminaCategoria(categoryID);
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }

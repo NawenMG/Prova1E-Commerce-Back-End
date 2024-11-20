@@ -38,7 +38,7 @@ public class OrdiniControllerRest {
      * Endpoint per aggiornare un ordine esistente.
      */
     @PutMapping("/aggiorna/{orderID}")
-    public ResponseEntity<String> aggiornaOrdine(@PathVariable int orderID, @RequestBody Ordini ordini) {
+    public ResponseEntity<String> aggiornaOrdine(@PathVariable String orderID, @RequestBody Ordini ordini) {
         String response = ordiniService.aggiornaOrdine(orderID, ordini);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class OrdiniControllerRest {
      * Endpoint per eliminare un ordine in base all'ID.
      */
     @DeleteMapping("/elimina/{orderID}")
-    public ResponseEntity<String> eliminaOrdine(@PathVariable int orderID) {
+    public ResponseEntity<String> eliminaOrdine(@PathVariable String orderID) {
         String response = ordiniService.eliminaOrdine(orderID);
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }

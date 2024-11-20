@@ -30,14 +30,14 @@ public class OrdiniService {
     /**
      * Metodo per aggiornare un ordine esistente in base all'ID.
      */
-    public String aggiornaOrdine(int orderID, Ordini ordini) {
+    public String aggiornaOrdine(String orderID, Ordini ordini) {
         return ordiniRep.updateOrdini(orderID, ordini);
     }
 
     /**
      * Metodo per eliminare un ordine in base all'ID.
      */
-    public String eliminaOrdine(int orderID) {
+    public String eliminaOrdine(String orderID) {
         return ordiniRep.deleteOrdini(orderID);
     }
 

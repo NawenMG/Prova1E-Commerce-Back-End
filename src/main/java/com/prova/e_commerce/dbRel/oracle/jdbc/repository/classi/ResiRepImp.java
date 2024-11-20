@@ -141,7 +141,7 @@ public class ResiRepImp implements ResiRep {
     }
 
     // Update
-    public String updateReturn(int returnID, Resi resi) {
+    public String updateReturn(String returnID, Resi resi) {
         String sql = "UPDATE Resi SET User_id = ?, Status = ?, Accetazione_reso = ?, Data_di_richiesta = ? WHERE ID = ?";
         jdbcTemplate.update(sql,    
         resi.getUsersID(),
@@ -154,7 +154,7 @@ public class ResiRepImp implements ResiRep {
     }
 
     // Delete
-    public String deleteReturn(int returnID) {
+    public String deleteReturn(String returnID) {
         String sql = "DELETE FROM Resi WHERE ID = ?";
         jdbcTemplate.update(sql, returnID);
         return "Dati eliminati con successo";

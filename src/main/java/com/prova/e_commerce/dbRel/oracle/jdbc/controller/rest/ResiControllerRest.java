@@ -38,7 +38,7 @@ public class ResiControllerRest {
      * Endpoint per aggiornare un reso esistente.
      */
     @PutMapping("/aggiorna/{returnID}")
-    public ResponseEntity<String> aggiornaReso(@PathVariable int returnID, @RequestBody Resi resi) {
+    public ResponseEntity<String> aggiornaReso(@PathVariable String returnID, @RequestBody Resi resi) {
         String response = resiService.aggiornaReso(returnID, resi);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class ResiControllerRest {
      * Endpoint per eliminare un reso in base all'ID.
      */
     @DeleteMapping("/elimina/{returnID}")
-    public ResponseEntity<String> eliminaReso(@PathVariable int returnID) {
+    public ResponseEntity<String> eliminaReso(@PathVariable String returnID) {
         String response = resiService.eliminaReso(returnID);
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }

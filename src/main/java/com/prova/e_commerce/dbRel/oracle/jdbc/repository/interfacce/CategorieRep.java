@@ -13,6 +13,6 @@ public interface CategorieRep {
     List<Categorie> query(ParamQuery parmQuery, Categorie categorie);
     String saveAll(int number);
     String insertCategory(Categorie category);
-    String updateCategory(int categoryID, Categorie category);
-    String deleteCategory(int categoryID);
+    String updateCategory(String categoryID, Categorie category);
+    String deleteCategory(String categoryID);
 }

@@ -5,9 +5,13 @@ import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
 import com.prova.e_commerce.dbDoc.randomData.RecensioniFaker;
 import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRepCustom;
+import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +26,9 @@ public class RecensioniService {
 
     @Autowired
     private RecensioniFaker recensioniFaker;
+
+    @Autowired
+    private S3Service s3Service;  // Iniezione del servizio S3
 
     // Metodo per trovare recensioni per un determinato productId
     public List<Recensioni> findByProductId(String productId) {
@@ -53,8 +60,8 @@ public class RecensioniService {
         }
     }
 
-    //Generazione di una lista fittizia di recensioni
-     public List<Recensioni> generateRandomRecensioni(int count) {
+    // Generazione di una lista fittizia di recensioni
+    public List<Recensioni> generateRandomRecensioni(int count) {
         List<Recensioni> recensioniList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             recensioniList.add(recensioniFaker.generateFakeReview());
@@ -69,5 +76,77 @@ public class RecensioniService {
             return true;
         }
         return false; // Se la recensione non esiste
+    }
+
+    // Metodo per caricare un file multimediale su S3 e associarlo a una recensione
+    public String caricaFileRecensione(String recensioneId, MultipartFile file, String tipoFile) throws IOException {
+        // Carica il file su S3 e ottieni l'URL
+        String fileUrl = s3Service.uploadFile("recensioni/" + recensioneId, file);
+        
+        // Recupera la recensione dal database
+        Recensioni recensione = recensioniRep.findById(recensioneId).orElseThrow(() -> new RuntimeException("Recensione non trovata"));
+
+        // Assegna l'URL del file in base al tipo di file (immagine o video)
+        if ("immagine".equalsIgnoreCase(tipoFile)) {
+            recensione.setImmagine(fileUrl);  // Imposta l'URL dell'immagine
+        } else if ("video".equalsIgnoreCase(tipoFile)) {
+            recensione.setVideo(fileUrl);  // Imposta l'URL del video
+        } else {
+            throw new IllegalArgumentException("Tipo di file non valido");
+        }
+
+        // Aggiorna la recensione nel database con il nuovo URL del file
+        recensioniRep.save(recensione);
+        
+        return fileUrl; // Ritorna l'URL del file caricato
+    }
+
+    // Metodo per scaricare il file multimediale associato a una recensione da S3
+    public InputStream scaricaFileRecensione(String recensioneId, String tipoFile) throws IOException {
+        // Recupera la recensione dal database
+        Recensioni recensione = recensioniRep.findById(recensioneId).orElseThrow(() -> new RuntimeException("Recensione non trovata"));
+
+        // Ottieni l'URL del file in base al tipo
+        String fileUrl = "immagine".equalsIgnoreCase(tipoFile) ? recensione.getImmagine() : recensione.getVideo();
+        
+        // Verifica se l'URL del file è valido
+        if (fileUrl == null) {
+            throw new RuntimeException("File non trovato per il tipo specificato");
+        }
+        
+        // Estrai la chiave dal URL del file
+        String key = fileUrl.substring(fileUrl.indexOf("amazonaws.com/") + 14);  // Estrai la chiave del file
+
+        return s3Service.downloadFile(key); // Usa S3Service per scaricare il file
+    }
+
+    // Metodo per eliminare il file multimediale associato a una recensione da S3
+    public void eliminaFileRecensione(String recensioneId, String tipoFile) {
+        // Recupera la recensione dal database
+        Recensioni recensione = recensioniRep.findById(recensioneId).orElseThrow(() -> new RuntimeException("Recensione non trovata"));
+
+        // Ottieni l'URL del file in base al tipo
+        String fileUrl = "immagine".equalsIgnoreCase(tipoFile) ? recensione.getImmagine() : recensione.getVideo();
+
+        // Verifica se l'URL del file è valido
+        if (fileUrl == null) {
+            throw new RuntimeException("File non trovato per il tipo specificato");
+        }
+
+        // Estrai la chiave dal URL del file
+        String key = fileUrl.substring(fileUrl.indexOf("amazonaws.com/") + 14);  // Estrai la chiave del file
+
+        // Elimina il file da S3
+        s3Service.deleteFile(key);
+
+        // Rimuovi l'URL del file dalla recensione
+        if ("immagine".equalsIgnoreCase(tipoFile)) {
+            recensione.setImmagine(null);
+        } else if ("video".equalsIgnoreCase(tipoFile)) {
+            recensione.setVideo(null);
+        }
+
+        // Aggiorna la recensione nel database
+        recensioniRep.save(recensione);
     }
 }

@@ -26,7 +26,7 @@ public class ProdottiFaker {
         product.setDescrizione(faker.lorem().sentence(5));
 
         // Immagine casuale - in questo caso, usiamo l'URL di un avatar, che è una stringa
-        product.setImmagine(faker.internet().avatar().getBytes());
+        product.setImmagine(faker.internet().avatar());
 
         // Quantità disponibile casuale
         product.setAmountAvailable(faker.number().numberBetween(0, 100));

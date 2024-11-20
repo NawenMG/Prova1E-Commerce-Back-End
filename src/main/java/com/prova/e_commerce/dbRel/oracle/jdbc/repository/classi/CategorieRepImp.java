@@ -126,7 +126,7 @@ public class CategorieRepImp implements CategorieRep {
     }
 
     //Update
-     public String updateCategory(int categoryID, Categorie categorie) {
+     public String updateCategory(String categoryID, Categorie categorie) {
         String sql = "UPDATE Categorie SET Nome = ?  WHERE ID = ?";
         jdbcTemplate.update(sql, 
         categorie.getName(),
@@ -136,7 +136,7 @@ public class CategorieRepImp implements CategorieRep {
     }
 
     // Delete
-    public String deleteCategory(int categoryID) {
+    public String deleteCategory(String categoryID) {
         String sql = "DELETE FROM Categorie WHERE ID = ?";
         jdbcTemplate.update(sql, categoryID);
         return "Dati eliminati con successo";

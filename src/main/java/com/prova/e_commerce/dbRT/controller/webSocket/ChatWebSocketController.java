@@ -1,14 +1,16 @@
 package com.prova.e_commerce.dbRT.controller.webSocket;
 
+import com.google.api.core.ApiFuture;
 import com.prova.e_commerce.dbRT.model.ChatSystem;
 import com.prova.e_commerce.dbRT.model.ChatSystem.Message;
 import com.prova.e_commerce.dbRT.service.ChatSystemService;
-import com.google.api.core.ApiFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -23,63 +25,48 @@ public class ChatWebSocketController {
     // Operazioni sulle Chat
     // ==============================
 
-    /**
-     * Creazione di una nuova chat.
-     */
     @MessageMapping("/createChat")
     @SendTo("/topic/chats")
     public CompletableFuture<ChatSystem> createChat(ChatSystem chat) {
         ApiFuture<Void> future = chatSystemService.createChat(chat);
-
         return CompletableFuture.supplyAsync(() -> {
             try {
-                future.get();  // Aspetta il risultato dell'operazione asincrona
-                return chat;   // Ritorna la chat appena creata
+                future.get();
+                return chat;
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException("Errore durante la creazione della chat", e);
             }
         });
     }
 
-    /**
-     * Recupera una chat esistente.
-     */
     @MessageMapping("/getChat")
     @SendTo("/topic/chat")
     public CompletableFuture<ChatSystem> getChat(String chatId) {
         return chatSystemService.selectChatById(chatId);
     }
 
-    /**
-     * Modifica una chat esistente.
-     */
     @MessageMapping("/updateChat")
     @SendTo("/topic/chats")
     public CompletableFuture<ChatSystem> updateChat(ChatSystem chat) {
         ApiFuture<Void> future = chatSystemService.updateChat(chat);
-
         return CompletableFuture.supplyAsync(() -> {
             try {
-                future.get();  // Aspetta che l'update sia completato
-                return chat;   // Ritorna la chat aggiornata
+                future.get();
+                return chat;
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException("Errore durante l'aggiornamento della chat", e);
             }
         });
     }
 
-    /**
-     * Elimina una chat.
-     */
     @MessageMapping("/deleteChat")
     @SendTo("/topic/chats")
     public CompletableFuture<String> deleteChat(String chatId) {
         ApiFuture<Void> future = chatSystemService.deleteChat(chatId);
-
         return CompletableFuture.supplyAsync(() -> {
             try {
-                future.get();  // Aspetta che la chat venga eliminata
-                return "Chat eliminata con successo";   // Ritorna un messaggio di conferma
+                future.get();
+                return "Chat eliminata con successo";
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException("Errore durante l'eliminazione della chat", e);
             }
@@ -90,66 +77,93 @@ public class ChatWebSocketController {
     // Operazioni sui Messaggi
     // ==============================
 
-    /**
-     * Creazione di un nuovo messaggio in una chat.
-     */
     @MessageMapping("/sendMessage")
     @SendTo("/topic/messages")
     public CompletableFuture<Message> sendMessage(Message message, String chatId) {
         ApiFuture<Void> future = chatSystemService.createMessage(chatId, message);
-
         return CompletableFuture.supplyAsync(() -> {
             try {
-                future.get();  // Aspetta il risultato dell'operazione asincrona
-                return message; // Ritorna il messaggio appena creato
+                future.get();
+                return message;
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException("Errore durante l'invio del messaggio", e);
             }
         });
     }
 
-    /**
-     * Modifica un messaggio esistente in una chat.
-     */
     @MessageMapping("/updateMessage")
     @SendTo("/topic/messages")
     public CompletableFuture<Message> updateMessage(String chatId, String messageId, Message updatedMessage) {
         ApiFuture<Void> future = chatSystemService.updateMessage(chatId, messageId, updatedMessage);
-
         return CompletableFuture.supplyAsync(() -> {
             try {
-                future.get();  // Aspetta che l'update sia completato
-                return updatedMessage;   // Ritorna il messaggio aggiornato
+                future.get();
+                return updatedMessage;
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException("Errore durante l'aggiornamento del messaggio", e);
             }
         });
     }
 
-    /**
-     * Elimina un singolo messaggio in una chat.
-     */
     @MessageMapping("/deleteMessage")
     @SendTo("/topic/messages")
     public CompletableFuture<String> deleteMessage(String chatId, String messageId) {
         ApiFuture<Void> future = chatSystemService.deleteMessage(chatId, messageId);
-
         return CompletableFuture.supplyAsync(() -> {
             try {
-                future.get();  // Aspetta che il messaggio venga eliminato
-                return "Messaggio eliminato con successo";   // Ritorna un messaggio di conferma
+                future.get();
+                return "Messaggio eliminato con successo";
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException("Errore durante l'eliminazione del messaggio", e);
             }
         });
     }
 
-    /**
-     * Recupera tutti i messaggi di una chat.
-     */
     @MessageMapping("/getMessages")
     @SendTo("/topic/messages")
     public CompletableFuture<List<Message>> getMessages(String chatId) {
         return chatSystemService.selectMessagesByChat(chatId);
+    }
+
+    // ==============================
+    // Operazioni sui File Allegati
+    // ==============================
+
+    /**
+     * Carica un file allegato ad un messaggio in una chat.
+     */
+    @MessageMapping("/uploadFile")
+    @SendTo("/topic/messages")
+    public CompletableFuture<String> uploadFile(String chatId, String messageId, MultipartFile file, String fileType) throws IOException {
+        // Carica il file tramite il servizio
+        String fileUrl = chatSystemService.uploadFileToMessage(chatId, messageId, file, fileType);
+
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return fileUrl;
+            } catch (Exception e) {
+                throw new RuntimeException("Errore durante il caricamento del file", e);
+            }
+        });
+    }
+
+    /**
+     * Scarica un file allegato ad un messaggio in una chat.
+     */
+    @MessageMapping("/downloadFile")
+    @SendTo("/topic/messages")
+    public CompletableFuture<byte[]> downloadFile(String chatId, String messageId, String fileType) throws IOException {
+        byte[] fileContent = chatSystemService.downloadFileFromMessage(chatId, messageId, fileType).readAllBytes();
+        return CompletableFuture.supplyAsync(() -> fileContent);
+    }
+
+    /**
+     * Elimina un file allegato da un messaggio di chat.
+     */
+    @MessageMapping("/deleteFile")
+    @SendTo("/topic/messages")
+    public CompletableFuture<String> deleteFile(String chatId, String messageId, String fileType) throws IOException {
+        chatSystemService.deleteFileFromMessage(chatId, messageId, fileType);
+        return CompletableFuture.supplyAsync(() -> "File eliminato con successo");
     }
 }

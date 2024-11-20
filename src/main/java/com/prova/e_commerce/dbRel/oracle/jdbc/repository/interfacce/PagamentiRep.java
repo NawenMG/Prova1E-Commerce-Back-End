@@ -13,6 +13,6 @@ public interface PagamentiRep {
     List<Pagamenti> query(ParamQuery parmQuery, Pagamenti pagamenti);
     String saveAll(int number);
     String insertPayment(Pagamenti pagamenti);
-    String updatePayment(int paymentID, Pagamenti pagamenti);
-    String deletePayment(int paymentID);
+    String updatePayment(String paymentID, Pagamenti pagamenti);
+    String deletePayment(String paymentID);
 }
