@@ -162,7 +162,7 @@ public class OrdiniRepImp implements OrdiniRep {
     }
 
     // Update
-    public String updateOrdini(int orderID, Ordini ordini) {
+    public String updateOrdini(String orderID, Ordini ordini) {
         String sql = "UPDATE Ordini SET User_id = ?, Stato_spedizione = ?, Data_di_consegna = ?, Data_di_richiesta = ?, Accettazione_ordine = ?, Status = ?, Corriere = ?, Posizione = ?  WHERE ID = ?";
         jdbcTemplate.update(sql, 
         ordini.getUsersID(),
@@ -179,7 +179,7 @@ public class OrdiniRepImp implements OrdiniRep {
     }
 
     // Delete
-    public String deleteOrdini(int orderID) {
+    public String deleteOrdini(String orderID) {
         String sql = "DELETE FROM Ordini WHERE ID = ?";
         jdbcTemplate.update(sql, orderID);
         return "Dati eliminati con successo";

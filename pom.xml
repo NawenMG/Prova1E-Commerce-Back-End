@@ -107,6 +107,12 @@
 			<artifactId>influxdb-java</artifactId>
 			<version>2.24</version>
 		</dependency>
+		<dependency>
+			<groupId>com.influxdb</groupId>
+			<artifactId>influxdb-client-java</artifactId>
+			<version>7.2.0</version>
+		</dependency>
+		
 
 		<!--Neo4j-->
 		<dependency>
@@ -114,6 +120,14 @@
 			<artifactId>spring-boot-starter-data-neo4j</artifactId>
 			<version>3.3.5</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-neo4j</artifactId>
+			<version>7.3.5</version>
+		</dependency>
+		
+		
 
 		<!-- Cassandra -->
 		<dependency>
@@ -134,20 +148,14 @@
 			<version>9.4.1</version>
 		</dependency>
 
-		<!-- Per Pinecone -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.11.0</version>
-		</dependency>
-
 		 <!-- DynamoDB -->
 		 <!-- Dipendenza per AWS SDK -->
 		 <dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb</artifactId>
-			<version>2.29.9</version>
+			<version>2.29.15</version>
 		</dependency>
+		
 	
 		<!-- Dipendenza per Spring Data DynamoDB -->
 		<dependency>
@@ -155,6 +163,7 @@
 			<artifactId>spring-data-dynamodb</artifactId>
 			<version>5.1.0</version>
 		</dependency>
+		
 	
 		<!-- Dipendenza per la configurazione del client DynamoDB -->
 		<dependency>
@@ -162,6 +171,20 @@
 			<artifactId>aws-sdk-java</artifactId>
 			<version>2.29.9</version>
 		</dependency>
+
+		<!-- AWS SDK v2 for DynamoDB Enhanced -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>dynamodb-enhanced</artifactId>
+			<version>2.29.15</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-dynamodb</artifactId>
+			<version>1.12.500</version>
+		</dependency>
+		
 		
 
 
@@ -257,7 +280,7 @@
 		</dependency>
 
 		<!-- Amazon RedShift -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-redshift</artifactId>
 			<version>1.12.777</version>
@@ -266,7 +289,7 @@
 			<groupId>com.amazon.redshift</groupId>
 			<artifactId>redshift-jdbc42</artifactId>
 			<version>2.1.0.30</version>
-		</dependency>
+		</dependency> -->
 
 
 
@@ -349,6 +372,42 @@
 			<artifactId>spring-ws-core</artifactId>
 			<version>4.0.11</version>
 		</dependency> -->
+
+
+		<!--Web Socket -->
+		<!-- Dipendenza di Spring WebSocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+			<version>3.3.5</version>
+		</dependency>
+		
+
+		<!-- Dipendenza di SockJS (necessaria per la connessione WebSocket) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>6.2.0</version>
+		</dependency>
+		
+	
+		<!-- Dipendenza di STOMP (protocollo per il messaggistico su WebSocket) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>6.1.12</version>
+		</dependency>
+
+
+		<!--S3-->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.29.15</version>
+		</dependency>
+		
+		
+	
 		
 		
 		

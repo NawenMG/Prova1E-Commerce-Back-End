@@ -12,6 +12,6 @@ public interface ResiRep {
     List<Resi> query(ParamQuery parmQuery, Resi resi);
     String saveAll(int number);
     String insertReturn(Resi resi);
-    String updateReturn(int returnID, Resi resi);
-    String deleteReturn(int returnID);
+    String updateReturn(String returnID, Resi resi);
+    String deleteReturn(String returnID);
 }

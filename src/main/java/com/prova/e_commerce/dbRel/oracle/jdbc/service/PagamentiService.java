@@ -30,14 +30,14 @@ public class PagamentiService {
     /**
      * Metodo per aggiornare un pagamento esistente in base all'ID.
      */
-    public String aggiornaPagamento(int paymentID, Pagamenti pagamenti) {
+    public String aggiornaPagamento(String paymentID, Pagamenti pagamenti) {
         return pagamentiRep.updatePayment(paymentID, pagamenti);
     }
 
     /**
      * Metodo per eliminare un pagamento in base all'ID.
      */
-    public String eliminaPagamento(int paymentID) {
+    public String eliminaPagamento(String paymentID) {
         return pagamentiRep.deletePayment(paymentID);
     }
 

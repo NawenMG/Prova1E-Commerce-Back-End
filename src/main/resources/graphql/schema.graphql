@@ -1,0 +1,586 @@
+# Tipo per rappresentare le Categorie
+type Categorie {
+    categoryID: String
+    name: String
+}
+
+# Input per creare o aggiornare una Categoria
+input CategorieInput {
+    categoryID: String
+    name: String
+}
+
+# Tipo di input per ParamQuery per le Categorie
+input ParamQueryInputCategorie {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeCategorie
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Categorie
+enum AggregationTypeCategorie {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare gli Ordini
+type Ordini {
+    orderID: String
+    usersID: String
+    statoDiSpedizione: String
+    dataDiConsegna: String
+    dataDiRichiesta: String
+    accettazioneOrdine: Boolean
+    status: String
+    corriere: String
+    posizione: String
+}
+
+# Input per creare o aggiornare un Ordine
+input OrdiniInput {
+    orderID: String
+    usersID: String
+    statoDiSpedizione: String
+    dataDiConsegna: String
+    dataDiRichiesta: String
+    accettazioneOrdine: Boolean
+    status: String
+    corriere: String
+    posizione: String
+}
+
+# Tipo di input per ParamQuery per gli Ordini
+input ParamQueryInputOrdini {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeOrdini
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Ordini
+enum AggregationTypeOrdini {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare i Pagamenti
+type Pagamenti {
+    paymentsID: String
+    type: String
+    data: String
+    status: Boolean
+    total: Float
+}
+
+# Input per creare o aggiornare un Pagamento
+input PagamentiInput {
+    paymentsID: String
+    type: String
+    data: String
+    status: Boolean
+    total: Float
+}
+
+# Tipo di input per ParamQuery per i Pagamenti
+input ParamQueryInputPagamenti {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypePagamenti
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Pagamenti
+enum AggregationTypePagamenti {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare i Prodotti
+type Prodotti {
+    productID: String
+    nome: String
+    prezzo: Float
+    descrizione: String
+    immagine: String
+    amountAvailable: Int
+    categoria: String
+    dataDiInserimento: String
+}
+
+# Input per creare o aggiornare un Prodotto
+input ProdottiInput {
+    productID: String
+    nome: String
+    prezzo: Float
+    descrizione: String
+    immagine: String
+    amountAvailable: Int
+    categoria: String
+    dataDiInserimento: String
+}
+
+# Tipo di input per ParamQuery per i Prodotti
+input ParamQueryInputProdotti {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeProdotti
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Prodotti
+enum AggregationTypeProdotti {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare le Recensioni
+type Recensioni {
+    id: String
+    userId: String
+    productId: String
+    voto: Int
+    titolo: String
+    descrizione: String
+    immagine: String
+    video: String
+    like: Int
+    dislike: Int
+    risposte: [RispostaRecensione]
+}
+
+# Tipo per rappresentare una Risposta a una Recensione
+type RispostaRecensione {
+    userId: String
+    testo: String
+    dataRisposta: String
+}
+
+# Input per creare o aggiornare una Recensione
+input RecensioniInput {
+    userId: String
+    productId: String
+    voto: Int
+    titolo: String
+    descrizione: String
+    immagine: String
+    video: String
+    like: Int
+    dislike: Int
+    risposte: [RispostaRecensioneInput]
+}
+
+# Input per inserire una risposta a una recensione
+input RispostaRecensioneInput {
+    userId: String
+    testo: String
+    dataRisposta: String
+}
+
+# Tipo di input per ParamQuery per le Recensioni
+input ParamQueryInputRecensioni {
+    filters: String
+    page: Int
+    size: Int
+    sortBy: String
+    order: String
+}
+
+# Tipo per rappresentare i Resi
+type Resi {
+    returnsID: String
+    usersID: String
+    status: Boolean
+    accettazioneReso: Boolean
+    dataRichiesta: String
+}
+
+# Input per creare o aggiornare un Reso
+input ResiInput {
+    returnsID: String
+    usersID: String
+    status: Boolean
+    accettazioneReso: Boolean
+    dataRichiesta: String
+}
+
+# Tipo di input per ParamQuery per i Resi
+input ParamQueryInputResi {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    boleani: String
+    orderBy: Boolean
+    top: Int
+    aggregationType: AggregationTypeResi
+    like: String
+    in: [String]
+    between: [String]
+    having: String
+    limit: Int
+    offset: Int
+}
+
+# Enum per rappresentare i vari tipi di aggregazione per Resi
+enum AggregationTypeResi {
+    NONE
+    MIN
+    MAX
+    COUNT
+    AVG
+    SUM
+}
+
+# Tipo per rappresentare una SchedaProdotti
+type SchedeProdotti {
+    id: String
+    nome: String
+    prezzo: Float
+    parametriDescrittivi: [ParametriDescrittiviEntry]
+}
+
+# Tipo per rappresentare un singolo parametro descrittivo come coppia chiave-valore
+type ParametriDescrittiviEntry {
+    key: String
+    value: String
+}
+
+# Input per creare o aggiornare una SchedaProdotti
+input SchedeProdottiInput {
+    nome: String
+    prezzo: Float
+    parametriDescrittivi: [ParametriDescrittiviInput]
+}
+
+# Input per rappresentare una coppia chiave-valore nei parametri descrittivi
+input ParametriDescrittiviInput {
+    key: String
+    value: String
+}
+
+# Tipo di input per ParamQuery per le SchedeProdotti
+input ParamQueryInputSchedeProdotti {
+    filters: String
+    page: Int
+    size: Int
+    sortBy: String
+    order: String
+}
+
+
+##########################
+#InfluxDB
+# Tipo per rappresentare le analisi dell'utente
+type UserAnalysis {
+    utente: String
+    tipoDiDispositivo: String
+    azione: String
+    durataAzione: Float
+    time: String
+}
+
+# Tipo di input per ParamQuery per UserAnalysis
+input ParamQueryInputUserAnalysis {
+    startTime: String
+    endTime: String
+    utente: String
+    tipoDiDispositivo: String
+    azione: String
+}
+
+# Tipo per rappresentare la durata media delle azioni per ogni utente
+type UserAverageDuration {
+    utente: String
+    averageDuration: Float
+}
+
+
+# Tipo per rappresentare l'analisi del traffico
+type TrafficAnalysis {
+    urlPagina: String
+    numeroDiVisite: Int
+    numeroDiVisitatoriUnici: Int
+    durataMediaVisite: Float
+    time: String
+}
+
+# Input per specificare un intervallo temporale
+input TimeRangeInput {
+    startTime: String
+    endTime: String
+}
+
+
+# Tipo per rappresentare le risposte del server
+type ServerResponse {
+    server: String
+    endpoint: String
+    responseTimeAverage: Float
+    numeroDiRequest: Int
+    numeroDiErrori: Int
+    time: String
+}
+
+# Input per specificare un intervallo temporale per ServerResponse
+input TimeRangeInput {
+    startTime: String
+    endTime: String
+}
+
+type AverageResponseTime {
+    server: String
+    averageResponseTime: Float
+}
+
+
+# Tipo per rappresentare il monitoraggio delle vendite
+type SalesMonitoring {
+    prodotto: String
+    categoriaProdotto: String
+    venditore: String
+    numeroOrdini: Int
+    numeroUnitaVendute: Int
+    ricavo: Float
+    time: String
+}
+
+# Tipo per rappresentare il ricavo medio per prodotto
+type AverageRevenueByProduct {
+    prodotto: String
+    ricavoMedio: Float
+}
+
+# Input per specificare un intervallo temporale per le vendite
+input SalesTimeRangeInput {
+    startTime: String
+    endTime: String
+}
+
+
+##########
+#CASSANDRA
+# Tipo per rappresentare gli Ordini
+type ArchiviazioneOrdini {
+    id: String
+    userId: String
+    orderDate: String
+    status: String
+    importoTotale: Float
+    indirizzoDellaSpedizione: String
+    listaArticoliDellOrdine: [String]
+    consegna: String
+    corriere: String
+}
+
+# Input per creare o aggiornare un Ordine
+input ArchiviazioneOrdiniInput {
+    id: String
+    userId: String
+    orderDate: String
+    status: String
+    importoTotale: Float
+    indirizzoDellaSpedizione: String
+    listaArticoliDellOrdine: [String]
+    consegna: String
+    corriere: String
+}
+
+# Tipo di input per ParamQuery per gli Ordini
+input ParamQueryCassandraInput {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    like: String
+    in: [String]
+    between: [String]
+    orderBy: Boolean
+    orderByColumn: String
+    limit: Int
+    offset: Int
+    allowFiltering: Boolean
+}
+
+
+# Tipo per rappresentare le transizioni archiviate
+type ArchiviazioneTransizioni {
+    id: String                    
+    orderId: String                
+    transizioneDate: String       
+    importoTotale: BigDecimal    
+    metodoDiPagamento: String      
+    status: String                 
+}
+
+input ArchiviazioneTransizioniInput{
+    id: String                    
+    orderId: String                
+    transizioneDate: String       
+    importoTotale: BigDecimal    
+    metodoDiPagamento: String      
+    status: String   
+}
+
+
+# Definiamo il tipo per rappresentare una segnalazione
+type ArchiviazioneSegnalazioni {
+  id: String
+  utente: String
+  riferimento: String
+  data: String
+  titolo: String
+  descrizione: String
+  fileMultimediali: String
+}
+
+input ArchiviazioneSegnalazioniInput{
+    id: String
+  utente: String
+  riferimento: String
+  data: String
+  titolo: String
+  descrizione: String
+  fileMultimediali: String
+}
+
+
+# Definizione del tipo Query unificato
+type Query {
+    #Oracle SQL e MongoDB
+    categorie(paramQuery: ParamQueryInputCategorie, categorie: CategorieInput): [Categorie]
+    ordini(paramQuery: ParamQueryInputOrdini, ordini: OrdiniInput): [Ordini]
+    pagamenti(paramQuery: ParamQueryInputPagamenti, pagamenti: PagamentiInput): [Pagamenti]
+    prodotti(paramQuery: ParamQueryInputProdotti, prodotti: ProdottiInput): [Prodotti]
+    recensioni(paramQuery: ParamQueryInputRecensioni, recensioni: RecensioniInput): [Recensioni]
+    resi(paramQuery: ParamQueryInputResi, resi: ResiInput): [Resi]
+    schedeProdotti(paramQuery: ParamQueryInputSchedeProdotti, schedeProdotti: SchedeProdottiInput): [SchedeProdotti]
+    #Influx
+    # Query per ottenere le analisi in un intervallo temporale
+    findByTimeRange(paramQuery: ParamQueryInputUserAnalysis): [UserAnalysis]
+    # Query per trovare le analisi per un utente specifico
+    findByUser(utente: String): [UserAnalysis]
+    # Query per trovare le analisi per tipo di dispositivo
+    findByDeviceType(tipoDiDispositivo: String): [UserAnalysis]
+    # Query per trovare le analisi per tipo di azione
+    findByAction(azione: String): [UserAnalysis]
+    # Query per ottenere la durata media delle azioni per ogni utente
+    getAverageDurationByUser: [UserAverageDuration]
+    # Query per ottenere le analisi filtrate per utente, dispositivo e intervallo temporale
+    findByUserDeviceAndTimeRange(
+        utente: String, 
+        tipoDiDispositivo: String, 
+        startTime: String, 
+        endTime: String
+    ): [UserAnalysis]
+     # Query per trovare le analisi in un intervallo temporale
+    findByTimeRange(timeRange: TimeRangeInput): [TrafficAnalysis]
+    # Query per trovare le analisi per una URL specifica
+    findByUrl(urlPagina: String!): [TrafficAnalysis]
+    # Query per ottenere le visite medie per URL
+    getAverageVisitsByUrl: [TrafficAnalysis]
+     # Query per ottenere le risposte in un intervallo temporale
+    findServerResponsesByTimeRange(timeRange: TimeRangeInput): [ServerResponse]
+    # Query per trovare le risposte per un server specifico
+    findServerResponsesByServer(server: String!): [ServerResponse]
+    # Query per trovare le risposte per un endpoint specifico
+    findServerResponsesByEndpoint(endpoint: String!): [ServerResponse]
+    # Query per ottenere il tempo medio di risposta per ogni server
+    getAverageResponseTimeByServer: [AverageResponseTime]
+    # Query per ottenere le risposte filtrate per server, endpoint e intervallo temporale
+    findServerResponsesByServerEndpointAndTimeRange(
+        server: String!,
+        endpoint: String!,
+        timeRange: TimeRangeInput
+    ): [ServerResponse]
+     # Query per ottenere i monitoraggi delle vendite in un intervallo di tempo
+    findSalesByTimeRange(timeRange: SalesTimeRangeInput): [SalesMonitoring]
+    # Query per trovare i monitoraggi delle vendite di un prodotto specifico
+    findSalesByProduct(prodotto: String!): [SalesMonitoring]
+    # Query per trovare i monitoraggi delle vendite di un venditore specifico
+    findSalesByVendor(venditore: String!): [SalesMonitoring]
+    # Query per trovare i monitoraggi delle vendite per una categoria di prodotto
+    findSalesByCategory(categoriaProdotto: String!): [SalesMonitoring]
+    # Query per ottenere il ricavo medio per prodotto
+    getAverageRevenueByProduct: [AverageRevenueByProduct]
+
+    #Cassandra
+    # Recupera tutti gli ordini
+    findAllOrdini: [ArchiviazioneOrdini]
+    # Recupera un ordine per ID
+    findOrdineById(id: String!): ArchiviazioneOrdini
+    # Esegui una query dinamica sugli ordini
+    queryDinamica(paramQuery: ParamQueryCassandraInput, ordine: ArchiviazioneOrdiniInput): [ArchiviazioneOrdini]
+    # Query per ottenere tutte le transizioni
+    allTransizioni: [ArchiviazioneTransizioni]
+    # Query per ottenere una transizione specifica tramite ID
+    transizioneById(id: String!): ArchiviazioneTransizioni
+    # Query dinamica per eseguire query personalizzate sulle transizioni
+    queryDinamica(paramQuery: ParamQueryCassandraInput, transizione: ArchiviazioneTransizioniInput): [ArchiviazioneTransizioni]
+    # Recupera tutte le segnalazioni
+    findAllSegnalazioni: [ArchiviazioneSegnalazioni]
+    # Recupera una segnalazione tramite ID
+    findSegnalazioneById(id: String!): ArchiviazioneSegnalazioni
+    # Esegui una query dinamica
+    queryDinamica(paramQuery: ParamQueryCassandraInput, segnalazione: ArchiviazioneSegnalazioniInput): [ArchiviazioneSegnalazioni]
+
+
+
+
+}

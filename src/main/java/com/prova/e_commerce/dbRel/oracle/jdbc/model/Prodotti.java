@@ -22,7 +22,7 @@ public class Prodotti {
 
     private String descrizione; // descrizione del prodotto (CLOB, trattato come Stringa)
 
-    private byte[] immagine;  // immagine del prodotto (BLOB trattato come byte[])
+    private String immagine;  // immagine del prodotto (BLOB trattato come byte[])
 
     /* @NotNull(message = "Obbligatorio") */
     private int amountAvailable;  // quantità disponibile
@@ -71,11 +71,11 @@ public class Prodotti {
         this.descrizione = descrizione;
     }
 
-    public byte[] getImmagine() {
+    public String getImmagine() {
         return immagine;
     }
 
-    public void setImmagine(byte[] immagine) {
+    public void setImmagine(String immagine) {
         this.immagine = immagine;
     }
 

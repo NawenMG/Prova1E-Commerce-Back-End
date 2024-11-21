@@ -13,6 +13,6 @@ public interface OrdiniRep {
     List<Ordini> query(ParamQuery parmQuery, Ordini ordini);
     String saveAll(int number);
     String insertOrdini(Ordini ordini);
-    String updateOrdini(int orderID, Ordini ordini);
-    String deleteOrdini(int orderID);
+    String updateOrdini(String orderID, Ordini ordini);
+    String deleteOrdini(String orderID);
 }

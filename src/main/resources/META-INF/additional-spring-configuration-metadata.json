@@ -104,6 +104,71 @@
       "name": "spring.datasource.local.username",
       "type": "java.lang.String",
       "description": "A description for 'spring.datasource.local.username'"
+    },
+    {
+      "name": "aws.datasource.url",
+      "type": "java.lang.String",
+      "description": "A description for 'aws.datasource.url'"
+    },
+    {
+      "name": "spring.flyway.aws.enabled",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.flyway.aws.enabled'"
+    },
+    {
+      "name": "aws.s3.bucket-name",
+      "type": "java.lang.String",
+      "description": "A description for 'aws.s3.bucket-name'"
+    },
+    {
+      "name": "aws.datasource.driver-class-name",
+      "type": "java.lang.String",
+      "description": "A description for 'aws.datasource.driver-class-name'"
+    },
+    {
+      "name": "aws.datasource.password",
+      "type": "java.lang.String",
+      "description": "A description for 'aws.datasource.password'"
+    },
+    {
+      "name": "aws.datasource.username",
+      "type": "java.lang.String",
+      "description": "A description for 'aws.datasource.username'"
+    },
+    {
+      "name": "influxdb.bucket",
+      "type": "java.lang.String",
+      "description": "A description for 'influxdb.bucket'"
+    },
+    {
+      "name": "influxdb.org",
+      "type": "java.lang.String",
+      "description": "A description for 'influxdb.org'"
+    },
+    {
+      "name": "influxdb.token",
+      "type": "java.lang.String",
+      "description": "A description for 'influxdb.token'"
+    },
+    {
+      "name": "spring.flyway.aws.locations",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.flyway.aws.locations'"
+    },
+    {
+      "name": "spring.flyway.aws.password",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.flyway.aws.password'"
+    },
+    {
+      "name": "spring.flyway.aws.user",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.flyway.aws.user'"
+    },
+    {
+      "name": "spring.flyway.aws.url",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.flyway.aws.url'"
     }
   ]
 }

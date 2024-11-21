@@ -31,14 +31,14 @@ public class CategorieService {
     /**
      * Metodo per aggiornare una categoria esistente in base all'ID.
      */
-    public String aggiornaCategoria(int categoryID, Categorie categorie) {
+    public String aggiornaCategoria(String categoryID, Categorie categorie) {
         return categorieRep.updateCategory(categoryID, categorie);
     }
 
     /**
      * Metodo per eliminare una categoria in base all'ID.
      */
-    public String eliminaCategoria(int categoryID) {
+    public String eliminaCategoria(String categoryID) {
         return categorieRep.deleteCategory(categoryID);
     }
 

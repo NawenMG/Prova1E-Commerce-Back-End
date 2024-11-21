@@ -30,14 +30,14 @@ public class ResiService {
     /**
      * Aggiorna i dati di un reso specifico identificato dall'ID.
      */
-    public String aggiornaReso(int returnID, Resi resi) {
+    public String aggiornaReso(String returnID, Resi resi) {
         return resiRep.updateReturn(returnID, resi);
     }
 
     /**
      * Elimina un reso specifico dal database in base all'ID.
      */
-    public String eliminaReso(int returnID) {
+    public String eliminaReso(String returnID) {
         return resiRep.deleteReturn(returnID);
     }
 

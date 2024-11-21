@@ -141,7 +141,7 @@ public class PagamentiRepImp implements PagamentiRep {
     }
 
     // Update
-    public String updatePayment(int paymentID, Pagamenti pagamenti) {
+    public String updatePayment(String paymentID, Pagamenti pagamenti) {
         String sql = "UPDATE Pagamenti SET Type = ?, Data = ?, Status = ?, Total = ? WHERE ID = ?";
         jdbcTemplate.update(sql, 
         pagamenti.getType(),
@@ -154,7 +154,7 @@ public class PagamentiRepImp implements PagamentiRep {
     }
 
     // Delete
-    public String deletePayment(int paymentID) {
+    public String deletePayment(String paymentID) {
         String sql = "DELETE FROM Pagamenti WHERE ID = ?";
         jdbcTemplate.update(sql, paymentID);
         return "Dati eliminati con successo";

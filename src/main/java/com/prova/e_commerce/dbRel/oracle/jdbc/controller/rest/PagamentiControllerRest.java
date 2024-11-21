@@ -38,7 +38,7 @@ public class PagamentiControllerRest {
      * Endpoint per aggiornare un pagamento esistente.
      */
     @PutMapping("/aggiorna/{paymentID}")
-    public ResponseEntity<String> aggiornaPagamento(@PathVariable int paymentID, @RequestBody Pagamenti pagamenti) {
+    public ResponseEntity<String> aggiornaPagamento(@PathVariable String paymentID, @RequestBody Pagamenti pagamenti) {
         String response = pagamentiService.aggiornaPagamento(paymentID, pagamenti);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class PagamentiControllerRest {
      * Endpoint per eliminare un pagamento in base all'ID.
      */
     @DeleteMapping("/elimina/{paymentID}")
-    public ResponseEntity<String> eliminaPagamento(@PathVariable int paymentID) {
+    public ResponseEntity<String> eliminaPagamento(@PathVariable String paymentID) {
         String response = pagamentiService.eliminaPagamento(paymentID);
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
