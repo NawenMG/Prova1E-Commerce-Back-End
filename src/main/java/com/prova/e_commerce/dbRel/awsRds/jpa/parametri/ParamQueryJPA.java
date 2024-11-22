@@ -1,4 +1,4 @@
-package com.prova.e_commerce.dbRel.oracle.jpa.parametri;
+package com.prova.e_commerce.dbRel.awsRds.jpa.parametri;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;

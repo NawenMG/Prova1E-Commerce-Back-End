@@ -1,4 +1,4 @@
-package com.prova.e_commerce.dbRel.oracle.jpa.entity;
+package com.prova.e_commerce.dbRel.awsRds.jpa.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

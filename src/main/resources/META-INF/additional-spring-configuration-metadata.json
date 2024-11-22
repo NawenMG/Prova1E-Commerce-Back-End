@@ -1,174 +1,242 @@
-{
-  "properties": [
-    {
-      "name": "flyway.enabled",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "spring.flyway.mongodb.enabled",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "spring.flyway.mongodb.locations",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "spring.flyway.oracle.baseline-on-migrate",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "spring.flyway.oracle.locations",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "spring.flyway.oracle.enabled",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "influxdb.username",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "influxdb.password",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "influxdb.url",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "influxdb.database",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "spring.data.neo4j.migrations.location",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "flyway.locations",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "flyway.cassandra.user",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "flyway.cassandra.password",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "flyway.cassandra.url",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "pinecone.environment",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "pinecone.apiKey",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "cloud.aws.region.static",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "cloud.aws.credentials.access-key",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "cloud.aws.credentials.secret-key",
-      "type": "java.lang.String"
-    },
-    {
-      "name": "spring.graphql.endpoint",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.graphql.endpoint'"
-    },
-    {
-      "name": "spring.datasource.local.url",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.datasource.local.url'"
-    },
-    {
-      "name": "spring.datasource.local.driver-class-name",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.datasource.local.driver-class-name'"
-    },
-    {
-      "name": "spring.datasource.local.password",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.datasource.local.password'"
-    },
-    {
-      "name": "spring.datasource.local.username",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.datasource.local.username'"
-    },
-    {
-      "name": "aws.datasource.url",
-      "type": "java.lang.String",
-      "description": "A description for 'aws.datasource.url'"
-    },
-    {
-      "name": "spring.flyway.aws.enabled",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.flyway.aws.enabled'"
-    },
-    {
-      "name": "aws.s3.bucket-name",
-      "type": "java.lang.String",
-      "description": "A description for 'aws.s3.bucket-name'"
-    },
-    {
-      "name": "aws.datasource.driver-class-name",
-      "type": "java.lang.String",
-      "description": "A description for 'aws.datasource.driver-class-name'"
-    },
-    {
-      "name": "aws.datasource.password",
-      "type": "java.lang.String",
-      "description": "A description for 'aws.datasource.password'"
-    },
-    {
-      "name": "aws.datasource.username",
-      "type": "java.lang.String",
-      "description": "A description for 'aws.datasource.username'"
-    },
-    {
-      "name": "influxdb.bucket",
-      "type": "java.lang.String",
-      "description": "A description for 'influxdb.bucket'"
-    },
-    {
-      "name": "influxdb.org",
-      "type": "java.lang.String",
-      "description": "A description for 'influxdb.org'"
-    },
-    {
-      "name": "influxdb.token",
-      "type": "java.lang.String",
-      "description": "A description for 'influxdb.token'"
-    },
-    {
-      "name": "spring.flyway.aws.locations",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.flyway.aws.locations'"
-    },
-    {
-      "name": "spring.flyway.aws.password",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.flyway.aws.password'"
-    },
-    {
-      "name": "spring.flyway.aws.user",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.flyway.aws.user'"
-    },
-    {
-      "name": "spring.flyway.aws.url",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.flyway.aws.url'"
-    }
-  ]
-}
+{"properties": [
+  {
+    "name": "flyway.enabled",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "spring.flyway.mongodb.enabled",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "spring.flyway.mongodb.locations",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "spring.flyway.oracle.baseline-on-migrate",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "spring.flyway.oracle.locations",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "spring.flyway.oracle.enabled",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "influxdb.username",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "influxdb.password",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "influxdb.url",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "influxdb.database",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "spring.data.neo4j.migrations.location",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "flyway.locations",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "flyway.cassandra.user",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "flyway.cassandra.password",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "flyway.cassandra.url",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "pinecone.environment",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "pinecone.apiKey",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "cloud.aws.region.static",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "cloud.aws.credentials.access-key",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "cloud.aws.credentials.secret-key",
+    "type": "java.lang.String"
+  },
+  {
+    "name": "spring.graphql.endpoint",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.graphql.endpoint'"
+  },
+  {
+    "name": "spring.datasource.local.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.local.url'"
+  },
+  {
+    "name": "spring.datasource.local.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.local.driver-class-name'"
+  },
+  {
+    "name": "spring.datasource.local.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.local.password'"
+  },
+  {
+    "name": "spring.datasource.local.username",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.local.username'"
+  },
+  {
+    "name": "aws.datasource.url",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.url'"
+  },
+  {
+    "name": "spring.flyway.aws.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.aws.enabled'"
+  },
+  {
+    "name": "aws.s3.bucket-name",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.s3.bucket-name'"
+  },
+  {
+    "name": "aws.datasource.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.driver-class-name'"
+  },
+  {
+    "name": "aws.datasource.password",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.password'"
+  },
+  {
+    "name": "aws.datasource.username",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.username'"
+  },
+  {
+    "name": "influxdb.bucket",
+    "type": "java.lang.String",
+    "description": "A description for 'influxdb.bucket'"
+  },
+  {
+    "name": "influxdb.org",
+    "type": "java.lang.String",
+    "description": "A description for 'influxdb.org'"
+  },
+  {
+    "name": "influxdb.token",
+    "type": "java.lang.String",
+    "description": "A description for 'influxdb.token'"
+  },
+  {
+    "name": "spring.flyway.aws.locations",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.aws.locations'"
+  },
+  {
+    "name": "spring.flyway.aws.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.aws.password'"
+  },
+  {
+    "name": "spring.flyway.aws.user",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.aws.user'"
+  },
+  {
+    "name": "spring.flyway.aws.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.aws.url'"
+  },
+  {
+    "name": "spring.flyway.local.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.local.password'"
+  },
+  {
+    "name": "spring.flyway.local.user",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.local.user'"
+  },
+  {
+    "name": "spring.flyway.local.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.local.url'"
+  },
+  {
+    "name": "spring.flyway.local.baseline-on-migrate",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.local.baseline-on-migrate'"
+  },
+  {
+    "name": "spring.flyway.local.locations",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.local.locations'"
+  },
+  {
+    "name": "spring.flyway.aws.baseline-on-migrate",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.flyway.aws.baseline-on-migrate'"
+  },
+  {
+    "name": "spring.datasource.local.jdbc-url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.local.jdbc-url'"
+  },
+  {
+    "name": "aws.datasource.jdbc-url",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.jdbc-url'"
+  },
+  {
+    "name": "aws.datasource.idle-timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.idle-timeout'"
+  },
+  {
+    "name": "aws.datasource.minimum-idle",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.minimum-idle'"
+  },
+  {
+    "name": "aws.datasource.maximum-pool-size",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.maximum-pool-size'"
+  },
+  {
+    "name": "aws.datasource.connection-timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.connection-timeout'"
+  },
+  {
+    "name": "aws.datasource.connection-timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.connection-timeout'"
+  },
+  {
+    "name": "aws.datasource.maximum-pool-size",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.datasource.maximum-pool-size'"
+  }
+]}

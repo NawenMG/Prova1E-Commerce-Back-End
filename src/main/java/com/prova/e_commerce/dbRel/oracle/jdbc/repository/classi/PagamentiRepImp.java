@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,17 +12,23 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.randomData.PagamentiFaker;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.PagamentiRep;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Repository
 public class PagamentiRepImp implements PagamentiRep {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    // Iniezione tramite costruttore con qualificatore
+    public PagamentiRepImp(@Qualifier("jdbcTemplateLocal") JdbcTemplate jdbcTemplate,
+                           NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     // Query
+    @Override
     public List<Pagamenti> query(ParamQuery paramQuery, Pagamenti pagamenti) {
         StringBuilder sql = new StringBuilder("SELECT ");
 
@@ -32,26 +37,23 @@ public class PagamentiRepImp implements PagamentiRep {
             sql.append("DISTINCT ");
         }
 
-        //Operatori di aggregazione
-        if(paramQuery.buildAggregationClause() == "MIN(column)"){
-            sql.append("MIN(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "MAX(column)"){
-            sql.append("MAX(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "COUNT(column)"){
-            sql.append("COUNT(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "AVG(column)"){
-            sql.append("AVG(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "SUM(column)"){
-            sql.append("SUM(  ");
+        // Operatori di aggregazione
+        if(paramQuery.buildAggregationClause() != null) {
+            if(paramQuery.buildAggregationClause().equals("MIN(column)")) {
+                sql.append("MIN(  ");
+            } else if(paramQuery.buildAggregationClause().equals("MAX(column)")) {
+                sql.append("MAX(  ");
+            } else if(paramQuery.buildAggregationClause().equals("COUNT(column)")) {
+                sql.append("COUNT(  ");
+            } else if(paramQuery.buildAggregationClause().equals("AVG(column)")) {
+                sql.append("AVG(  ");
+            } else if(paramQuery.buildAggregationClause().equals("SUM(column)")) {
+                sql.append("SUM(  ");
+            }
         }
 
-
-         // Selezione dinamica delle colonne in base agli attributi dell'oggetto 'Categorie'
-         if (pagamenti.getPaymentsID() != null) {
+        // Selezione dinamica delle colonne in base agli attributi dell'oggetto 'Pagamenti'
+        if (pagamenti.getPaymentsID() != null) {
             sql.append("ID, ");
         }
         if (pagamenti.getType() != null) {
@@ -70,15 +72,14 @@ public class PagamentiRepImp implements PagamentiRep {
             sql.append("* ");
         }
 
-         // Rimuovi l'ultima virgola, se presente
-         if (sql.charAt(sql.length() - 2) == ',') {
+        // Rimuovi l'ultima virgola, se presente
+        if (sql.charAt(sql.length() - 2) == ',') {
             sql.deleteCharAt(sql.length() - 2);
         }
 
-        if(paramQuery.buildAggregationClause() != "column"){
+        if(paramQuery.buildAggregationClause() != null && !paramQuery.buildAggregationClause().equals("column")){
             sql.append(")  ");
         }
-
 
         sql.append("FROM Pagamenti");
 
@@ -107,27 +108,34 @@ public class PagamentiRepImp implements PagamentiRep {
             p.setType(rs.getString("Type"));
             p.setData(rs.getDate("Data").toLocalDate());
             p.setStatus(rs.getBoolean("Status"));
-            p.setTotal(rs.getBigDecimal("Total"));
+            p.setTotal(rs.getBigDecimal("Totale"));
             return p;
-        });   
+        });
     }
 
     // Per implementare il faker
+    @Override
     public String saveAll(int number) {
         String sql = "INSERT INTO Pagamenti (ID, Type, Data, Status, Total) VALUES (?, ?, ?, ?, ?)";
         PagamentiFaker pagamentiFaker = new PagamentiFaker();
     
         for (int i = 0; i < number; i++) {
-            // Genera una categoria fittizia
+            // Genera un pagamento fittizio
             Pagamenti pagamenti = pagamentiFaker.generateFakePayment(number);
     
-            // Salva la categoria nel database
-            jdbcTemplate.update(sql, pagamenti);
+            // Salva il pagamento nel database
+            jdbcTemplate.update(sql, 
+                pagamenti.getPaymentsID(),
+                pagamenti.getType(),
+                pagamenti.getData(),
+                pagamenti.getStatus(),
+                pagamenti.getTotal());
         }
         return "Dati generati con successo";
     }
 
     // Insert
+    @Override
     public String insertPayment(Pagamenti pagamenti) {
         String sql = "INSERT INTO Pagamenti (ID, Type, Data, Status, Total) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
@@ -135,12 +143,12 @@ public class PagamentiRepImp implements PagamentiRep {
         pagamenti.getType(),
         pagamenti.getData(),
         pagamenti.getStatus(),
-        pagamenti.getTotal()
-        );
+        pagamenti.getTotal());
         return "Dati inseriti con successo";
     }
 
     // Update
+    @Override
     public String updatePayment(String paymentID, Pagamenti pagamenti) {
         String sql = "UPDATE Pagamenti SET Type = ?, Data = ?, Status = ?, Total = ? WHERE ID = ?";
         jdbcTemplate.update(sql, 
@@ -148,17 +156,15 @@ public class PagamentiRepImp implements PagamentiRep {
         pagamenti.getData(),
         pagamenti.getStatus(),
         pagamenti.getTotal(),
-        paymentID
-        );
+        paymentID);
         return "Dati aggiornati con successo";
     }
 
     // Delete
+    @Override
     public String deletePayment(String paymentID) {
         String sql = "DELETE FROM Pagamenti WHERE ID = ?";
         jdbcTemplate.update(sql, paymentID);
         return "Dati eliminati con successo";
     }
-
-    
 }

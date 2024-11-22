@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,17 +13,23 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.randomData.OrdiniFaker;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Ordini;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.OrdiniRep;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Repository
 public class OrdiniRepImp implements OrdiniRep {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    // Iniezione tramite costruttore con qualificatore
+    public OrdiniRepImp(@Qualifier("jdbcTemplateLocal") JdbcTemplate jdbcTemplate,
+                        NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     // Query
+    @Override
     public List<Ordini> query(ParamQuery paramQuery, Ordini ordini) {
         StringBuilder sql = new StringBuilder("SELECT ");
 
@@ -33,26 +38,23 @@ public class OrdiniRepImp implements OrdiniRep {
             sql.append("DISTINCT ");
         }
 
-        //Operatori di aggregazione
-        if(paramQuery.buildAggregationClause() == "MIN(column)"){
-            sql.append("MIN(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "MAX(column)"){
-            sql.append("MAX(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "COUNT(column)"){
-            sql.append("COUNT(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "AVG(column)"){
-            sql.append("AVG(  ");
-        }
-        if(paramQuery.buildAggregationClause() == "SUM(column)"){
-            sql.append("SUM(  ");
+        // Operatori di aggregazione
+        if(paramQuery.buildAggregationClause() != null) {
+            if(paramQuery.buildAggregationClause().equals("MIN(column)")) {
+                sql.append("MIN(  ");
+            } else if(paramQuery.buildAggregationClause().equals("MAX(column)")) {
+                sql.append("MAX(  ");
+            } else if(paramQuery.buildAggregationClause().equals("COUNT(column)")) {
+                sql.append("COUNT(  ");
+            } else if(paramQuery.buildAggregationClause().equals("AVG(column)")) {
+                sql.append("AVG(  ");
+            } else if(paramQuery.buildAggregationClause().equals("SUM(column)")) {
+                sql.append("SUM(  ");
+            }
         }
 
-
-         // Selezione dinamica delle colonne in base agli attributi dell'oggetto 'Categorie'
-         if (ordini.getOrderID() != null) {
+        // Selezione dinamica delle colonne in base agli attributi dell'oggetto 'Ordini'
+        if (ordini.getOrderID() != null) {
             sql.append("ID, ");
         }
         if (ordini.getUsersID() != null) {
@@ -83,15 +85,14 @@ public class OrdiniRepImp implements OrdiniRep {
             sql.append("* ");
         }
 
-         // Rimuovi l'ultima virgola, se presente
-         if (sql.charAt(sql.length() - 2) == ',') {
+        // Rimuovi l'ultima virgola, se presente
+        if (sql.charAt(sql.length() - 2) == ',') {
             sql.deleteCharAt(sql.length() - 2);
         }
 
-        if(paramQuery.buildAggregationClause() != "column"){
+        if(paramQuery.buildAggregationClause() != null && !paramQuery.buildAggregationClause().equals("column")){
             sql.append(")  ");
         }
-
 
         sql.append("FROM Ordini");
 
@@ -126,25 +127,29 @@ public class OrdiniRepImp implements OrdiniRep {
             o.setCorriere(rs.getString("Corriere"));
             o.setPosizione(rs.getString("Posizione"));
             return o;
-        });   
+        });
     }
 
     // Per implementare il faker
+    @Override
     public String saveAll(int number) {
         String sql = "INSERT INTO Ordini (ID, User_id, Stato_spedizione, Data_di_consegna, Data_di_richiesta, Accettazione_ordine, Status, Corriere, Posizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         OrdiniFaker ordiniFaker = new OrdiniFaker();
     
         for (int i = 0; i < number; i++) {
-            // Genera una categoria fittizia
+            // Genera un ordine fittizio
             Ordini ordini = ordiniFaker.generateFakeOrder(number);
     
-            // Salva la categoria nel database
-            jdbcTemplate.update(sql, ordini);
+            // Salva l'ordine nel database
+            jdbcTemplate.update(sql, ordini.getOrderID(), ordini.getUsersID(), ordini.getStatoDiSpedizione(),
+                                ordini.getDataDiConsegna(), ordini.getDataDiRichiesta(), ordini.isAccettazioneOrdine(),
+                                ordini.getStatus(), ordini.getCorriere(), ordini.getPosizione());
         }
         return "Dati generati con successo";
     }
 
     // Insert
+    @Override
     public String insertOrdini(Ordini ordini) {
         String sql = "INSERT INTO Ordini (ID, User_id, Stato_spedizione, Data_di_consegna, Data_di_richiesta, Accettazione_ordine, Status, Corriere, Posizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
@@ -162,6 +167,7 @@ public class OrdiniRepImp implements OrdiniRep {
     }
 
     // Update
+    @Override
     public String updateOrdini(String orderID, Ordini ordini) {
         String sql = "UPDATE Ordini SET User_id = ?, Stato_spedizione = ?, Data_di_consegna = ?, Data_di_richiesta = ?, Accettazione_ordine = ?, Status = ?, Corriere = ?, Posizione = ?  WHERE ID = ?";
         jdbcTemplate.update(sql, 
@@ -179,6 +185,7 @@ public class OrdiniRepImp implements OrdiniRep {
     }
 
     // Delete
+    @Override
     public String deleteOrdini(String orderID) {
         String sql = "DELETE FROM Ordini WHERE ID = ?";
         jdbcTemplate.update(sql, orderID);

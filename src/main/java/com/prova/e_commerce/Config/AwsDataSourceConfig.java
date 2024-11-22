@@ -1,4 +1,4 @@
-package com.prova.e_commerce.Config;
+/* package com.prova.e_commerce.Config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
@@ -11,21 +11,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import org.flywaydb.core.Flyway;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer;
+
 
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "com.example.repository.aws", // pacchetto repository per il database AWS
+    basePackages = "com.prova.e_commerce.dbRel.awsRds.repository", 
     entityManagerFactoryRef = "entityManagerFactoryAws",
     transactionManagerRef = "transactionManagerAws"
 )
 public class AwsDataSourceConfig {
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.aws")
+    @ConfigurationProperties(prefix = "aws.datasource")
+    @Qualifier("dataSourceAws")
     public DataSource dataSourceAws() {
         return DataSourceBuilder.create().build();
     }
@@ -33,10 +36,10 @@ public class AwsDataSourceConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryAws(
             EntityManagerFactoryBuilder builder,
-            @Qualifier("dataSourceAws") DataSource dataSource) {
+            @Qualifier("dataSourceAws") DataSource dataSource) {  
         return builder
                 .dataSource(dataSource)
-                .packages("com.example.model.aws") // pacchetto contenente le entità del database AWS
+                .packages("com.prova.e_commerce.dbRel.awsRds.entity") 
                 .persistenceUnit("aws")
                 .build();
     }
@@ -46,4 +49,20 @@ public class AwsDataSourceConfig {
             @Qualifier("entityManagerFactoryAws") EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
-}
+
+    // Configurazione Flyway per AWS RDS
+    @Bean
+    public Flyway flywayRemote(@Qualifier("dataSourceAws") DataSource dataSource) {
+        return Flyway.configure()
+                .dataSource(dataSource)
+                .locations("classpath:db/migration/oracle/aws")  // Definisci dove si trovano le migrazioni
+                .baselineOnMigrate(true)  // Imposta baseline se non esistono migrazioni
+                .load();
+    }
+
+    // Metodo per inizializzare le migrazioni Flyway
+    @Bean
+    public FlywayMigrationInitializer flywayMigrationInitializerAws(@Qualifier("flywayRemote") Flyway flyway) {
+        return new FlywayMigrationInitializer(flyway);
+    }
+} */

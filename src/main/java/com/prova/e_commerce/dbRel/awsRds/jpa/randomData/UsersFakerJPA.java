@@ -1,8 +1,8 @@
-package com.prova.e_commerce.dbRel.oracle.jpa.randomData;
+package com.prova.e_commerce.dbRel.awsRds.jpa.randomData;
 
 import com.github.javafaker.Faker;
-import com.prova.e_commerce.dbRel.oracle.jpa.entity.Users;
-import com.prova.e_commerce.dbRel.oracle.jpa.repository.interfacce.UsersRepJPA;
+import com.prova.e_commerce.dbRel.awsRds.jpa.entity.Users;
+import com.prova.e_commerce.dbRel.awsRds.jpa.repository.interfacce.UsersRepJPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

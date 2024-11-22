@@ -32,26 +32,25 @@ public class ResiRepImp implements ResiRep {
             sql.append("DISTINCT ");
         }
 
-        //Operatori di aggregazione
-        if(paramQuery.buildAggregationClause() == "MIN(column)"){
+        // Operatori di aggregazione
+        if (paramQuery.buildAggregationClause().equals("MIN(column)")) {
             sql.append("MIN(  ");
         }
-        if(paramQuery.buildAggregationClause() == "MAX(column)"){
+        if (paramQuery.buildAggregationClause().equals("MAX(column)")) {
             sql.append("MAX(  ");
         }
-        if(paramQuery.buildAggregationClause() == "COUNT(column)"){
+        if (paramQuery.buildAggregationClause().equals("COUNT(column)")) {
             sql.append("COUNT(  ");
         }
-        if(paramQuery.buildAggregationClause() == "AVG(column)"){
+        if (paramQuery.buildAggregationClause().equals("AVG(column)")) {
             sql.append("AVG(  ");
         }
-        if(paramQuery.buildAggregationClause() == "SUM(column)"){
+        if (paramQuery.buildAggregationClause().equals("SUM(column)")) {
             sql.append("SUM(  ");
         }
 
-
-         // Selezione dinamica delle colonne in base agli attributi dell'oggetto 'Categorie'
-         if (resi.getReturnsID() != null) {
+        // Selezione dinamica delle colonne in base agli attributi dell'oggetto 'Resi'
+        if (resi.getReturnsID() != null) {
             sql.append("ID, ");
         }
         if (resi.getUsersID() != null) {
@@ -66,19 +65,18 @@ public class ResiRepImp implements ResiRep {
         if (resi.getDataRichiesta() != null) {
             sql.append("Data_di_richiesta, ");
         }
-        if(paramQuery.getAll() != false){
+        if (paramQuery.getAll() != false) {
             sql.append("* ");
         }
 
-         // Rimuovi l'ultima virgola, se presente
-         if (sql.charAt(sql.length() - 2) == ',') {
+        // Rimuovi l'ultima virgola, se presente
+        if (sql.charAt(sql.length() - 2) == ',') {
             sql.deleteCharAt(sql.length() - 2);
         }
 
-        if(paramQuery.buildAggregationClause() != "column"){
+        if (!paramQuery.buildAggregationClause().equals("column")) {
             sql.append(")  ");
         }
-
 
         sql.append("FROM Resi");
 
@@ -109,20 +107,26 @@ public class ResiRepImp implements ResiRep {
             r.setAccettazioneReso(rs.getBoolean("Accetazione_reso"));
             r.setDataRichiesta(rs.getDate("Data_di_richiesta").toLocalDate());
             return r;
-        });   
+        });
     }
 
     // Per implementare il faker
     public String saveAll(int number) {
         String sql = "INSERT INTO Resi (ID, User_id, Status, Accetazione_reso, Data_di_richiesta) VALUES (?, ?, ?, ?, ?)";
         ResiFaker resiFaker = new ResiFaker();
-    
+
         for (int i = 0; i < number; i++) {
-            // Genera una categoria fittizia
+            // Genera un reso fittizio
             Resi resi = resiFaker.generateFakeReturn(number);
-    
-            // Salva la categoria nel database
-            jdbcTemplate.update(sql, resi);
+
+            // Salva il reso nel database
+            jdbcTemplate.update(sql,
+                resi.getReturnsID(),
+                resi.getUsersID(),
+                resi.isStatus(),
+                resi.isAccettazioneReso(),
+                resi.getDataRichiesta()
+            );
         }
         return "Dati generati con successo";
     }
@@ -131,11 +135,11 @@ public class ResiRepImp implements ResiRep {
     public String insertReturn(Resi resi) {
         String sql = "INSERT INTO Resi (ID, User_id, Status, Accetazione_reso, Data_di_richiesta) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
-        resi.getReturnsID(),
-        resi.getUsersID(),
-        resi.isStatus(),
-        resi.isAccettazioneReso(),
-        resi.getDataRichiesta()
+            resi.getReturnsID(),
+            resi.getUsersID(),
+            resi.isStatus(),
+            resi.isAccettazioneReso(),
+            resi.getDataRichiesta()
         );
         return "Dati inseriti con successo";
     }
@@ -143,12 +147,12 @@ public class ResiRepImp implements ResiRep {
     // Update
     public String updateReturn(String returnID, Resi resi) {
         String sql = "UPDATE Resi SET User_id = ?, Status = ?, Accetazione_reso = ?, Data_di_richiesta = ? WHERE ID = ?";
-        jdbcTemplate.update(sql,    
-        resi.getUsersID(),
-        resi.isStatus(),
-        resi.isAccettazioneReso(),
-        resi.getDataRichiesta(), 
-        returnID
+        jdbcTemplate.update(sql,
+            resi.getUsersID(),
+            resi.isStatus(),
+            resi.isAccettazioneReso(),
+            resi.getDataRichiesta(),
+            returnID
         );
         return "Dati aggiornati con successo";
     }

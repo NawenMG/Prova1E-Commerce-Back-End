@@ -1,6 +1,6 @@
-package com.prova.e_commerce.dbRel.oracle.jpa.repository.interfacce;
+package com.prova.e_commerce.dbRel.awsRds.jpa.repository.interfacce;
 
-import com.prova.e_commerce.dbRel.oracle.jpa.entity.Users;
+import com.prova.e_commerce.dbRel.awsRds.jpa.entity.Users;
 //import com.prova.e_commerce.dbRel.oracle.jpa.parametri.ParamQueryJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

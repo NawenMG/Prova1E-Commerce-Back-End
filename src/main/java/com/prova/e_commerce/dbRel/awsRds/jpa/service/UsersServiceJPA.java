@@ -1,7 +1,7 @@
-package com.prova.e_commerce.dbRel.oracle.jpa.service;
+/* package com.prova.e_commerce.dbRel.awsRds.jpa.service;
 
-import com.prova.e_commerce.dbRel.oracle.jpa.entity.Users;
-import com.prova.e_commerce.dbRel.oracle.jpa.repository.classi.UsersRepImpJPA;
+import com.prova.e_commerce.dbRel.awsRds.jpa.entity.Users;
+import com.prova.e_commerce.dbRel.awsRds.jpa.repository.classi.UsersRepImpJPA;
 import com.prova.e_commerce.storage.S3Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UsersService {
+public class UsersServiceJPA {
 
     @Autowired
     private UsersRepImpJPA usersRepImpJPA;
@@ -121,3 +121,4 @@ public class UsersService {
         usersRepImpJPA.update(user);  // Salva l'utente senza l'URL dell'immagine
     }
 }
+ */
