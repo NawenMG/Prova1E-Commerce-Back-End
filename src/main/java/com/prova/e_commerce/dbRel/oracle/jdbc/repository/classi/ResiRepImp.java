@@ -56,10 +56,10 @@ public class ResiRepImp implements ResiRep {
         if (resi.getUsersID() != null) {
             sql.append("User_id, ");
         }
-        if (resi.isStatus() != false) {
+        if (resi.getStatus() != false) {
             sql.append("Status, ");
         }
-        if (resi.isAccettazioneReso() != false) {
+        if (resi.getAccettazioneReso() != false) {
             sql.append("Accetazione_reso, ");
         }
         if (resi.getDataRichiesta() != null) {
@@ -123,8 +123,8 @@ public class ResiRepImp implements ResiRep {
             jdbcTemplate.update(sql,
                 resi.getReturnsID(),
                 resi.getUsersID(),
-                resi.isStatus(),
-                resi.isAccettazioneReso(),
+                resi.getStatus(),
+                resi.getAccettazioneReso(),
                 resi.getDataRichiesta()
             );
         }
@@ -137,8 +137,8 @@ public class ResiRepImp implements ResiRep {
         jdbcTemplate.update(sql,
             resi.getReturnsID(),
             resi.getUsersID(),
-            resi.isStatus(),
-            resi.isAccettazioneReso(),
+            resi.getStatus(),
+            resi.getAccettazioneReso(),
             resi.getDataRichiesta()
         );
         return "Dati inseriti con successo";
@@ -149,8 +149,8 @@ public class ResiRepImp implements ResiRep {
         String sql = "UPDATE Resi SET User_id = ?, Status = ?, Accetazione_reso = ?, Data_di_richiesta = ? WHERE ID = ?";
         jdbcTemplate.update(sql,
             resi.getUsersID(),
-            resi.isStatus(),
-            resi.isAccettazioneReso(),
+            resi.getStatus(),
+            resi.getAccettazioneReso(),
             resi.getDataRichiesta(),
             returnID
         );

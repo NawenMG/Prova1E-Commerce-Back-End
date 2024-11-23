@@ -4,6 +4,10 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttri
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 import com.prova.e_commerce.dbKey.model.SottoClassi.Notifica;
@@ -11,11 +15,27 @@ import com.prova.e_commerce.dbKey.model.SottoClassi.Notifica;
 @DynamoDbBean
 public class SettingSite {
 
+    @NotNull(message = "L'ID utente è obbligatorio")
+    @Size(min = 3, max = 100, message = "L'ID utente deve essere tra 3 e 100 caratteri")
     private String userId;
+
+    @NotNull(message = "Il numero di prodotti per pagina non può essere nullo")
+    @Min(value = 1, message = "I prodotti per pagina devono essere almeno 1")
     private Integer prodottiPerPagina;
+
+    @NotNull(message = "Il tema è obbligatorio")
+    @NotEmpty(message = "Il tema non può essere vuoto")
     private String tema;
+
+    @NotNull(message = "Il layout è obbligatorio")
+    @NotEmpty(message = "Il layout non può essere vuoto")
     private String layout;
+
+    @NotNull(message = "La lingua è obbligatoria")
+    @NotEmpty(message = "La lingua non può essere vuota")
     private String lingua;
+
+    @NotNull(message = "La lista delle notifiche non può essere nulla")
     private List<Notifica> notifiche;
 
     // Partition key
@@ -73,5 +93,4 @@ public class SettingSite {
     public void setNotifiche(List<Notifica> notifiche) {
         this.notifiche = notifiche;
     }
-
 }

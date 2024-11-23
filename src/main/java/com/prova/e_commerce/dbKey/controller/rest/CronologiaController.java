@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbKey.controller.rest;
 import com.prova.e_commerce.dbKey.model.Cronologia;
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.service.CronologiaService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +30,7 @@ public class CronologiaController {
      */
     @PostMapping("/aggiungi/{userId}")
     public ResponseEntity<Void> aggiungiProdottiCronologia(
-            @PathVariable String userId, @RequestBody List<Prodotto> prodotti) {
+            @PathVariable String userId, @Valid @RequestBody List<Prodotto> prodotti) {
         cronologiaService.aggiungiDatiCronologici(userId, prodotti);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

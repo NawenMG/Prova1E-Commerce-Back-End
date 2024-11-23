@@ -8,6 +8,8 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.PagamentiService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 @Component
@@ -17,7 +19,7 @@ public class PagamentiResolverGraphql {
     private PagamentiService pagamentiService;
 
     @QueryMapping
-    public List<Pagamenti> pagamenti(ParamQuery paramQuery, Pagamenti pagamenti) {
+    public List<Pagamenti> pagamenti(ParamQuery paramQuery, @Valid Pagamenti pagamenti) {
         return pagamentiService.queryPagamenti(paramQuery, pagamenti);
     }
 }

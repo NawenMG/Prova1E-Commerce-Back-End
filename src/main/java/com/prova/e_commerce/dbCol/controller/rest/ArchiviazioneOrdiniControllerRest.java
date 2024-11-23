@@ -4,6 +4,8 @@ import com.prova.e_commerce.dbCol.model.ArchiviazioneOrdini;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.service.ArchiviazioneOrdiniService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,14 +40,14 @@ public class ArchiviazioneOrdiniControllerRest {
 
     // Crea un nuovo ordine
     @PostMapping
-    public ResponseEntity<Void> createOrdine(@RequestBody ArchiviazioneOrdini ordine) {
+    public ResponseEntity<Void> createOrdine(@Valid @RequestBody ArchiviazioneOrdini ordine) {
         archiviazioneOrdiniService.saveOrdine(ordine);
         return ResponseEntity.status(HttpStatus.CREATED).build();  // Restituisce 201 Created
     }
 
     // Aggiorna un ordine esistente
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateOrdine(@PathVariable String id, @RequestBody ArchiviazioneOrdini ordine) {
+    public ResponseEntity<Void> updateOrdine(@PathVariable String id, @Valid @RequestBody ArchiviazioneOrdini ordine) {
         archiviazioneOrdiniService.updateOrdine(id, ordine);
         return ResponseEntity.ok().build();  // Restituisce 200 OK se l'ordine è stato aggiornato
     }
@@ -60,7 +62,7 @@ public class ArchiviazioneOrdiniControllerRest {
     // Esegui una query dinamica sugli ordini
     @PostMapping("/query")
     public ResponseEntity<List<ArchiviazioneOrdini>> queryDinamica(@RequestBody ParamQueryCassandra paramQuery,
-                                                                   @RequestBody ArchiviazioneOrdini ordine) {
+                                                                  @Valid @RequestBody ArchiviazioneOrdini ordine) {
         List<ArchiviazioneOrdini> ordini = archiviazioneOrdiniService.queryDinamica(paramQuery, ordine);
         return ResponseEntity.ok(ordini);  // Restituisce 200 OK con il risultato della query
     }

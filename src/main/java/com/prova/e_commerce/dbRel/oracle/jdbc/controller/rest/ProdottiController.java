@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbRel.oracle.jdbc.controller.rest;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Prodotti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.ProdottiService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +27,7 @@ public class ProdottiController {
      * Endpoint per eseguire una query avanzata sui prodotti in base a parametri dinamici.
      */
     @PostMapping("/query")
-    public ResponseEntity<List<Prodotti>> queryProdotti(@RequestBody ParamQuery paramQuery, @RequestBody Prodotti prodotti) {
+    public ResponseEntity<List<Prodotti>> queryProdotti(@RequestBody ParamQuery paramQuery, @Valid @RequestBody Prodotti prodotti) {
         List<Prodotti> prodottiList = prodottiService.queryProdotti(paramQuery, prodotti);
         return new ResponseEntity<>(prodottiList, HttpStatus.OK);
     }
@@ -33,7 +36,7 @@ public class ProdottiController {
      * Endpoint per inserire un nuovo prodotto.
      */
     @PostMapping
-    public ResponseEntity<String> inserisciProdotto(@RequestBody Prodotti prodotto) {
+    public ResponseEntity<String> inserisciProdotto(@Valid @RequestBody Prodotti prodotto) {
         String response = prodottiService.inserisciProdotto(prodotto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -42,7 +45,7 @@ public class ProdottiController {
      * Endpoint per aggiornare un prodotto esistente in base all'ID.
      */
     @PutMapping("/{productId}")
-    public ResponseEntity<String> aggiornaProdotto(@PathVariable String productId, @RequestBody Prodotti prodotto) {
+    public ResponseEntity<String> aggiornaProdotto(@PathVariable String productId, @Valid @RequestBody Prodotti prodotto) {
         String response = prodottiService.aggiornaProdotto(productId, prodotto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

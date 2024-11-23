@@ -8,6 +8,8 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.model.Ordini;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.OrdiniService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 @Component
@@ -17,7 +19,7 @@ public class OrdiniResolverGraphql {
     private OrdiniService ordiniService;
 
     @QueryMapping
-    public List<Ordini> ordini(ParamQuery paramQuery, Ordini ordini) {
+    public List<Ordini> ordini(ParamQuery paramQuery, @Valid Ordini ordini) {
         return ordiniService.queryOrdini(paramQuery, ordini);
     }
 }

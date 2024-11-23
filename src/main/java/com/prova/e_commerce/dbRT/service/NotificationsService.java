@@ -3,6 +3,8 @@ package com.prova.e_commerce.dbRT.service;
 import com.prova.e_commerce.dbRT.model.Notifications;
 import com.prova.e_commerce.dbRT.repository.interfacce.NotificationsRep;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class NotificationsService {
     private NotificationsRep notificationsRep;
 
     // Crea una nuova notifica
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public CompletableFuture<Void> createNotification(Notifications notification) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -26,6 +29,7 @@ public class NotificationsService {
     }
 
     // Modifica una notifica esistente
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#notification.id")
     public CompletableFuture<Void> updateNotification(Notifications notification) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -36,12 +40,14 @@ public class NotificationsService {
         });
     }
 
-    // Recupera una notifica per ID
+    // Recupera una notifica per ID (con caching)
+    @Cacheable(value = {"caffeine", "redis"}, key = "#notificationId")
     public CompletableFuture<Notifications> getNotificationById(String notificationId) {
         return notificationsRep.selectNotificationById(notificationId);
     }
 
     // Elimina una notifica
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#notificationId")
     public CompletableFuture<Void> deleteNotification(String notificationId) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -53,6 +59,7 @@ public class NotificationsService {
     }
 
     // Aggiungi un messaggio a una notifica
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#notificationId")
     public CompletableFuture<Void> addMessageToNotification(String notificationId, Notifications.Message message) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -63,12 +70,14 @@ public class NotificationsService {
         });
     }
 
-    // Recupera tutti i messaggi di una notifica
+    // Recupera tutti i messaggi di una notifica (con caching)
+    @Cacheable(value = {"caffeine", "redis"}, key = "#notificationId")
     public CompletableFuture<List<Notifications.Message>> getMessagesForNotification(String notificationId) {
         return notificationsRep.selectMessagesByNotification(notificationId);
     }
 
     // Elimina un messaggio da una notifica
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#notificationId")
     public CompletableFuture<Void> deleteMessageFromNotification(String notificationId, String messageId) {
         return CompletableFuture.runAsync(() -> {
             try {

@@ -1,17 +1,31 @@
 package com.prova.e_commerce.dbRT.model;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public class ShippingStatus {
 
+    @NotBlank(message = "L'ID è obbligatorio")
     private String id; // ID (Obbligatorio)
-    private String deliveryDate; // Data di consegna (Obbligatorio)
-    private String status; // Status (Obbligatorio)
-    private CurrentLocation currentLocation; // Locazione corrente (Obbligatorio)
-    private List<HistoricalLocation> locationHistory; // Storico delle locazioni
 
-    public ShippingStatus() {
-    }
+    @NotBlank(message = "La data di consegna è obbligatoria")
+    private String deliveryDate; // Data di consegna (Obbligatorio)
+
+    @NotBlank(message = "Lo status è obbligatorio")
+    private String status; // Status (Obbligatorio)
+
+    @NotNull(message = "La locazione corrente è obbligatoria")
+    @Valid
+    private CurrentLocation currentLocation; // Locazione corrente (Obbligatorio)
+
+    @Valid
+    private List<@NotNull(message = "Gli elementi dello storico delle locazioni non possono essere null") HistoricalLocation> locationHistory; // Storico delle locazioni
+
+    // Costruttore
+    public ShippingStatus() {}
 
     // Getter and Setter
     public String getId() {
@@ -54,13 +68,15 @@ public class ShippingStatus {
         this.locationHistory = locationHistory;
     }
 
-    // Inner classes for current and historical locations
+    // Classe interna per CurrentLocation
     public static class CurrentLocation {
+        @NotBlank(message = "La posizione corrente è obbligatoria")
         private String position; // Posizione (Obbligatorio)
+
+        @NotBlank(message = "Il timestamp corrente è obbligatorio")
         private String timestamp; // Timestamp (Obbligatorio)
 
-        public CurrentLocation() {
-        }
+        public CurrentLocation() {}
 
         // Getter and Setter
         public String getPosition() {
@@ -80,9 +96,15 @@ public class ShippingStatus {
         }
     }
 
+    // Classe interna per HistoricalLocation
     public static class HistoricalLocation {
+        @NotBlank(message = "La posizione nello storico non può essere vuota")
         private String position; // Posizione
+
+        @NotBlank(message = "Il timestamp nello storico non può essere vuoto")
         private String timestamp; // Timestamp
+
+        public HistoricalLocation() {}
 
         // Getter and Setter
         public String getPosition() {

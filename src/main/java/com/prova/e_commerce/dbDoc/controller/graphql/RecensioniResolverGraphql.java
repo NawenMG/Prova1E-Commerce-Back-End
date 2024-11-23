@@ -8,6 +8,8 @@ import com.prova.e_commerce.dbDoc.entity.Recensioni;
 import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
 import com.prova.e_commerce.dbDoc.service.RecensioniService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 @Component
@@ -17,7 +19,7 @@ public class RecensioniResolverGraphql {
     private RecensioniService recensioniService;
 
     @QueryMapping
-    public List<Recensioni> recensioni(ParamQueryDbDoc paramQuery, Recensioni recensioni) {
+    public List<Recensioni> recensioni(ParamQueryDbDoc paramQuery, @Valid Recensioni recensioni) {
         return recensioniService.queryDynamic(paramQuery, recensioni);
     }
 }

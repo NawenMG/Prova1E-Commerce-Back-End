@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbTS.controller.rest;
 
 import com.prova.e_commerce.dbTS.model.ServerResponse;
 import com.prova.e_commerce.dbTS.service.ServerResponseService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,21 +20,21 @@ public class ServerResponseControllerRest {
 
     // Endpoint per inserire una singola risposta del server
     @PostMapping("/add")
-    public ResponseEntity<Void> insert(@RequestBody ServerResponse serverResponse) {
+    public ResponseEntity<Void> insert(@Valid @RequestBody ServerResponse serverResponse) {
         serverResponseService.insert(serverResponse);
         return ResponseEntity.ok().build();
     }
 
     // Endpoint per inserire un batch di risposte del server
     @PostMapping("/addBatch")
-    public ResponseEntity<Void> insertBatch(@RequestBody List<ServerResponse> serverResponseList) {
+    public ResponseEntity<Void> insertBatch(@Valid @RequestBody List<ServerResponse> serverResponseList) {
         serverResponseService.insertBatch(serverResponseList);
         return ResponseEntity.ok().build();
     }
 
     // Endpoint per aggiornare una risposta del server
     @PutMapping("/update")
-    public ResponseEntity<Void> update(@RequestBody ServerResponse serverResponse) {
+    public ResponseEntity<Void> update(@Valid @RequestBody ServerResponse serverResponse) {
         serverResponseService.update(serverResponse, serverResponse); // Aggiungere logica per l'aggiornamento tra risposta vecchia e nuova
         return ResponseEntity.ok().build();
     }

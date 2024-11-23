@@ -1,38 +1,45 @@
 package com.prova.e_commerce.dbRel.oracle.jdbc.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.PastOrPresent;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/* import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size; */
-
 public class Prodotti {
 
-    /* @NotBlank(message = "Obbligatorio")
-    @Size(max = 50, message = "L'ID del prodotto non può superare i 50 caratteri") */
-    private String productID;  // chiave primaria (modificato in String per corrispondere a VARCHAR2(50))
+    @NotBlank(message = "L'ID del prodotto è obbligatorio")
+    @Size(max = 50, message = "L'ID del prodotto non può superare i 50 caratteri")
+    private String productID;  // chiave primaria
 
-    /* @NotBlank(message = "Obbligatorio")
-    @Size(max = 100, message = "Il nome del prodotto non può superare i 100 caratteri") */
-    private String nome;             // nome del prodotto
+    @NotBlank(message = "Il nome del prodotto è obbligatorio")
+    @Size(max = 100, message = "Il nome del prodotto non può superare i 100 caratteri")
+    private String nome;  // nome del prodotto
 
-    /* @NotNull(message = "Obbligatorio") */
-    private BigDecimal prezzo;      // prezzo del prodotto (BigDecimal per precisione decimale)
+    @NotNull(message = "Il prezzo del prodotto è obbligatorio")
+    @PositiveOrZero(message = "Il prezzo del prodotto deve essere positivo o zero")
+    private BigDecimal prezzo;  // prezzo del prodotto
 
-    private String descrizione; // descrizione del prodotto (CLOB, trattato come Stringa)
+    @Size(max = 2000, message = "La descrizione non può superare i 2000 caratteri")
+    private String descrizione;  // descrizione del prodotto (opzionale)
 
-    private String immagine;  // immagine del prodotto (BLOB trattato come byte[])
+    @Size(max = 255, message = "Il nome del file immagine non può superare i 255 caratteri")
+    private String immagine;  // immagine del prodotto (opzionale)
 
-    /* @NotNull(message = "Obbligatorio") */
-    private int amountAvailable;  // quantità disponibile
+    @NotNull(message = "La quantità disponibile è obbligatoria")
+    @PositiveOrZero(message = "La quantità disponibile deve essere positiva o zero")
+    private Integer amountAvailable;  // quantità disponibile
 
-    /* @NotNull(message = "Obbligatorio")
-    @Size(max = 50, message = "Il nome della categoria non può superare i 50 caratteri") */
-    private String categoria; // categoria del prodotto
+    @NotBlank(message = "La categoria del prodotto è obbligatoria")
+    @Size(max = 50, message = "Il nome della categoria non può superare i 50 caratteri")
+    private String categoria;  // categoria del prodotto
 
-    /* @NotNull(message = "Obbligatorio") */
-    private LocalDate dataDiInserimento; // data di inserimento del prodotto
+    @NotNull(message = "La data di inserimento è obbligatoria")
+    @PastOrPresent(message = "La data di inserimento deve essere nel passato o nel presente")
+    private LocalDate dataDiInserimento;  // data di inserimento
 
     // Costruttore
     public Prodotti() {
@@ -79,11 +86,11 @@ public class Prodotti {
         this.immagine = immagine;
     }
 
-    public int getAmountAvailable() {
+    public Integer getAmountAvailable() {
         return amountAvailable;
     }
 
-    public void setAmountAvailable(int amountAvailable) {
+    public void setAmountAvailable(Integer amountAvailable) {
         this.amountAvailable = amountAvailable;
     }
 

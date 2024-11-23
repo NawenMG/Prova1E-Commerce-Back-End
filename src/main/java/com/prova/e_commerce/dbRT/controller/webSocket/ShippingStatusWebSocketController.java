@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbRT.controller.webSocket;
 
 import com.prova.e_commerce.dbRT.model.ShippingStatus;
 import com.prova.e_commerce.dbRT.service.ShippingStatusService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -23,7 +26,7 @@ public class ShippingStatusWebSocketController {
     // Crea una nuova spedizione (Riceve i dati dal client, crea la spedizione e invia una risposta)
     @MessageMapping("/createShippingStatus")
     @SendTo("/topic/shippingStatus")
-    public CompletableFuture<String> createShippingStatus(ShippingStatus shippingStatus) {
+    public CompletableFuture<String> createShippingStatus(@Valid ShippingStatus shippingStatus) {
         return shippingStatusService.createShippingStatus(shippingStatus)
                 .thenApply(v -> "Spedizione creata con successo! ID: " + shippingStatus.getId());
     }
@@ -31,7 +34,7 @@ public class ShippingStatusWebSocketController {
     // Modifica una spedizione esistente
     @MessageMapping("/updateShippingStatus")
     @SendTo("/topic/shippingStatus")
-    public CompletableFuture<String> updateShippingStatus(ShippingStatus shippingStatus) {
+    public CompletableFuture<String> updateShippingStatus(@Valid ShippingStatus shippingStatus) {
         return shippingStatusService.updateShippingStatus(shippingStatus)
                 .thenApply(v -> "Spedizione aggiornata con successo! ID: " + shippingStatus.getId());
     }
@@ -58,7 +61,7 @@ public class ShippingStatusWebSocketController {
     // Aggiungi una nuova locazione per una spedizione
     @MessageMapping("/addLocationToShipping")
     @SendTo("/topic/shippingStatus")
-    public CompletableFuture<String> addLocationToShipping(String shippingStatusId, ShippingStatus.CurrentLocation location) {
+    public CompletableFuture<String> addLocationToShipping(String shippingStatusId, @Valid ShippingStatus.CurrentLocation location) {
         return shippingStatusService.addLocationToShipping(shippingStatusId, location)
                 .thenApply(v -> "Locazione aggiunta con successo per la spedizione ID: " + shippingStatusId);
     }

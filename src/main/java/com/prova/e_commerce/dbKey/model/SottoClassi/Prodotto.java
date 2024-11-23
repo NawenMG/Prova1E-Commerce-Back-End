@@ -3,14 +3,29 @@ package com.prova.e_commerce.dbKey.model.SottoClassi;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Pattern;
+
 @DynamoDbBean
 public class Prodotto {
 
+    @NotNull(message = "L'ID del prodotto è obbligatorio")
     private String productId;  // ID del prodotto
+
+    @NotNull(message = "Il nome del prodotto è obbligatorio")
     private String nome;       // Nome del prodotto
+
+    @Positive(message = "La quantità del prodotto deve essere maggiore di zero")
     private int quantita;      // Quantità del prodotto
+
+    @Positive(message = "Il prezzo unitario deve essere maggiore di zero")
     private double prezzoUnitario; // Prezzo per unità del prodotto
+
+    @Positive(message = "Il prezzo totale deve essere maggiore di zero")
     private double prezzoTotale;  // Prezzo totale del prodotto (quantita * prezzoUnitario)
+
+    @Pattern(regexp = "^https?://.*", message = "L'URL dell'immagine deve essere valido")
     private String immagine;    // URL dell'immagine del prodotto
 
     @DynamoDbAttribute("productId")

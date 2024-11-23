@@ -6,6 +6,8 @@ import com.prova.e_commerce.dbG.model.NodoProdotto;
 import com.prova.e_commerce.dbG.model.NodoUtente;
 import com.prova.e_commerce.dbG.service.ServiceGraphDB;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,35 +22,35 @@ public class ControllerRestGraphDB {
 
     // POST - Crea un nuovo Utente
     @PostMapping("/utenti")
-    public ResponseEntity<NodoUtente> creaUtente(@RequestBody NodoUtente utente) {
+    public ResponseEntity<NodoUtente> creaUtente(@Valid @RequestBody NodoUtente utente) {
         NodoUtente nuovoUtente = serviceGraphDB.creaUtente(utente);
         return new ResponseEntity<>(nuovoUtente, HttpStatus.CREATED);
     }
 
     // POST - Crea un nuovo Prodotto
     @PostMapping("/prodotti")
-    public ResponseEntity<NodoProdotto> creaProdotto(@RequestBody NodoProdotto prodotto) {
+    public ResponseEntity<NodoProdotto> creaProdotto(@Valid @RequestBody NodoProdotto prodotto) {
         NodoProdotto nuovoProdotto = (NodoProdotto) serviceGraphDB.creaProdotto(prodotto);
         return new ResponseEntity<>(nuovoProdotto, HttpStatus.CREATED);
     }
 
     // POST - Crea una nuova CategoriaProdotto
     @PostMapping("/categorie-prodotti")
-    public ResponseEntity<NodoCategoriaProdotto> creaCategoriaProdotto(@RequestBody NodoCategoriaProdotto categoriaProdotto) {
+    public ResponseEntity<NodoCategoriaProdotto> creaCategoriaProdotto(@Valid @RequestBody NodoCategoriaProdotto categoriaProdotto) {
         NodoCategoriaProdotto nuovaCategoria = serviceGraphDB.creaCategoriaProdotto(categoriaProdotto);
         return new ResponseEntity<>(nuovaCategoria, HttpStatus.CREATED);
     }
 
     // POST - Crea una nuova LocazioneUtente
     @PostMapping("/locazioni-utenti")
-    public ResponseEntity<NodoLocazioneUtente> creaLocazioneUtente(@RequestBody NodoLocazioneUtente locazioneUtente) {
+    public ResponseEntity<NodoLocazioneUtente> creaLocazioneUtente(@Valid @RequestBody NodoLocazioneUtente locazioneUtente) {
         NodoLocazioneUtente nuovaLocazione = serviceGraphDB.creaLocazioneUtente(locazioneUtente);
         return new ResponseEntity<>(nuovaLocazione, HttpStatus.CREATED);
     }
 
     // PUT - Aggiorna un Utente esistente
     @PutMapping("/utenti/{id}")
-    public ResponseEntity<NodoUtente> aggiornaUtente(@PathVariable Long id, @RequestBody NodoUtente utente) {
+    public ResponseEntity<NodoUtente> aggiornaUtente(@PathVariable Long id, @Valid @RequestBody NodoUtente utente) {
         try {
             NodoUtente utenteAggiornato = serviceGraphDB.aggiornaUtente(id, utente);
             return new ResponseEntity<>(utenteAggiornato, HttpStatus.OK);
@@ -59,7 +61,7 @@ public class ControllerRestGraphDB {
 
     // PUT - Aggiorna un Prodotto esistente
     @PutMapping("/prodotti/{id}")
-    public ResponseEntity<NodoProdotto> aggiornaProdotto(@PathVariable Long id, @RequestBody NodoProdotto prodotto) {
+    public ResponseEntity<NodoProdotto> aggiornaProdotto(@PathVariable Long id, @Valid @RequestBody NodoProdotto prodotto) {
         try {
             NodoProdotto prodottoAggiornato = serviceGraphDB.aggiornaProdotto(id, prodotto);
             return new ResponseEntity<>(prodottoAggiornato, HttpStatus.OK);
@@ -70,7 +72,7 @@ public class ControllerRestGraphDB {
 
     // PUT - Aggiorna una CategoriaProdotto esistente
     @PutMapping("/categorie-prodotti/{id}")
-    public ResponseEntity<NodoCategoriaProdotto> aggiornaCategoriaProdotto(@PathVariable Long id, @RequestBody NodoCategoriaProdotto categoriaProdotto) {
+    public ResponseEntity<NodoCategoriaProdotto> aggiornaCategoriaProdotto(@PathVariable Long id, @Valid @RequestBody NodoCategoriaProdotto categoriaProdotto) {
         try {
             NodoCategoriaProdotto categoriaProdottoAggiornata = serviceGraphDB.aggiornaCategoriaProdotto(id, categoriaProdotto);
             return new ResponseEntity<>(categoriaProdottoAggiornata, HttpStatus.OK);
@@ -81,7 +83,7 @@ public class ControllerRestGraphDB {
 
     // PUT - Aggiorna una LocazioneUtente esistente
     @PutMapping("/locazioni-utenti/{id}")
-    public ResponseEntity<NodoLocazioneUtente> aggiornaLocazioneUtente(@PathVariable Long id, @RequestBody NodoLocazioneUtente locazioneUtente) {
+    public ResponseEntity<NodoLocazioneUtente> aggiornaLocazioneUtente(@PathVariable Long id, @Valid @RequestBody NodoLocazioneUtente locazioneUtente) {
         try {
             NodoLocazioneUtente locazioneUtenteAggiornata = serviceGraphDB.aggiornaLocazioneUtente(id, locazioneUtente);
             return new ResponseEntity<>(locazioneUtenteAggiornata, HttpStatus.OK);

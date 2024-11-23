@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbCol.controller.graphql;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneSegnalazioni;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.service.ArchiviazioneSegnalazioniService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Component;
@@ -29,7 +32,7 @@ public class ArchiviazioneSegnalazioniResolverGraphql {
 
     // Query dinamica per eseguire query personalizzate sulle segnalazioni
     @QueryMapping
-    public List<ArchiviazioneSegnalazioni> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneSegnalazioni segnalazione) {
+    public List<ArchiviazioneSegnalazioni> queryDinamica(ParamQueryCassandra paramQuery, @Valid ArchiviazioneSegnalazioni segnalazione) {
         return archiviazioneSegnalazioniService.queryDinamica(paramQuery, segnalazione);
     }
 }

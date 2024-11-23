@@ -3,12 +3,21 @@ package com.prova.e_commerce.dbKey.model.SottoClassi;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 
+import javax.validation.constraints.NotNull;
+
 @DynamoDbBean
 public class Notifica {
 
+    @NotNull(message = "La notifica via email è obbligatoria")
     private Boolean email;
+
+    @NotNull(message = "La notifica via sms è obbligatoria")
     private Boolean sms;
+
+    @NotNull(message = "Le notifiche sono obbligatorie")
     private Boolean notifiche;
+
+    @NotNull(message = "Le notifiche locali sono obbligatorie")
     private Boolean locali;
 
     @DynamoDbAttribute("Email")

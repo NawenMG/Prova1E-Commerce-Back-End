@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbRel.oracle.jdbc.controller.rest;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Categorie;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.CategorieService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,7 @@ public class CategorieControllerRest {
      * Endpoint per ottenere una lista di categorie in base a parametri di query dinamici.
      */
     @GetMapping("/query")
-    public ResponseEntity<List<Categorie>> queryCategorie(@RequestBody ParamQuery paramQuery, @RequestBody Categorie categorie) {
+    public ResponseEntity<List<Categorie>> queryCategorie(@RequestBody ParamQuery paramQuery, @Valid @RequestBody Categorie categorie) {
         List<Categorie> categorieList = categorieService.queryCategorie(paramQuery, categorie);
         return new ResponseEntity<>(categorieList, HttpStatus.OK);
     }
@@ -29,7 +32,7 @@ public class CategorieControllerRest {
      * Endpoint per inserire una nuova categoria.
      */
     @PostMapping("/inserisci")
-    public ResponseEntity<String> inserisciCategoria(@RequestBody Categorie categorie) {
+    public ResponseEntity<String> inserisciCategoria(@Valid @RequestBody Categorie categorie) {
         String response = categorieService.inserisciCategoria(categorie);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -38,7 +41,7 @@ public class CategorieControllerRest {
      * Endpoint per aggiornare una categoria esistente.
      */
     @PutMapping("/aggiorna/{categoryID}")
-    public ResponseEntity<String> aggiornaCategoria(@PathVariable String categoryID, @RequestBody Categorie categorie) {
+    public ResponseEntity<String> aggiornaCategoria(@PathVariable String categoryID, @Valid @RequestBody Categorie categorie) {
         String response = categorieService.aggiornaCategoria(categoryID, categorie);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

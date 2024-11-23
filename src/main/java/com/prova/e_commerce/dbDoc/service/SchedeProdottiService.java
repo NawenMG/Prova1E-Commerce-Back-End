@@ -6,6 +6,8 @@ import com.prova.e_commerce.dbDoc.randomData.SchedeProdottiFaker;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRepCustom;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,28 +28,43 @@ public class SchedeProdottiService {
     @Autowired
     private SchedeProdottiRepCustom schedeProdottiRepCustom;
 
-    // Metodo per cercare prodotti per nome
+    /**
+     * Cache per cercare prodotti per nome (10 minuti in Caffeine, 30 minuti in Redis).
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#nome", unless = "#result == null")
     public List<SchedeProdotti> findByNome(String nome) {
         return schedeProdottiRep.findByNome(nome);
     }
 
-    // Metodo per cercare prodotti con prezzo inferiore a una certa soglia
+    /**
+     * Cache per cercare prodotti con prezzo inferiore a una certa soglia (10 minuti in Caffeine, 30 minuti in Redis).
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#prezzo", unless = "#result == null")
     public List<SchedeProdotti> findByPrezzoLessThan(BigDecimal prezzo) {
         return schedeProdottiRep.findByPrezzoLessThan(prezzo);
     }
 
-    // Metodo per cercare prodotti con criteri dinamici
+    /**
+     * Cache per cercare prodotti con criteri dinamici (10 minuti in Caffeine, 30 minuti in Redis).
+     * La cache è memorizzata con la chiave unica della query.
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#paramQueryDbDoc.query", unless = "#result == null")
     public List<SchedeProdotti> queryDynamic(ParamQueryDbDoc paramQueryDbDoc, SchedeProdotti schedeProdotti) {
         return schedeProdottiRepCustom.query(paramQueryDbDoc, schedeProdotti);
     }
 
-    // Metodo per inserire un nuovo prodotto
+    /**
+     * Metodo per inserire un nuovo prodotto e invalidare la cache corrispondente.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public SchedeProdotti insert(SchedeProdotti prodotto) {
         return schedeProdottiRep.save(prodotto);
     }
 
-    //Generazione di una lista fittizia di schede prodotti
-     public List<SchedeProdotti> generateRandomSchedeProdotti(int count) {
+    /**
+     * Metodo per generare una lista fittizia di schede prodotti.
+     */
+    public List<SchedeProdotti> generateRandomSchedeProdotti(int count) {
         List<SchedeProdotti> schedeProdottiList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             schedeProdottiList.add(prodottiFaker.generateFakeProduct());
@@ -55,7 +72,10 @@ public class SchedeProdottiService {
         return schedeProdottiList;
     }
 
-    // Metodo per aggiornare un prodotto esistente
+    /**
+     * Metodo per aggiornare un prodotto esistente e invalidare la cache corrispondente.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     @Transactional
     public SchedeProdotti update(String id, SchedeProdotti prodotto) {
         Optional<SchedeProdotti> existingProdotto = schedeProdottiRep.findById(id);
@@ -70,7 +90,10 @@ public class SchedeProdottiService {
         }
     }
 
-    // Metodo per eliminare un prodotto per ID
+    /**
+     * Metodo per eliminare un prodotto per ID e invalidare la cache corrispondente.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteById(String id) {
         if (schedeProdottiRep.existsById(id)) {
             schedeProdottiRep.deleteById(id);

@@ -3,6 +3,8 @@ package com.prova.e_commerce.dbRT.service;
 import com.prova.e_commerce.dbRT.model.ShippingStatus;
 import com.prova.e_commerce.dbRT.repository.interfacce.ShippingStatusRep;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,7 @@ public class ShippingStatusService {
     // ==============================
 
     // Crea una nuova spedizione
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public CompletableFuture<Void> createShippingStatus(ShippingStatus shippingStatus) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -30,6 +33,7 @@ public class ShippingStatusService {
     }
 
     // Modifica una spedizione esistente
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#shippingStatus.id")
     public CompletableFuture<Void> updateShippingStatus(ShippingStatus shippingStatus) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -40,12 +44,14 @@ public class ShippingStatusService {
         });
     }
 
-    // Recupera lo stato della spedizione per ID
+    // Recupera lo stato della spedizione per ID (con caching)
+    @Cacheable(value = {"caffeine", "redis"}, key = "#shippingStatusId")
     public CompletableFuture<ShippingStatus> getShippingStatusById(String shippingStatusId) {
         return shippingStatusRep.selectShippingStatusById(shippingStatusId);
     }
 
     // Elimina lo stato della spedizione
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#shippingStatusId")
     public CompletableFuture<Void> deleteShippingStatus(String shippingStatusId) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -61,6 +67,7 @@ public class ShippingStatusService {
     // ==============================
 
     // Aggiungi una nuova locazione per una spedizione
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#shippingStatusId")
     public CompletableFuture<Void> addLocationToShipping(String shippingStatusId, ShippingStatus.CurrentLocation location) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -71,12 +78,14 @@ public class ShippingStatusService {
         });
     }
 
-    // Recupera tutte le locazioni storiche di una spedizione
+    // Recupera tutte le locazioni storiche di una spedizione (con caching)
+    @Cacheable(value = {"caffeine", "redis"}, key = "#shippingStatusId")
     public CompletableFuture<List<ShippingStatus.HistoricalLocation>> getLocationsForShipping(String shippingStatusId) {
         return shippingStatusRep.selectLocationsForShipping(shippingStatusId);
     }
 
     // Elimina una locazione storica da una spedizione
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#shippingStatusId")
     public CompletableFuture<Void> deleteLocationFromShipping(String shippingStatusId, String locationId) {
         return CompletableFuture.runAsync(() -> {
             try {

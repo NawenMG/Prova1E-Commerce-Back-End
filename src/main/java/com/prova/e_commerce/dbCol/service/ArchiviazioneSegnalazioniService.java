@@ -1,11 +1,12 @@
 package com.prova.e_commerce.dbCol.service;
 
-import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneSegnalazioniRep;
-import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneSegnalazioni;
-import com.prova.e_commerce.storage.S3Service;  // Aggiungi l'import del servizio S3
-
+import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
+import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneSegnalazioniRep;
+import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,46 +21,52 @@ public class ArchiviazioneSegnalazioniService {
     private ArchiviazioneSegnalazioniRep archiviazioneSegnalazioniRep;
 
     @Autowired
-    private S3Service s3Service;  // Iniezione del servizio S3
+    private S3Service s3Service;
 
     /**
-     * Metodo per eseguire una query dinamica sulle segnalazioni.
+     * Cache per eseguire una query dinamica sulle segnalazioni (10 minuti in Caffeine, 30 minuti in Redis).
      */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#paramQuery.toString() + #segnalazione.toString()")
     public List<ArchiviazioneSegnalazioni> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneSegnalazioni segnalazione) {
         return archiviazioneSegnalazioniRep.queryDinamica(paramQuery, segnalazione);
     }
 
     /**
-     * Metodo per trovare una segnalazione in base al suo ID.
+     * Cache per trovare una segnalazione tramite ID (10 minuti in Caffeine, 30 minuti in Redis).
      */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#id")
     public ArchiviazioneSegnalazioni findSegnalazioneById(String id) {
         return archiviazioneSegnalazioniRep.findSegnalazioneById(id);
     }
 
     /**
-     * Metodo per recuperare tutte le segnalazioni.
+     * Cache per trovare tutte le segnalazioni (10 minuti in Caffeine, 30 minuti in Redis).
      */
+    @Cacheable(value = {"caffeine", "redis"}, key = "'findAllSegnalazioni'")
     public List<ArchiviazioneSegnalazioni> findAllSegnalazioni() {
         return archiviazioneSegnalazioniRep.findAllSegnalazioni();
     }
 
     /**
-     * Metodo per salvare una nuova segnalazione.
+     * Metodo per salvare una nuova segnalazione e invalidare la cache corrispondente.
      */
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public void saveSegnalazione(ArchiviazioneSegnalazioni segnalazione) {
         archiviazioneSegnalazioniRep.saveSegnalazione(segnalazione);
     }
 
     /**
-     * Metodo per aggiornare una segnalazione esistente in base all'ID.
+     * Metodo per aggiornare una segnalazione esistente in base all'ID e invalidare la cache corrispondente.
      */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void updateSegnalazione(String id, ArchiviazioneSegnalazioni segnalazione) {
         archiviazioneSegnalazioniRep.updateSegnalazione(id, segnalazione);
     }
 
     /**
-     * Metodo per eliminare una segnalazione in base all'ID.
+     * Metodo per eliminare una segnalazione in base all'ID e invalidare la cache corrispondente.
      */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteSegnalazione(String id) {
         archiviazioneSegnalazioniRep.deleteSegnalazione(id);
     }
@@ -106,8 +113,9 @@ public class ArchiviazioneSegnalazioniService {
     }
 
     /**
-     * Metodo per eliminare il file multimediale associato a una segnalazione da S3.
+     * Metodo per eliminare il file multimediale associato a una segnalazione da S3 e invalidare la cache.
      */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#segnalazioneId")
     public void eliminaFileSegnalazione(String segnalazioneId) {
         // Recupera la segnalazione dal database
         ArchiviazioneSegnalazioni segnalazione = archiviazioneSegnalazioniRep.findSegnalazioneById(segnalazioneId);

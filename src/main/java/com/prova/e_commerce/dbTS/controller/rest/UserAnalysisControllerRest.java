@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbTS.controller.rest;
 
 import com.prova.e_commerce.dbTS.model.UserAnalysis;
 import com.prova.e_commerce.dbTS.service.UserAnalysisService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,21 +20,21 @@ public class UserAnalysisControllerRest {
 
     // Endpoint per inserire una singola analisi
     @PostMapping
-    public ResponseEntity<Void> insert(@RequestBody UserAnalysis analysis) {
+    public ResponseEntity<Void> insert(@Valid @RequestBody UserAnalysis analysis) {
         userAnalysisService.insert(analysis);
         return ResponseEntity.ok().build();
     }
 
     // Endpoint per inserire un batch di analisi
     @PostMapping("/batch")
-    public ResponseEntity<Void> insertBatch(@RequestBody List<UserAnalysis> analysisList) {
+    public ResponseEntity<Void> insertBatch(@Valid @RequestBody List<UserAnalysis> analysisList) {
         userAnalysisService.insertBatch(analysisList);
         return ResponseEntity.ok().build();
     }
 
     // Endpoint per aggiornare un'analisi
     @PutMapping
-    public ResponseEntity<Void> update(@RequestBody UserAnalysis userAnalysis) {
+    public ResponseEntity<Void> update(@Valid @RequestBody UserAnalysis userAnalysis) {
         userAnalysisService.update(userAnalysis, userAnalysis); // Aggiungere logica per l'aggiornamento tra analisi vecchia e nuova
         return ResponseEntity.ok().build();
     }

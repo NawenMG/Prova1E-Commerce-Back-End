@@ -7,6 +7,8 @@ import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRepCustom;
 import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,27 +32,50 @@ public class RecensioniService {
     @Autowired
     private S3Service s3Service;  // Iniezione del servizio S3
 
-    // Metodo per trovare recensioni per un determinato productId
-    public List<Recensioni> findByProductId(String productId) {
-        return recensioniRep.findByProductId(productId);
-    }
-
-    // Metodo per trovare recensioni per un determinato userId
-    public List<Recensioni> findByUserId(String userId) {
-        return recensioniRep.findByUserId(userId);
-    }
-
-    // Metodo per trovare recensioni con criteri dinamici
+    /**
+     * Cache per eseguire una query dinamica sulle recensioni (10 minuti in Caffeine, 30 minuti in Redis).
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#paramQueryDbDoc.toString() + #recensioni.toString()")
     public List<Recensioni> queryDynamic(ParamQueryDbDoc paramQueryDbDoc, Recensioni recensioni) {
         return recensioniRepCustom.query(paramQueryDbDoc, recensioni);
     }
 
-    // Metodo per inserire una nuova recensione
+    /**
+     * Cache per trovare recensioni per un determinato productId (10 minuti in Caffeine, 30 minuti in Redis).
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#productId")
+    public List<Recensioni> findByProductId(String productId) {
+        return recensioniRep.findByProductId(productId);
+    }
+
+    /**
+     * Cache per trovare recensioni per un determinato userId (10 minuti in Caffeine, 30 minuti in Redis).
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#userId")
+    public List<Recensioni> findByUserId(String userId) {
+        return recensioniRep.findByUserId(userId);
+    }
+
+    /**
+     * Cache per trovare tutte le recensioni (10 minuti in Caffeine, 30 minuti in Redis).
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "'findAll'")
+    public List<Recensioni> findAllRecensioni() {
+        return recensioniRep.findAll();
+    }
+
+    /**
+     * Metodo per salvare una nuova recensione e invalidare la cache corrispondente.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public Recensioni saveRecensione(Recensioni recensione) {
         return recensioniRep.save(recensione);
     }
 
-    // Metodo per aggiornare una recensione esistente
+    /**
+     * Metodo per aggiornare una recensione esistente e invalidare la cache corrispondente.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public Recensioni updateRecensione(String id, Recensioni recensione) {
         if (recensioniRep.existsById(id)) {
             recensione.setId(id); // Impostiamo l'ID per l'update
@@ -60,16 +85,10 @@ public class RecensioniService {
         }
     }
 
-    // Generazione di una lista fittizia di recensioni
-    public List<Recensioni> generateRandomRecensioni(int count) {
-        List<Recensioni> recensioniList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            recensioniList.add(recensioniFaker.generateFakeReview());
-        }
-        return recensioniList;
-    }
-
-    // Metodo per eliminare una recensione
+    /**
+     * Metodo per eliminare una recensione e invalidare la cache corrispondente.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public boolean deleteRecensione(String id) {
         if (recensioniRep.existsById(id)) {
             recensioniRep.deleteById(id);
@@ -78,7 +97,20 @@ public class RecensioniService {
         return false; // Se la recensione non esiste
     }
 
-    // Metodo per caricare un file multimediale su S3 e associarlo a una recensione
+    /**
+     * Metodo per generare recensioni fittizie (ad esempio per test o popolamento).
+     */
+    public List<Recensioni> generateRandomRecensioni(int count) {
+        List<Recensioni> recensioniList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            recensioniList.add(recensioniFaker.generateFakeReview());
+        }
+        return recensioniList;
+    }
+
+    /**
+     * Metodo per caricare un file multimediale su S3 e associarlo a una recensione.
+     */
     public String caricaFileRecensione(String recensioneId, MultipartFile file, String tipoFile) throws IOException {
         // Carica il file su S3 e ottieni l'URL
         String fileUrl = s3Service.uploadFile("recensioni/" + recensioneId, file);
@@ -101,7 +133,9 @@ public class RecensioniService {
         return fileUrl; // Ritorna l'URL del file caricato
     }
 
-    // Metodo per scaricare il file multimediale associato a una recensione da S3
+    /**
+     * Metodo per scaricare il file multimediale associato a una recensione da S3.
+     */
     public InputStream scaricaFileRecensione(String recensioneId, String tipoFile) throws IOException {
         // Recupera la recensione dal database
         Recensioni recensione = recensioniRep.findById(recensioneId).orElseThrow(() -> new RuntimeException("Recensione non trovata"));
@@ -120,7 +154,9 @@ public class RecensioniService {
         return s3Service.downloadFile(key); // Usa S3Service per scaricare il file
     }
 
-    // Metodo per eliminare il file multimediale associato a una recensione da S3
+    /**
+     * Metodo per eliminare il file multimediale associato a una recensione da S3.
+     */
     public void eliminaFileRecensione(String recensioneId, String tipoFile) {
         // Recupera la recensione dal database
         Recensioni recensione = recensioniRep.findById(recensioneId).orElseThrow(() -> new RuntimeException("Recensione non trovata"));

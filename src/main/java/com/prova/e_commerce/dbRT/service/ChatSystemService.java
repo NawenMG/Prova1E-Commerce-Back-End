@@ -6,6 +6,8 @@ import com.prova.e_commerce.dbRT.repository.interfacce.ChatSystemRep;
 import com.prova.e_commerce.storage.S3Service;
 import com.google.api.core.ApiFuture;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,18 +29,22 @@ public class ChatSystemService {
     // Operazioni sulle Chat
     // ==============================
 
+    @Cacheable(value = {"caffeine", "redis"}, key = "#chat.chatId")
     public ApiFuture<Void> createChat(ChatSystem chat) {
         return chatSystemRep.createChat(chat);
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#chat.chatId")
     public ApiFuture<Void> updateChat(ChatSystem chat) {
         return chatSystemRep.updateChat(chat);
     }
 
+    @Cacheable(value = {"caffeine", "redis"}, key = "#chatId")
     public CompletableFuture<ChatSystem> selectChatById(String chatId) {
         return chatSystemRep.selectChatById(chatId);
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#chatId")
     public ApiFuture<Void> deleteChat(String chatId) {
         return chatSystemRep.deleteChat(chatId);
     }
@@ -47,22 +53,27 @@ public class ChatSystemService {
     // Operazioni sui Messaggi
     // ==============================
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#chatId")
     public ApiFuture<Void> createMessage(String chatId, Message message) {
         return chatSystemRep.createMessage(chatId, message);
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#chatId")
     public ApiFuture<Void> updateMessage(String chatId, String messageId, Message updatedMessage) {
         return chatSystemRep.updateMessage(chatId, messageId, updatedMessage);
     }
 
+    @Cacheable(value = {"caffeine", "redis"}, key = "#chatId")
     public CompletableFuture<List<Message>> selectMessagesByChat(String chatId) {
         return chatSystemRep.selectMessagesByChat(chatId);
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#chatId")
     public ApiFuture<Void> deleteMessage(String chatId, String messageId) {
         return chatSystemRep.deleteMessage(chatId, messageId);
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#chatId")
     public ApiFuture<Void> deleteAllMessages(String chatId) {
         return chatSystemRep.deleteAllMessages(chatId);
     }
@@ -95,8 +106,7 @@ public class ChatSystemService {
             .thenApply(chat -> chat.getMessages().stream()
                 .filter(m -> m.getConversationId().equals(messageId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Messaggio non trovato")))
-            .join();
+                .orElseThrow(() -> new RuntimeException("Messaggio non trovato"))).join();
 
         // Imposta l'URL del file a seconda del tipo
         switch (fileType.toLowerCase()) {
@@ -134,8 +144,7 @@ public class ChatSystemService {
             .thenApply(chat -> chat.getMessages().stream()
                 .filter(m -> m.getConversationId().equals(messageId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Messaggio non trovato")))
-            .join();
+                .orElseThrow(() -> new RuntimeException("Messaggio non trovato"))).join();
 
         String fileUrl = null;
 
@@ -178,8 +187,7 @@ public class ChatSystemService {
             .thenApply(chat -> chat.getMessages().stream()
                 .filter(m -> m.getConversationId().equals(messageId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Messaggio non trovato")))
-            .join();
+                .orElseThrow(() -> new RuntimeException("Messaggio non trovato"))).join();
 
         String fileUrl = null;
 

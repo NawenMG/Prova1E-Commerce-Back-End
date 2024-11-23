@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbDoc.controller.rest;
 import com.prova.e_commerce.dbDoc.entity.Recensioni;
 import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
 import com.prova.e_commerce.dbDoc.service.RecensioniService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +45,7 @@ public class RecensioniControllerRest {
 
     // Endpoint per ottenere recensioni con criteri dinamici
     @PostMapping("/query")
-    public ResponseEntity<List<Recensioni>> queryRecensioni(@RequestBody ParamQueryDbDoc paramQueryDbDoc, @RequestBody Recensioni recensioni) {
+    public ResponseEntity<List<Recensioni>> queryRecensioni(@RequestBody ParamQueryDbDoc paramQueryDbDoc, @Valid @RequestBody Recensioni recensioni) {
         List<Recensioni> recensioniList = recensioniService.queryDynamic(paramQueryDbDoc, recensioni);
         return new ResponseEntity<>(recensioniList, HttpStatus.OK);
     }
@@ -56,7 +59,7 @@ public class RecensioniControllerRest {
 
     // Endpoint per aggiornare una recensione esistente
     @PutMapping("/{id}")
-    public ResponseEntity<Recensioni> updateRecensione(@PathVariable String id, @RequestBody Recensioni recensione) {
+    public ResponseEntity<Recensioni> updateRecensione(@PathVariable String id, @Valid @RequestBody Recensioni recensione) {
         Recensioni updatedRecensione = recensioniService.updateRecensione(id, recensione);
         if (updatedRecensione == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

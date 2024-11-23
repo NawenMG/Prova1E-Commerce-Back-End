@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbCol.controller.rest;
 
 import com.prova.e_commerce.dbCol.model.ArchiviazioneSegnalazioni;
 import com.prova.e_commerce.dbCol.service.ArchiviazioneSegnalazioniService;
+
+import jakarta.validation.Valid;
+
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,7 @@ public class ArchiviazioneSegnalazioniControllerRest {
      */
     @PostMapping("/query")
     public ResponseEntity<List<ArchiviazioneSegnalazioni>> queryDinamica(@RequestBody ParamQueryCassandra paramQuery,
-                                                                           @RequestBody ArchiviazioneSegnalazioni segnalazione) {
+                                                                         @Valid  @RequestBody ArchiviazioneSegnalazioni segnalazione) {
         List<ArchiviazioneSegnalazioni> result = archiviazioneSegnalazioniService.queryDinamica(paramQuery, segnalazione);
         return ResponseEntity.ok(result);
     }
@@ -55,7 +58,7 @@ public class ArchiviazioneSegnalazioniControllerRest {
      * Metodo per creare una nuova segnalazione.
      */
     @PostMapping
-    public ResponseEntity<Void> createSegnalazione(@RequestBody ArchiviazioneSegnalazioni segnalazione) {
+    public ResponseEntity<Void> createSegnalazione(@Valid @RequestBody ArchiviazioneSegnalazioni segnalazione) {
         archiviazioneSegnalazioniService.saveSegnalazione(segnalazione);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -65,7 +68,7 @@ public class ArchiviazioneSegnalazioniControllerRest {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateSegnalazione(@PathVariable String id,
-                                                   @RequestBody ArchiviazioneSegnalazioni segnalazione) {
+                                                  @Valid @RequestBody ArchiviazioneSegnalazioni segnalazione) {
         archiviazioneSegnalazioniService.updateSegnalazione(id, segnalazione);
         return ResponseEntity.ok().build();
     }

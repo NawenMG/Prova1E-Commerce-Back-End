@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbRT.controller.webSocket;
 
 import com.prova.e_commerce.dbRT.model.Notifications;
 import com.prova.e_commerce.dbRT.service.NotificationsService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -21,7 +24,7 @@ public class NotificationsWebSocketController {
 
     // Endpoint per creare una nuova notifica
     @MessageMapping("/createNotification")
-    public CompletableFuture<Void> createNotification(Notifications notification) {
+    public CompletableFuture<Void> createNotification(@Valid Notifications notification) {
         // Chiamata al servizio per creare la notifica
         return notificationsService.createNotification(notification).thenRun(() -> {
             // Dopo aver creato la notifica, inviamo un messaggio a tutti i client
@@ -31,7 +34,7 @@ public class NotificationsWebSocketController {
 
     // Endpoint per aggiornare una notifica esistente
     @MessageMapping("/updateNotification")
-    public CompletableFuture<Void> updateNotification(Notifications notification) {
+    public CompletableFuture<Void> updateNotification(@Valid Notifications notification) {
         // Chiamata al servizio per aggiornare la notifica
         return notificationsService.updateNotification(notification).thenRun(() -> {
             // Dopo aver aggiornato la notifica, inviamo un messaggio aggiornato a tutti i client
@@ -51,7 +54,7 @@ public class NotificationsWebSocketController {
 
     // Endpoint per aggiungere un messaggio a una notifica
     @MessageMapping("/addMessageToNotification")
-    public CompletableFuture<Void> addMessageToNotification(String notificationId, Notifications.Message message) {
+    public CompletableFuture<Void> addMessageToNotification(String notificationId, @Valid Notifications.Message message) {
         // Chiamata al servizio per aggiungere un messaggio alla notifica
         return notificationsService.addMessageToNotification(notificationId, message).thenRun(() -> {
             // Dopo aver aggiunto il messaggio, inviamo la notifica aggiornata a tutti i client

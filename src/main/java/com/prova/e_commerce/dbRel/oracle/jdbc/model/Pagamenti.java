@@ -1,26 +1,31 @@
 package com.prova.e_commerce.dbRel.oracle.jdbc.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.PastOrPresent;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-/* import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size; */
 
 public class Pagamenti {
 
-   /*  @NotBlank(message = "Obbligatorio")
-    @Size(max = 50, message = "L'ID del pagamento non può superare i 50 caratteri") */
+    @NotBlank(message = "L'ID del pagamento è obbligatorio")
+    @Size(max = 50, message = "L'ID del pagamento non può superare i 50 caratteri")
     private String paymentsID;  // chiave primaria (modificato in String per corrispondere a VARCHAR2(50))
 
-    /* @NotBlank(message = "Obbligatorio") */
+    @NotBlank(message = "Il tipo di pagamento è obbligatorio")
     private String type;     // tipo di pagamento
 
-    /* @NotNull(message = "Obbligatorio") */
+    @NotNull(message = "La data del pagamento è obbligatoria")
+    @PastOrPresent(message = "La data del pagamento deve essere nel passato o nel presente")
     private LocalDate data;  // data del pagamento
 
     private Boolean status;   // stato del pagamento (Boolean per permettere null)
 
-    /* @NotNull(message = "Obbligatorio") */
+    @NotNull(message = "Il totale del pagamento è obbligatorio")
+    @PositiveOrZero(message = "Il totale del pagamento deve essere positivo o zero")
     private BigDecimal total;     // totale del pagamento (BigDecimal per precisione decimale)
 
     // Costruttore

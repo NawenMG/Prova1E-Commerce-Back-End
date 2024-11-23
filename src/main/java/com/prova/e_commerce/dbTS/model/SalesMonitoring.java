@@ -2,36 +2,52 @@ package com.prova.e_commerce.dbTS.model;
 
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.time.Instant;
 
 @Measurement(name = "SalesMonitoring")
 public class SalesMonitoring {
 
     // Tag: Prodotto
+    @NotBlank(message = "Il nome del prodotto non può essere vuoto")
     @Column(tag = true)
     private String prodotto;
 
     // Tag: Categoria prodotto
+    @NotBlank(message = "La categoria del prodotto non può essere vuota")
     @Column(tag = true)
     private String categoriaProdotto;
 
     // Tag: Venditore
+    @NotBlank(message = "Il venditore non può essere vuoto")
     @Column(tag = true)
     private String venditore;
 
     // Field: Numero di ordini
+    @NotNull(message = "Il numero di ordini non può essere null")
+    @Min(value = 0, message = "Il numero di ordini deve essere maggiore o uguale a 0")
     @Column
     private Integer numeroOrdini;
 
     // Field: Numero di unità vendute
+    @NotNull(message = "Il numero di unità vendute non può essere null")
+    @Min(value = 0, message = "Il numero di unità vendute deve essere maggiore o uguale a 0")
     @Column
     private Integer numeroUnitaVendute;
 
     // Field: Ricavo
+    @NotNull(message = "Il ricavo non può essere null")
+    @Positive(message = "Il ricavo deve essere positivo")
     @Column
     private Double ricavo;
 
     // Timestamp: gestito automaticamente
+    @NotNull(message = "Il timestamp non può essere null")
     @Column(timestamp = true)
     private Instant time;
 

@@ -8,6 +8,7 @@ import com.prova.e_commerce.dbDoc.entity.SchedeProdotti;
 import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
 import com.prova.e_commerce.dbDoc.service.SchedeProdottiService;
 
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class SchedeProdottiResolverGraphql {
     private SchedeProdottiService schedeProdottiService;
 
     @QueryMapping
-    public List<SchedeProdotti> schedeprodotti(ParamQueryDbDoc paramQuery, SchedeProdotti schedeProdotti) {
+    public List<SchedeProdotti> schedeprodotti(ParamQueryDbDoc paramQuery, @Valid SchedeProdotti schedeProdotti) {
         return schedeProdottiService.queryDynamic(paramQuery, schedeProdotti);
     }
 }

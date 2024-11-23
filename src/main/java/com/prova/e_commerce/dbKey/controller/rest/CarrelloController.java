@@ -4,6 +4,8 @@ import com.prova.e_commerce.dbKey.model.Carrello;
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.service.CarrelloService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class CarrelloController {
     @PostMapping("/{userId}/prodotti")
     public ResponseEntity<String> aggiungiProdotti(
             @PathVariable String userId,
-            @RequestBody List<Prodotto> nuoviProdotti) {
+            @Valid @RequestBody List<Prodotto> nuoviProdotti) {
         try {
             carrelloService.aggiungiProdotti(userId, nuoviProdotti);
             return ResponseEntity.ok("Prodotti aggiunti al carrello con successo.");

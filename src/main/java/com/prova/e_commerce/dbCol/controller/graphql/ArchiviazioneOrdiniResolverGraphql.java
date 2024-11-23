@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbCol.controller.graphql;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneOrdini;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.service.ArchiviazioneOrdiniService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Component;
@@ -29,7 +32,7 @@ public class ArchiviazioneOrdiniResolverGraphql {
 
     // Query dinamica per eseguire query personalizzate sugli ordini
     @QueryMapping
-    public List<ArchiviazioneOrdini> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneOrdini ordine) {
+    public List<ArchiviazioneOrdini> queryDinamica(ParamQueryCassandra paramQuery, @Valid ArchiviazioneOrdini ordine) {
         return archiviazioneOrdiniService.queryDinamica(paramQuery, ordine);
     }
 }

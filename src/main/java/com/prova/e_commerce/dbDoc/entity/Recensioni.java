@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Document(collection = "Recensioni")
@@ -15,31 +16,44 @@ public class Recensioni {
 
     @Indexed
     @Field("User_id")
+    @NotNull(message = "User_id non può essere nullo")
+    @Size(min = 1, max = 255, message = "User_id deve essere tra 1 e 255 caratteri")
     private String userId; // ID dell'utente che ha scritto la recensione
 
     @Indexed
     @Field("Product_id")
+    @NotNull(message = "Product_id non può essere nullo")
+    @Size(min = 1, max = 255, message = "Product_id deve essere tra 1 e 255 caratteri")
     private String productId; // ID del prodotto recensito
 
     @Field("voto")
+    @Min(value = 1, message = "Il voto deve essere almeno 1")
+    @Max(value = 5, message = "Il voto deve essere massimo 5")
     private Integer voto; // Voto (da 1 a 5, ad esempio)
 
     @Field("titolo")
+    @NotNull(message = "Il titolo della recensione non può essere nullo")
+    @Size(min = 1, max = 255, message = "Il titolo deve essere tra 1 e 255 caratteri")
     private String titolo; // Titolo della recensione
 
     @Field("descrizione")
+    @Size(max = 2000, message = "La descrizione non può superare i 2000 caratteri")
     private String descrizione; // Descrizione della recensione
 
     @Field("immagine")
+    @Size(max = 500, message = "L'URL dell'immagine non può superare i 500 caratteri")
     private String immagine; // URL dell'immagine (opzionale)
 
     @Field("video")
+    @Size(max = 500, message = "L'URL del video non può superare i 500 caratteri")
     private String video; // URL del video (opzionale)
 
     @Field("like")
+    @PositiveOrZero(message = "Il numero di like deve essere maggiore o uguale a zero")
     private Integer like; // Numero di like
 
     @Field("dislike")
+    @PositiveOrZero(message = "Il numero di dislike deve essere maggiore o uguale a zero")
     private Integer dislike; // Numero di dislike
 
     @Field("risposte")

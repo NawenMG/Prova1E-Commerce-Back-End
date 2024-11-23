@@ -2,32 +2,47 @@ package com.prova.e_commerce.dbTS.model;
 
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.time.Instant;
 
 @Measurement(name = "ServerResponse")
 public class ServerResponse {
 
     // Tag: Server
+    @NotBlank(message = "Il nome del server non può essere vuoto")
     @Column(tag = true)
     private String server;
 
     // Tag: Endpoint
+    @NotBlank(message = "Il nome dell'endpoint non può essere vuoto")
     @Column(tag = true)
     private String endpoint;
 
     // Field: Tempo di risposta medio
+    @NotNull(message = "Il tempo di risposta medio non può essere null")
+    @Positive(message = "Il tempo di risposta medio deve essere positivo")
     @Column
     private Double responseTimeAverage;
 
     // Field: Numero di richieste
+    @NotNull(message = "Il numero di richieste non può essere null")
+    @PositiveOrZero(message = "Il numero di richieste deve essere maggiore o uguale a 0")
     @Column
     private Integer numeroDiRequest;
 
     // Field: Numero di errori
+    @NotNull(message = "Il numero di errori non può essere null")
+    @PositiveOrZero(message = "Il numero di errori deve essere maggiore o uguale a 0")
     @Column
     private Integer numeroDiErrori;
 
     // Timestamp: gestito automaticamente
+    @NotNull(message = "Il timestamp non può essere null")
     @Column(timestamp = true)
     private Instant time;
 

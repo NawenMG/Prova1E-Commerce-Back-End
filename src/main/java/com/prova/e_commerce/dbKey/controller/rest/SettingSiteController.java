@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbKey.controller.rest;
 
 import com.prova.e_commerce.dbKey.model.SettingSite;
 import com.prova.e_commerce.dbKey.service.SettingSiteService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +36,7 @@ public class SettingSiteController {
      * @return Risposta di successo o errore
      */
     @PostMapping("/save/{userId}")
-    public ResponseEntity<String> salvaImpostazioni(@PathVariable String userId, @RequestBody SettingSite settings) {
+    public ResponseEntity<String> salvaImpostazioni(@PathVariable String userId, @Valid @RequestBody SettingSite settings) {
         // Salva o aggiorna le impostazioni
         settingSiteService.salvaImpostazioni(userId, settings);
         return ResponseEntity.ok("Impostazioni salvate con successo");

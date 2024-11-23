@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbTS.controller.rest;
 
 import com.prova.e_commerce.dbTS.model.SalesMonitoring;
 import com.prova.e_commerce.dbTS.service.SalesMonitoringService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,19 +19,19 @@ public class SalesMonitoringControllerRest {
 
     // Endpoint per inserire un singolo monitoraggio delle vendite
     @PostMapping("/add")
-    public void addSalesMonitoring(@RequestBody SalesMonitoring salesMonitoring) {
+    public void addSalesMonitoring(@Valid @RequestBody SalesMonitoring salesMonitoring) {
         salesMonitoringService.insert(salesMonitoring);
     }
 
     // Endpoint per inserire un batch di monitoraggi delle vendite
     @PostMapping("/addBatch")
-    public void addSalesMonitoringBatch(@RequestBody List<SalesMonitoring> salesMonitoringList) {
+    public void addSalesMonitoringBatch( @Valid @RequestBody List<SalesMonitoring> salesMonitoringList) {
         salesMonitoringService.insertBatch(salesMonitoringList);
     }
 
     // Endpoint per aggiornare un monitoraggio delle vendite
     @PutMapping("/update")
-    public void updateSalesMonitoring(@RequestBody SalesMonitoring oldSalesMonitoring, @RequestBody SalesMonitoring newSalesMonitoring) {
+    public void updateSalesMonitoring(@Valid @RequestBody SalesMonitoring oldSalesMonitoring, @Valid @RequestBody SalesMonitoring newSalesMonitoring) {
         salesMonitoringService.update(oldSalesMonitoring, newSalesMonitoring);
     }
 

@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbRel.oracle.jdbc.controller.rest;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.PagamentiService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,7 @@ public class PagamentiControllerRest {
      * Endpoint per ottenere una lista di pagamenti in base a parametri di query dinamici.
      */
     @GetMapping("/query")
-    public ResponseEntity<List<Pagamenti>> queryPagamenti(@RequestBody ParamQuery paramQuery, @RequestBody Pagamenti pagamenti) {
+    public ResponseEntity<List<Pagamenti>> queryPagamenti(@RequestBody ParamQuery paramQuery, @Valid @RequestBody Pagamenti pagamenti) {
         List<Pagamenti> pagamentiList = pagamentiService.queryPagamenti(paramQuery, pagamenti);
         return new ResponseEntity<>(pagamentiList, HttpStatus.OK);
     }
@@ -29,7 +32,7 @@ public class PagamentiControllerRest {
      * Endpoint per inserire un nuovo pagamento.
      */
     @PostMapping("/inserisci")
-    public ResponseEntity<String> inserisciPagamento(@RequestBody Pagamenti pagamenti) {
+    public ResponseEntity<String> inserisciPagamento( @Valid @RequestBody Pagamenti pagamenti) {
         String response = pagamentiService.inserisciPagamento(pagamenti);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -38,7 +41,7 @@ public class PagamentiControllerRest {
      * Endpoint per aggiornare un pagamento esistente.
      */
     @PutMapping("/aggiorna/{paymentID}")
-    public ResponseEntity<String> aggiornaPagamento(@PathVariable String paymentID, @RequestBody Pagamenti pagamenti) {
+    public ResponseEntity<String> aggiornaPagamento(@PathVariable String paymentID, @Valid @RequestBody Pagamenti pagamenti) {
         String response = pagamentiService.aggiornaPagamento(paymentID, pagamenti);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

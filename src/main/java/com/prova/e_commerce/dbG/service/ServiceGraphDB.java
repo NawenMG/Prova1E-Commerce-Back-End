@@ -1,6 +1,8 @@
 package com.prova.e_commerce.dbG.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import com.prova.e_commerce.dbG.model.NodoCategoriaProdotto;
@@ -14,7 +16,7 @@ import com.prova.e_commerce.dbG.repository.interfacce.NodoProdottoRep;
 import com.prova.e_commerce.dbG.repository.interfacce.NodoUtenteRep;
 
 @Service
-public class ServiceGraphDB{
+public class ServiceGraphDB {
 
     @Autowired
     private NodoUtenteRep nodoUtenteRep;
@@ -31,6 +33,7 @@ public class ServiceGraphDB{
     @Autowired
     private CustomRepNeo4j customRepNeo4j;
 
+    // Metodi per registrare le azioni degli utenti
     public void visitaProdotto(Long utenteId, Long prodottoId) {
         customRepNeo4j.visitaProdotto(utenteId, prodottoId);
     }
@@ -47,28 +50,31 @@ public class ServiceGraphDB{
         customRepNeo4j.provenienzaGeografica(utenteId, prodottoId);
     }
 
-
-
-     // Metodi POST (Creazione di nodi)
+    // Metodi POST (Creazione di nodi)
     
-     public NodoUtente creaUtente(NodoUtente utente) {
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
+    public NodoUtente creaUtente(NodoUtente utente) {
         return nodoUtenteRep.save(utente);
     }
 
-    public NodoProdottoRep creaProdotto(NodoProdotto prodotto) {
-        return (NodoProdottoRep) nodoProdottoRep.save(prodotto);
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
+    public NodoProdotto creaProdotto(NodoProdotto prodotto) {
+        return  nodoProdottoRep.save(prodotto);
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public NodoCategoriaProdotto creaCategoriaProdotto(NodoCategoriaProdotto categoriaProdotto) {
         return nodoCategoriaProdottoRep.save(categoriaProdotto);
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public NodoLocazioneUtente creaLocazioneUtente(NodoLocazioneUtente locazioneUtente) {
         return nodoLocazioneUtenteRep.save(locazioneUtente);
     }
 
     // Metodi PUT (Aggiornamento di nodi)
 
+    @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoUtente aggiornaUtente(Long id, NodoUtente utente) {
         if (nodoUtenteRep.existsById(id)) {
             utente.setId(id);
@@ -78,6 +84,7 @@ public class ServiceGraphDB{
         }
     }
 
+    @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoProdotto aggiornaProdotto(Long id, NodoProdotto prodotto) {
         if (nodoProdottoRep.existsById(id)) {
             prodotto.setId(id);
@@ -87,6 +94,7 @@ public class ServiceGraphDB{
         }
     }
 
+    @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoCategoriaProdotto aggiornaCategoriaProdotto(Long id, NodoCategoriaProdotto categoriaProdotto) {
         if (nodoCategoriaProdottoRep.existsById(id)) {
             categoriaProdotto.setId(id);
@@ -96,6 +104,7 @@ public class ServiceGraphDB{
         }
     }
 
+    @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoLocazioneUtente aggiornaLocazioneUtente(Long id, NodoLocazioneUtente locazioneUtente) {
         if (nodoLocazioneUtenteRep.existsById(id)) {
             locazioneUtente.setId(id);
@@ -107,6 +116,7 @@ public class ServiceGraphDB{
 
     // Metodi DELETE (Eliminazione di nodi)
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaUtente(Long id) {
         if (nodoUtenteRep.existsById(id)) {
             nodoUtenteRep.deleteById(id);
@@ -115,6 +125,7 @@ public class ServiceGraphDB{
         }
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaProdotto(Long id) {
         if (nodoProdottoRep.existsById(id)) {
             nodoProdottoRep.deleteById(id);
@@ -123,6 +134,7 @@ public class ServiceGraphDB{
         }
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaCategoriaProdotto(Long id) {
         if (nodoCategoriaProdottoRep.existsById(id)) {
             nodoCategoriaProdottoRep.deleteById(id);
@@ -131,6 +143,7 @@ public class ServiceGraphDB{
         }
     }
 
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaLocazioneUtente(Long id) {
         if (nodoLocazioneUtenteRep.existsById(id)) {
             nodoLocazioneUtenteRep.deleteById(id);

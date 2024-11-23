@@ -5,6 +5,8 @@ import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.repository.interfacce.CarrelloRep;
 import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +24,10 @@ public class CarrelloService {
     @Autowired
     private S3Service s3Service;
 
+    /**
+     * Metodo per aggiungere nuovi prodotti al carrello e invalidare la cache.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void aggiungiProdotti(String userId, List<Prodotto> nuoviProdotti) {
         if (nuoviProdotti == null || nuoviProdotti.isEmpty()) {
             throw new IllegalArgumentException("La lista dei prodotti non può essere vuota o null.");
@@ -29,6 +35,10 @@ public class CarrelloService {
         carrelloRep.aggiungiProdotti(userId, nuoviProdotti);
     }
 
+    /**
+     * Metodo per ottenere il carrello di un utente. La cache è attiva per 10 minuti in Caffeine e 30 minuti in Redis.
+     */
+    @Cacheable(value = {"caffeine", "redis"}, key = "#userId", unless = "#result == null")
     public Optional<Carrello> getCarrello(String userId) {
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("L'userId non può essere null o vuoto.");
@@ -36,6 +46,10 @@ public class CarrelloService {
         return carrelloRep.trovaCarrello(userId);
     }
 
+    /**
+     * Metodo per rimuovere un prodotto dal carrello e invalidare la cache.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void rimuoviProdotto(String userId, String prodottoId) {
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("L'userId non può essere null o vuoto.");
@@ -46,6 +60,10 @@ public class CarrelloService {
         carrelloRep.eliminaProdotto(userId, prodottoId);
     }
 
+    /**
+     * Metodo per svuotare il carrello di un utente e invalidare la cache.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void svuotaCarrello(String userId) {
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("L'userId non può essere null o vuoto.");
@@ -55,6 +73,10 @@ public class CarrelloService {
 
     // **Gestione dei file per i prodotti**
 
+    /**
+     * Metodo per caricare un'immagine del prodotto e invalidare la cache.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public String caricaImmagineProdotto(String userId, String prodottoId, MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Il file non può essere null o vuoto.");
@@ -84,6 +106,9 @@ public class CarrelloService {
         return fileUrl;
     }
 
+    /**
+     * Metodo per scaricare l'immagine del prodotto.
+     */
     public InputStream scaricaImmagineProdotto(String userId, String prodottoId) throws IOException {
         // Recupera il carrello dell'utente
         Carrello carrello = carrelloRep.trovaCarrello(userId)
@@ -107,6 +132,10 @@ public class CarrelloService {
         return s3Service.downloadFile(key);
     }
 
+    /**
+     * Metodo per eliminare l'immagine del prodotto e invalidare la cache.
+     */
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void eliminaImmagineProdotto(String userId, String prodottoId) {
         // Recupera il carrello dell'utente
         Carrello carrello = carrelloRep.trovaCarrello(userId)

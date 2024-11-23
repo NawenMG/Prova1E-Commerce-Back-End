@@ -2,28 +2,38 @@ package com.prova.e_commerce.dbTS.model;
 
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.Instant;
 
 @Measurement(name = "UserAnalysis")
 public class UserAnalysis {
 
     // Tag: Utente
+    @NotBlank(message = "Il campo 'utente' non può essere vuoto o null")
     @Column(tag = true)
     private String utente;
 
     // Tag: Tipo di dispositivo
+    @NotBlank(message = "Il campo 'tipoDiDispositivo' non può essere vuoto o null")
     @Column(tag = true)
     private String tipoDiDispositivo;
 
     // Tag: Azione
+    @NotBlank(message = "Il campo 'azione' non può essere vuoto o null")
     @Column(tag = true)
     private String azione;
 
     // Field: Durata dell'azione
+    @NotNull(message = "La durata dell'azione non può essere null")
+    @Positive(message = "La durata dell'azione deve essere maggiore di 0")
     @Column
     private Double durataAzione;
 
     // Timestamp: gestito automaticamente
+    @NotNull(message = "Il timestamp non può essere null")
     @Column(timestamp = true)
     private Instant time;
 

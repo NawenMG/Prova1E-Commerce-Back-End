@@ -4,6 +4,9 @@ import com.google.api.core.ApiFuture;
 import com.prova.e_commerce.dbRT.model.ChatSystem;
 import com.prova.e_commerce.dbRT.model.ChatSystem.Message;
 import com.prova.e_commerce.dbRT.service.ChatSystemService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -27,7 +30,7 @@ public class ChatWebSocketController {
 
     @MessageMapping("/createChat")
     @SendTo("/topic/chats")
-    public CompletableFuture<ChatSystem> createChat(ChatSystem chat) {
+    public CompletableFuture<ChatSystem> createChat(@Valid ChatSystem chat) {
         ApiFuture<Void> future = chatSystemService.createChat(chat);
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -47,7 +50,7 @@ public class ChatWebSocketController {
 
     @MessageMapping("/updateChat")
     @SendTo("/topic/chats")
-    public CompletableFuture<ChatSystem> updateChat(ChatSystem chat) {
+    public CompletableFuture<ChatSystem> updateChat(@Valid ChatSystem chat) {
         ApiFuture<Void> future = chatSystemService.updateChat(chat);
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -79,7 +82,7 @@ public class ChatWebSocketController {
 
     @MessageMapping("/sendMessage")
     @SendTo("/topic/messages")
-    public CompletableFuture<Message> sendMessage(Message message, String chatId) {
+    public CompletableFuture<Message> sendMessage(@Valid Message message, String chatId) {
         ApiFuture<Void> future = chatSystemService.createMessage(chatId, message);
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -93,7 +96,7 @@ public class ChatWebSocketController {
 
     @MessageMapping("/updateMessage")
     @SendTo("/topic/messages")
-    public CompletableFuture<Message> updateMessage(String chatId, String messageId, Message updatedMessage) {
+    public CompletableFuture<Message> updateMessage(String chatId, String messageId, @Valid Message updatedMessage) {
         ApiFuture<Void> future = chatSystemService.updateMessage(chatId, messageId, updatedMessage);
         return CompletableFuture.supplyAsync(() -> {
             try {

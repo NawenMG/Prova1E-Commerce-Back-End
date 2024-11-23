@@ -4,6 +4,8 @@ import com.prova.e_commerce.dbKey.model.WishList;
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.service.WishListService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,7 @@ public class WishListController {
     private WishListService wishListService;
 
     @PostMapping("/{userId}/prodotti")
-    public ResponseEntity<?> aggiungiProdotti(@PathVariable String userId, @RequestBody List<Prodotto> prodotti) {
+    public ResponseEntity<?> aggiungiProdotti(@PathVariable String userId, @Valid @RequestBody List<Prodotto> prodotti) {
         try {
             wishListService.aggiungiProdotti(userId, prodotti);
             return ResponseEntity.ok("Prodotti aggiunti con successo alla wishlist.");
@@ -98,6 +100,7 @@ public ResponseEntity<?> trovaWishList(@PathVariable String userId) {
     @GetMapping("/{userId}/prodotti/{prodottoId}/immagine")
     public ResponseEntity<?> scaricaImmagineProdotto(@PathVariable String userId, @PathVariable String prodottoId) {
         try {
+            @SuppressWarnings("unused")
             InputStream inputStream = wishListService.scaricaImmagineProdotto(userId, prodottoId);
             return ResponseEntity.ok().body("Immagine scaricata con successo.");
         } catch (IllegalArgumentException e) {

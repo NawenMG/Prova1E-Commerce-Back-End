@@ -4,8 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-/* import javax.validation.constraints.NotNull;
-import javax.validation.constraints.DecimalMin; */
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -16,16 +16,16 @@ public class SchedeProdotti {
     private String id;
 
     @Field("nome")
-    /* @NotNull(message = "Il nome del prodotto è obbligatorio") */
+    @NotNull(message = "Il nome del prodotto è obbligatorio") // Validazione del nome
     private String nome;
 
     @Field("prezzo")
-    /* @NotNull(message = "Il prezzo del prodotto è obbligatorio")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Il prezzo deve essere maggiore di zero") */
+    @NotNull(message = "Il prezzo del prodotto è obbligatorio") // Validazione del prezzo (non nullo)
+    @DecimalMin(value = "0.01", inclusive = true, message = "Il prezzo deve essere maggiore o uguale a 0.01") // Validazione per prezzo maggiore di zero
     private BigDecimal prezzo;
 
     @Field("parametriDescrittivi")
-    private Map<String, String> parametriDescrittivi;
+    private Map<String, String> parametriDescrittivi; // Nessuna validazione specifica
 
     // Costruttori
     public SchedeProdotti() {}

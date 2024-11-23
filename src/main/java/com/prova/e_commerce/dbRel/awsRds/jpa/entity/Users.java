@@ -6,9 +6,9 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 
-/* import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size; */
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "Users")  // Imposta il nome della tabella nel database
@@ -18,34 +18,34 @@ public class Users {
     @Column(name = "ID")  // Definisce il nome della colonna nel database
     private String usersID;
 
-   /*  @NotBlank(message = "Il nome è obbligatorio")
-    @Size(max = 100, message = "Il nome non può superare i 100 caratteri") */
+    @NotBlank(message = "Il nome è obbligatorio")
+    @Size(max = 100, message = "Il nome non può superare i 100 caratteri")
     @Column(name = "Nome")
     private String nome;  // Nome
 
-    /* @NotBlank(message = "Il cognome è obbligatorio")
-    @Size(max = 100, message = "Il cognome non può superare i 100 caratteri") */
+    @NotBlank(message = "Il cognome è obbligatorio")
+    @Size(max = 100, message = "Il cognome non può superare i 100 caratteri")
     @Column(name = "Cognome")
     private String cognome;  // Cognome
 
-    /* @NotBlank(message = "Il ruolo è obbligatorio")
-    @Size(max = 50, message = "Il ruolo non può superare i 50 caratteri") */
+    @NotBlank(message = "Il ruolo è obbligatorio")
+    @Size(max = 50, message = "Il ruolo non può superare i 50 caratteri")
     @Column(name = "Ruolo")
     private String ruolo;  // Ruolo
 
-   /*  @NotBlank(message = "Il nome utente è obbligatorio")
-    @Size(max = 100, message = "Il nome utente non può superare i 100 caratteri") */
+    @NotBlank(message = "Il nome utente è obbligatorio")
+    @Size(max = 100, message = "Il nome utente non può superare i 100 caratteri")
     @Column(name = "Nome_Utente", unique = true)  // Imposta "nome_utente" come unico
     private String nomeUtente;  // Nome utente (unico)
 
-    /* @NotBlank(message = "L'email è obbligatoria")
+    @NotBlank(message = "L'email è obbligatoria")
     @Email(message = "L'email non è valida")
-    @Size(max = 100, message = "L'email non può superare i 100 caratteri") */
+    @Size(max = 100, message = "L'email non può superare i 100 caratteri")
     @Column(name = "Email", unique = true)  // Imposta "email" come unica
     private String email;  // Email (unica)
 
-   /*  @NotBlank(message = "La password è obbligatoria")
-    @Size(min = 10, message = "La password deve essere lunga almeno 10 caratteri") */
+    @NotBlank(message = "La password è obbligatoria")
+    @Size(min = 10, message = "La password deve essere lunga almeno 10 caratteri")
     @Column(name = "Password")
     private String password;  // Password (hash)
 

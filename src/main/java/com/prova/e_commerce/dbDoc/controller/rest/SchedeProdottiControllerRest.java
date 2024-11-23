@@ -2,6 +2,9 @@ package com.prova.e_commerce.dbDoc.controller.rest;
 
 import com.prova.e_commerce.dbDoc.entity.SchedeProdotti;
 import com.prova.e_commerce.dbDoc.service.SchedeProdottiService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +36,7 @@ public class SchedeProdottiControllerRest {
 
     // Endpoint per inserire un nuovo prodotto
     @PostMapping
-    public ResponseEntity<SchedeProdotti> createSchedaProdotto(@RequestBody SchedeProdotti prodotto) {
+    public ResponseEntity<SchedeProdotti> createSchedaProdotto(@Valid @RequestBody SchedeProdotti prodotto) {
         SchedeProdotti nuovoProdotto = schedeProdottiService.insert(prodotto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuovoProdotto);
     }
@@ -47,7 +50,7 @@ public class SchedeProdottiControllerRest {
     @PutMapping("/{id}")
     public ResponseEntity<SchedeProdotti> updateSchedaProdotto(
             @PathVariable String id,
-            @RequestBody SchedeProdotti prodotto) {
+            @Valid @RequestBody SchedeProdotti prodotto) {
         SchedeProdotti prodottoAggiornato = schedeProdottiService.update(id, prodotto);
         return ResponseEntity.ok(prodottoAggiornato);
     }

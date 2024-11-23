@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbRel.oracle.jdbc.controller.rest;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Resi;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.ResiService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,7 @@ public class ResiControllerRest {
      * Endpoint per eseguire una query avanzata sui resi in base a parametri dinamici.
      */
     @GetMapping("/query")
-    public ResponseEntity<List<Resi>> queryResi(@RequestBody ParamQuery paramQuery, @RequestBody Resi resi) {
+    public ResponseEntity<List<Resi>> queryResi(@RequestBody ParamQuery paramQuery, @Valid @RequestBody Resi resi) {
         List<Resi> resiList = resiService.queryResi(paramQuery, resi);
         return new ResponseEntity<>(resiList, HttpStatus.OK);
     }
@@ -29,7 +32,7 @@ public class ResiControllerRest {
      * Endpoint per inserire un nuovo reso nel database.
      */
     @PostMapping("/inserisci")
-    public ResponseEntity<String> inserisciReso(@RequestBody Resi resi) {
+    public ResponseEntity<String> inserisciReso(@Valid @RequestBody Resi resi) {
         String response = resiService.inserisciReso(resi);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -38,7 +41,7 @@ public class ResiControllerRest {
      * Endpoint per aggiornare un reso esistente.
      */
     @PutMapping("/aggiorna/{returnID}")
-    public ResponseEntity<String> aggiornaReso(@PathVariable String returnID, @RequestBody Resi resi) {
+    public ResponseEntity<String> aggiornaReso(@PathVariable String returnID, @Valid @RequestBody Resi resi) {
         String response = resiService.aggiornaReso(returnID, resi);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
