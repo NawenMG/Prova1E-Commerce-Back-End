@@ -3,8 +3,8 @@ package com.prova.e_commerce.dbTS.service;
 import com.prova.e_commerce.dbTS.model.ServerResponse;
 import com.prova.e_commerce.dbTS.randomData.ServerResponseFaker;
 import com.prova.e_commerce.dbTS.repository.interfacce.ServerResponseRep;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -23,22 +23,38 @@ public class ServerResponseService {
     @Autowired
     private ServerResponseFaker serverResponseFaker;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate; // Kafka producer
+
+    private static final String KAFKA_TOPIC_SERVER_RESPONSE_AGGIUNGI = "server-response-topic-aggiungi"; 
+    private static final String KAFKA_TOPIC_SERVER_RESPONSE_AGGIORNA = "server-response-topic-aggiorna"; 
+
+
     // Inserisce una singola risposta del server e invalida la cache
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public void insert(ServerResponse serverResponse) {
         serverResponseRep.insert(serverResponse);
+        
+        // Invia un messaggio Kafka per notificare l'inserimento della risposta del server
+        kafkaTemplate.send(KAFKA_TOPIC_SERVER_RESPONSE_AGGIUNGI, "Nuova risposta del server inserita: " + serverResponse.getServer());
     }
 
     // Inserisce un batch di risposte del server e invalida la cache
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public void insertBatch(List<ServerResponse> serverResponseList) {
         serverResponseRep.insertBatch(serverResponseList);
+        
+        // Invia un messaggio Kafka per notificare l'inserimento del batch di risposte
+        kafkaTemplate.send(KAFKA_TOPIC_SERVER_RESPONSE_AGGIUNGI, "Batch di risposte del server inserito. Numero di voci: " + serverResponseList.size());
     }
 
     // Aggiorna una risposta del server (scrivendo un nuovo punto) e invalida la cache
     @CacheEvict(value = {"caffeine", "redis"}, key = "#oldResponse.id")
     public void update(ServerResponse oldResponse, ServerResponse newResponse) {
         serverResponseRep.update(oldResponse, newResponse);
+        
+        // Invia un messaggio Kafka per notificare l'aggiornamento della risposta del server
+        kafkaTemplate.send(KAFKA_TOPIC_SERVER_RESPONSE_AGGIORNA, "Risposta del server aggiornata. ID: " + oldResponse.getServer() + " -> " + newResponse.getServer());
     }
 
     // Elimina tutte le risposte di un server specifico e invalida la cache

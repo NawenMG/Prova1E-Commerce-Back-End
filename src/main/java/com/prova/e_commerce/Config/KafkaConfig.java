@@ -7,14 +7,13 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.beans.factory.annotation.Value;
 
-
 @Configuration
 @EnableKafka
 public class KafkaConfig {
-    
+
     @Value("${kafka.topic.name}")
     private String topicName;
-    
+
     @Bean
     public NewTopic kafkaTopic() {
         return TopicBuilder.name(topicName)

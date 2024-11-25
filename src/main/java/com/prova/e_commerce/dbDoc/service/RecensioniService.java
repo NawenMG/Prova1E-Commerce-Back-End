@@ -8,6 +8,7 @@ import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRepCustom;
 import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,13 @@ public class RecensioniService {
 
     @Autowired
     private S3Service s3Service;  // Iniezione del servizio S3
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_RECENSIONI_SAVE = "recensioni-topic-save";  
+    private static final String TOPIC_RECENSIONI_UPDATE = "recensioni-topic-update";
+
 
     /**
      * Cache per eseguire una query dinamica sulle recensioni (10 minuti in Caffeine, 30 minuti in Redis).
@@ -69,21 +77,29 @@ public class RecensioniService {
      */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public Recensioni saveRecensione(Recensioni recensione) {
-        return recensioniRep.save(recensione);
+     Recensioni savedRecensione = recensioniRep.save(recensione);
+     // Invia evento Kafka
+     kafkaTemplate.send(TOPIC_RECENSIONI_SAVE, "RecensioneCreata", savedRecensione);
+     return savedRecensione;
     }
+
 
     /**
      * Metodo per aggiornare una recensione esistente e invalidare la cache corrispondente.
      */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public Recensioni updateRecensione(String id, Recensioni recensione) {
-        if (recensioniRep.existsById(id)) {
-            recensione.setId(id); // Impostiamo l'ID per l'update
-            return recensioniRep.save(recensione);
-        } else {
-            return null; // Puoi gestire il caso di recensione non trovata
-        }
+     if (recensioniRep.existsById(id)) {
+        recensione.setId(id); // Impostiamo l'ID per l'update
+        Recensioni updatedRecensione = recensioniRep.save(recensione);
+        // Invia evento Kafka
+        kafkaTemplate.send(TOPIC_RECENSIONI_UPDATE, "RecensioneAggiornata", updatedRecensione);
+        return updatedRecensione;
+     } else {
+        return null; // Puoi gestire il caso di recensione non trovata
+     }
     }
+
 
     /**
      * Metodo per eliminare una recensione e invalidare la cache corrispondente.

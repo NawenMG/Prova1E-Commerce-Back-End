@@ -6,6 +6,7 @@ import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneSegnalazion
 import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,13 @@ public class ArchiviazioneSegnalazioniService {
 
     @Autowired
     private S3Service s3Service;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_SEGNALAZIONI_SAVE = "segnalazioni-topic-save";
+    private static final String TOPIC_SEGNALAZIONI_UPDATE = "segnalazioni-topic-update";
+
 
     /**
      * Cache per eseguire una query dinamica sulle segnalazioni (10 minuti in Caffeine, 30 minuti in Redis).
@@ -52,24 +60,31 @@ public class ArchiviazioneSegnalazioniService {
      */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public void saveSegnalazione(ArchiviazioneSegnalazioni segnalazione) {
-        archiviazioneSegnalazioniRep.saveSegnalazione(segnalazione);
+     archiviazioneSegnalazioniRep.saveSegnalazione(segnalazione);
+     // Pubblica evento Kafka
+     kafkaTemplate.send(TOPIC_SEGNALAZIONI_SAVE, "SegnalazioneCreata", segnalazione);
     }
+
 
     /**
      * Metodo per aggiornare una segnalazione esistente in base all'ID e invalidare la cache corrispondente.
      */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void updateSegnalazione(String id, ArchiviazioneSegnalazioni segnalazione) {
-        archiviazioneSegnalazioniRep.updateSegnalazione(id, segnalazione);
+     archiviazioneSegnalazioniRep.updateSegnalazione(id, segnalazione);
+     // Pubblica evento Kafka
+     kafkaTemplate.send(TOPIC_SEGNALAZIONI_UPDATE, "SegnalazioneAggiornata", segnalazione);
     }
+
 
     /**
      * Metodo per eliminare una segnalazione in base all'ID e invalidare la cache corrispondente.
      */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteSegnalazione(String id) {
-        archiviazioneSegnalazioniRep.deleteSegnalazione(id);
+     archiviazioneSegnalazioniRep.deleteSegnalazione(id);
     }
+
 
     /**
      * Metodo per caricare un file multimediale su S3 e associarlo a una segnalazione.

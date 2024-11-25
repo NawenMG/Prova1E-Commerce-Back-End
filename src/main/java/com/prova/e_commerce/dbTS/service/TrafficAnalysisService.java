@@ -3,8 +3,8 @@ package com.prova.e_commerce.dbTS.service;
 import com.prova.e_commerce.dbTS.model.TrafficAnalysis;
 import com.prova.e_commerce.dbTS.randomData.TrafficAnalysisFaker;
 import com.prova.e_commerce.dbTS.repository.interfacce.TrafficAnalysisRep;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -22,16 +22,28 @@ public class TrafficAnalysisService {
     @Autowired
     private TrafficAnalysisFaker trafficAnalysisFaker;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate; // Kafka producer
+
+    private static final String KAFKA_TOPIC_TRAFFIC_ANALYSIS_AGGIUNGI = "traffic-analysis-topic-aggiungi"; 
+
+
     // Inserisce una singola analisi del traffico e invalida la cache
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public void insert(TrafficAnalysis analysis) {
         trafficAnalysisRep.insert(analysis);
+
+        // Invia un messaggio Kafka per notificare l'inserimento dell'analisi del traffico
+        kafkaTemplate.send(KAFKA_TOPIC_TRAFFIC_ANALYSIS_AGGIUNGI, "Nuova analisi del traffico inserita: " + analysis.getUrlPagina());
     }
 
     // Inserisce un batch di analisi del traffico e invalida la cache
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public void insertBatch(List<TrafficAnalysis> analysisList) {
         trafficAnalysisRep.insertBatch(analysisList);
+
+        // Invia un messaggio Kafka per notificare l'inserimento del batch di analisi del traffico
+        kafkaTemplate.send(KAFKA_TOPIC_TRAFFIC_ANALYSIS_AGGIUNGI, "Batch di analisi del traffico inserito. Numero di voci: " + analysisList.size());
     }
 
     // Elimina le analisi per una specifica URL e invalida la cache

@@ -5,6 +5,7 @@ import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.repository.interfacce.WishListRep;
 import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,11 @@ public class WishListService {
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_EVENTI_WISHLIST_AGGIUNGI = "eventi-wishlist-topic-aggiungi"; // Nome del topic Kafka
+
     /**
      * Metodo per aggiungere nuovi prodotti alla wishlist dell'utente.
      * Invalida la cache dell'utente dopo l'operazione.
@@ -34,6 +40,10 @@ public class WishListService {
             throw new IllegalArgumentException("La lista dei prodotti non può essere vuota o null.");
         }
         wishListRep.aggiungiProdotti(userId, nuoviProdotti);
+
+        // Invia evento Kafka per l'aggiunta di prodotti alla wishlist
+        kafkaTemplate.send(TOPIC_EVENTI_WISHLIST_AGGIUNGI, "ProdottiAggiuntiWishlist", 
+                           "Prodotti aggiunti alla wishlist dell'utente " + userId);
     }
 
     /**

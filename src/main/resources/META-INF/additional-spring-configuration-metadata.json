@@ -238,5 +238,20 @@
     "name": "aws.datasource.maximum-pool-size",
     "type": "java.lang.String",
     "description": "A description for 'aws.datasource.maximum-pool-size'"
+  },
+  {
+    "name": "spring.kafka.topic.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.kafka.topic.name'"
+  },
+  {
+    "name": "kafka.properties.security.protocol",
+    "type": "java.lang.String",
+    "description": "A description for 'kafka.properties.security.protocol'"
+  },
+  {
+    "name": "kafka.topic.name",
+    "type": "java.lang.String",
+    "description": "A description for 'kafka.topic.name'"
   }
 ]}

@@ -18,6 +18,12 @@ public class ArchiviazioneOrdiniService {
     @Autowired
     private ArchiviazioneOrdiniRep archiviazioneOrdiniRep;
 
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_ORDINI_SAVE = "ordini-topic-save";
+    private static final String TOPIC_ORDINI_UPDATE = "ordini-topic-update";
+
     /**
      * Cache per eseguire una query dinamica sugli ordini (10 minuti in Caffeine, 30 minuti in Redis).
      */
@@ -46,17 +52,23 @@ public class ArchiviazioneOrdiniService {
      * Metodo per salvare un nuovo ordine e invalidare la cache corrispondente.
      */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
-    public void saveOrdine(ArchiviazioneOrdini ordine) {
-        archiviazioneOrdiniRep.saveOrdine(ordine);
+     public void saveOrdine(ArchiviazioneOrdini ordine) {
+     archiviazioneOrdiniRep.saveOrdine(ordine);
+     // Pubblica evento Kafka
+     kafkaTemplate.send(TOPIC_ORDINI_SAVE, "OrdineCreato", ordine);
     }
+
 
     /**
      * Metodo per aggiornare un ordine esistente e invalidare la cache corrispondente.
      */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void updateOrdine(String id, ArchiviazioneOrdini ordine) {
-        archiviazioneOrdiniRep.updateOrdine(id, ordine);
+     archiviazioneOrdiniRep.updateOrdine(id, ordine);
+     // Pubblica evento Kafka
+     kafkaTemplate.send(TOPIC_ORDINI_UPDATE, "OrdineAggiornato", ordine);
     }
+
 
     /**
      * Metodo per eliminare un ordine e invalidare la cache corrispondente.

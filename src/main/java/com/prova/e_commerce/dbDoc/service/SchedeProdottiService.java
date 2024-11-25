@@ -7,6 +7,7 @@ import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRepCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,12 @@ public class SchedeProdottiService {
 
     @Autowired
     private SchedeProdottiRepCustom schedeProdottiRepCustom;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_SCHEDA_PRODOTTI_SAVE = "scheda-prodotti-topic-save"; 
+    private static final String TOPIC_SCHEDA_PRODOTTI_UPDATE = "scheda-prodotti-topic-update";
 
     /**
      * Cache per cercare prodotti per nome (10 minuti in Caffeine, 30 minuti in Redis).
@@ -58,8 +65,12 @@ public class SchedeProdottiService {
      */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public SchedeProdotti insert(SchedeProdotti prodotto) {
-        return schedeProdottiRep.save(prodotto);
+     SchedeProdotti savedProdotto = schedeProdottiRep.save(prodotto);
+     // Invia evento Kafka
+     kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_SAVE, "ProdottoCreato", savedProdotto);
+     return savedProdotto;
     }
+
 
     /**
      * Metodo per generare una lista fittizia di schede prodotti.
@@ -78,17 +89,21 @@ public class SchedeProdottiService {
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     @Transactional
     public SchedeProdotti update(String id, SchedeProdotti prodotto) {
-        Optional<SchedeProdotti> existingProdotto = schedeProdottiRep.findById(id);
-        if (existingProdotto.isPresent()) {
-            SchedeProdotti updatedProdotto = existingProdotto.get();
-            updatedProdotto.setNome(prodotto.getNome());
-            updatedProdotto.setPrezzo(prodotto.getPrezzo());
-            updatedProdotto.setParametriDescrittivi(prodotto.getParametriDescrittivi());
-            return schedeProdottiRep.save(updatedProdotto);
-        } else {
-            throw new RuntimeException("Prodotto con ID " + id + " non trovato.");
-        }
+     Optional<SchedeProdotti> existingProdotto = schedeProdottiRep.findById(id);
+     if (existingProdotto.isPresent()) {
+        SchedeProdotti updatedProdotto = existingProdotto.get();
+        updatedProdotto.setNome(prodotto.getNome());
+        updatedProdotto.setPrezzo(prodotto.getPrezzo());
+        updatedProdotto.setParametriDescrittivi(prodotto.getParametriDescrittivi());
+        SchedeProdotti savedProdotto = schedeProdottiRep.save(updatedProdotto);
+        // Invia evento Kafka
+        kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_UPDATE, "ProdottoAggiornato", savedProdotto);
+        return savedProdotto;
+     } else {
+        throw new RuntimeException("Prodotto con ID " + id + " non trovato.");
+     }
     }
+
 
     /**
      * Metodo per eliminare un prodotto per ID e invalidare la cache corrispondente.

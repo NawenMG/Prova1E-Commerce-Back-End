@@ -5,6 +5,7 @@ import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneTransizioni;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,12 @@ public class ArchiviazioneTransizioniService {
 
     @Autowired
     private ArchiviazioneTransizioniRep archiviazioneTransizioniRep;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_TRANSIZIONI_SAVE = "transizioni-topic-save";
+    private static final String TOPIC_TRANSIZIONI_UPDATE = "transizioni-topic-save";
 
     /**
      * Cache per eseguire una query dinamica sulle transizioni (10 minuti in Caffeine, 30 minuti in Redis).
@@ -45,22 +52,29 @@ public class ArchiviazioneTransizioniService {
      */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public void saveTransizione(ArchiviazioneTransizioni transizione) {
-        archiviazioneTransizioniRep.saveTransizione(transizione);
+     archiviazioneTransizioniRep.saveTransizione(transizione);
+     // Pubblica evento Kafka
+     kafkaTemplate.send(TOPIC_TRANSIZIONI_SAVE, "TransizioneCreata", transizione);
     }
+
 
     /**
      * Metodo per aggiornare una transizione esistente in base all'ID e invalidare la cache corrispondente.
      */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void updateTransizione(String id, ArchiviazioneTransizioni transizione) {
-        archiviazioneTransizioniRep.updateTransizione(id, transizione);
+     archiviazioneTransizioniRep.updateTransizione(id, transizione);
+     // Pubblica evento Kafka
+     kafkaTemplate.send(TOPIC_TRANSIZIONI_UPDATE, "TransizioneAggiornata", transizione);
     }
+  
 
     /**
      * Metodo per eliminare una transizione in base all'ID e invalidare la cache corrispondente.
      */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteTransizione(String id) {
-        archiviazioneTransizioniRep.deleteTransizione(id);
+     archiviazioneTransizioniRep.deleteTransizione(id);
     }
+
 }

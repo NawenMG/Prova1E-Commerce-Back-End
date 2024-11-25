@@ -6,6 +6,7 @@ import com.prova.e_commerce.dbKey.repository.interfacce.CarrelloRep;
 import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,16 +25,25 @@ public class CarrelloService {
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_EVENTI_CARRELLO_AGGIUNGI = "eventi-carrello-topic-aggiungi";  // Nome del topic Kafka
+
     /**
      * Metodo per aggiungere nuovi prodotti al carrello e invalidare la cache.
      */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void aggiungiProdotti(String userId, List<Prodotto> nuoviProdotti) {
-        if (nuoviProdotti == null || nuoviProdotti.isEmpty()) {
-            throw new IllegalArgumentException("La lista dei prodotti non può essere vuota o null.");
-        }
-        carrelloRep.aggiungiProdotti(userId, nuoviProdotti);
+     if (nuoviProdotti == null || nuoviProdotti.isEmpty()) {
+        throw new IllegalArgumentException("La lista dei prodotti non può essere vuota o null.");
+     }
+     carrelloRep.aggiungiProdotti(userId, nuoviProdotti);
+
+     // Invia evento Kafka per l'aggiunta di prodotti
+     kafkaTemplate.send(TOPIC_EVENTI_CARRELLO_AGGIUNGI, "ProdottiAggiunti", "Prodotti aggiunti al carrello dell'utente " + userId);
     }
+
 
     /**
      * Metodo per ottenere il carrello di un utente. La cache è attiva per 10 minuti in Caffeine e 30 minuti in Redis.

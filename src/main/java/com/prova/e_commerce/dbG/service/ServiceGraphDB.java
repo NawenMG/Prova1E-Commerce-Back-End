@@ -2,6 +2,7 @@ package com.prova.e_commerce.dbG.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
@@ -33,22 +34,41 @@ public class ServiceGraphDB {
     @Autowired
     private CustomRepNeo4j customRepNeo4j;
 
-    // Metodi per registrare le azioni degli utenti
+     @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC_EVENTI_VISITA = "eventi-prodotti-topic-visita";  
+    private static final String TOPIC_EVENTI_ACQUISTA = "eventi-prodotti-topic-acquista";
+    private static final String TOPIC_EVENTI_APPARTENENZA_CATEGORIA = "eventi-appartenenza-categoria";
+    private static final String TOPIC_EVENTI_PROVENIENZA_UTENTI = "eventi-provenienza-utenti";
+
     public void visitaProdotto(Long utenteId, Long prodottoId) {
         customRepNeo4j.visitaProdotto(utenteId, prodottoId);
+        // Invia evento Kafka per la visita
+        kafkaTemplate.send(TOPIC_EVENTI_VISITA, "ProdottoVisitato", "Utente " + utenteId + " ha visitato il prodotto " + prodottoId);
     }
+    
 
     public void acquistoProdotto(Long utenteId, Long prodottoId) {
         customRepNeo4j.acquistoProdotto(utenteId, prodottoId);
+        // Invia evento Kafka per l'acquisto
+        kafkaTemplate.send(TOPIC_EVENTI_ACQUISTA, "ProdottoAcquistato", "Utente " + utenteId + " ha acquistato il prodotto " + prodottoId);
     }
+    
 
     public void appartenenzaCategoria(Long prodottoId, String categoriaNome) {
         customRepNeo4j.appartenenzaCategoria(prodottoId, categoriaNome);
+        // Invia evento Kafka per l'appartenenza alla categoria
+        kafkaTemplate.send(TOPIC_EVENTI_APPARTENENZA_CATEGORIA, "ProdottoCategoriaAggiunta", "Prodotto " + prodottoId + " appartiene alla categoria " + categoriaNome);
     }
+    
 
     public void provenienzaGeografica(Long utenteId, Long prodottoId) {
         customRepNeo4j.provenienzaGeografica(utenteId, prodottoId);
+        // Invia evento Kafka per la provenienza geografica
+        kafkaTemplate.send(TOPIC_EVENTI_PROVENIENZA_UTENTI, "ProdottoProvenienzaGeografica", "L'utente " + utenteId + " proviene da una certa località per il prodotto " + prodottoId);
     }
+    
 
     // Metodi POST (Creazione di nodi)
     

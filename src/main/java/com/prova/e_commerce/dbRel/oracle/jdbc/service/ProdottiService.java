@@ -6,6 +6,7 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.ProdottiRep;
 import com.prova.e_commerce.storage.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,12 @@ public class ProdottiService {
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate; // Kafka producer
+
+    private static final String KAFKA_TOPIC_PRODOTTI_AGGIUNGI = "prodotti-topic-aggiungi"; 
+    private static final String KAFKA_TOPIC_PRODOTTI_AGGIORNA = "prodotti-topic-aggiorna";
+
     /**
      * Metodo per eseguire una query avanzata sui prodotti in base a parametri dinamici.
      * Utilizza Caffeine per 10 minuti e Redis per 30 minuti.
@@ -38,7 +45,9 @@ public class ProdottiService {
      */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String inserisciProdotto(Prodotti prodotto) {
+        kafkaTemplate.send(KAFKA_TOPIC_PRODOTTI_AGGIUNGI, "Nuovo prodotto inserito: " + prodotto.getProductId());
         return prodottiRep.insertProduct(prodotto);
+
     }
 
     /**
@@ -47,6 +56,7 @@ public class ProdottiService {
      */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String aggiornaProdotto(String productID, Prodotti prodotto) {
+        kafkaTemplate.send(KAFKA_TOPIC_PRODOTTI_AGGIORNA, "Prodotto aggiornato: " + productID);
         return prodottiRep.updateProduct(productID, prodotto);
     }
 
@@ -83,6 +93,7 @@ public class ProdottiService {
         // Imposta l'URL dell'immagine nel prodotto
         prodotto.setImmagine(fileUrl);  
 
+
         // Aggiorna il prodotto nel database con il nuovo URL dell'immagine
         return prodottiRep.updateProduct(productId, prodotto);
     }
@@ -98,8 +109,11 @@ public class ProdottiService {
         // Ottieni l'URL dell'immagine
         String fileUrl = prodotto.getImmagine();  
 
+        
+        
         // Estrai la chiave dal URL dell'immagine (assumiamo che contenga la chiave completa)
         String key = fileUrl.substring(fileUrl.indexOf("amazonaws.com/") + 14);  // 14 è la lunghezza di "amazonaws.com/"
+        
 
         return s3Service.downloadFile(key);
     }

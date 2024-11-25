@@ -3,6 +3,7 @@ package com.prova.e_commerce.dbRT.service;
 import com.prova.e_commerce.dbRT.model.ShippingStatus;
 import com.prova.e_commerce.dbRT.repository.interfacce.ShippingStatusRep;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,12 @@ public class ShippingStatusService {
     @Autowired
     private ShippingStatusRep shippingStatusRep;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate; // Kafka producer
+
+    private static final String KAFKA_TOPIC_SHIPPING_AGGIUNGI = "shipping-status-topic-aggiungi"; 
+    private static final String KAFKA_TOPIC_SHIPPING_AGGIORNA = "shipping-status-topic-aggiorna";
+
     // ==============================
     // Operazioni sullo Stato della Spedizione
     // ==============================
@@ -26,6 +33,9 @@ public class ShippingStatusService {
         return CompletableFuture.runAsync(() -> {
             try {
                 shippingStatusRep.createShippingStatus(shippingStatus).get();
+                
+                // Invia un messaggio Kafka per notificare la creazione della spedizione
+                kafkaTemplate.send(KAFKA_TOPIC_SHIPPING_AGGIUNGI, "Nuovo stato di spedizione creato: " + shippingStatus.getId());
             } catch (Exception e) {
                 throw new RuntimeException("Errore durante la creazione dello stato della spedizione", e);
             }
@@ -38,6 +48,9 @@ public class ShippingStatusService {
         return CompletableFuture.runAsync(() -> {
             try {
                 shippingStatusRep.updateShippingStatus(shippingStatus).get();
+                
+                // Invia un messaggio Kafka per notificare l'aggiornamento dello stato della spedizione
+                kafkaTemplate.send(KAFKA_TOPIC_SHIPPING_AGGIORNA, "Stato di spedizione aggiornato: " + shippingStatus.getId());
             } catch (Exception e) {
                 throw new RuntimeException("Errore durante l'aggiornamento dello stato della spedizione", e);
             }
