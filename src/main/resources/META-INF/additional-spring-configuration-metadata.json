@@ -253,5 +253,15 @@
     "name": "kafka.topic.name",
     "type": "java.lang.String",
     "description": "A description for 'kafka.topic.name'"
+  },
+  {
+    "name": "aws.sns.topicArn",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.sns.topicArn'"
+  },
+  {
+    "name": "aws.sns.topicArn",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.sns.topicArn'"
   }
 ]}

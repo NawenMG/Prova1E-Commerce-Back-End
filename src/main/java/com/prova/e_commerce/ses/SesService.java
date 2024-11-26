@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.ses.model.*;
 import software.amazon.awssdk.services.ses.SesClient;
 
 @Service
-public class EmailService {
+public class SesService {
 
     @Autowired
     private UsersService usersService;
