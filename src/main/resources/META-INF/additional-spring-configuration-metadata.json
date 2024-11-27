@@ -263,5 +263,15 @@
     "name": "aws.sns.topicArn",
     "type": "java.lang.String",
     "description": "A description for 'aws.sns.topicArn'"
+  },
+  {
+    "name": "stripe.secret.key",
+    "type": "java.lang.String",
+    "description": "A description for 'stripe.secret.key'"
+  },
+  {
+    "name": "stripe.publishable.key",
+    "type": "java.lang.String",
+    "description": "A description for 'stripe.publishable.key'"
   }
 ]}

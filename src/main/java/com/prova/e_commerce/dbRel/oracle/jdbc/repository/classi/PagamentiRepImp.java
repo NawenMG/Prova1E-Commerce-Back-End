@@ -167,4 +167,28 @@ public class PagamentiRepImp implements PagamentiRep {
         jdbcTemplate.update(sql, paymentID);
         return "Dati eliminati con successo";
     }
+
+
+    @Override
+    public Pagamenti findByPaymentId(String paymentId) {
+    String sql = "SELECT * FROM Pagamenti WHERE ID = :paymentId";
+
+    // Parametri per la query
+    Map<String, Object> params = new HashMap<>();
+    params.put("paymentId", paymentId);
+
+    // Esegui la query con NamedParameterJdbcTemplate
+    return namedParameterJdbcTemplate.queryForObject(sql, params, (rs, rowNum) -> {
+        Pagamenti pagamenti = new Pagamenti();
+        pagamenti.setPaymentsID(rs.getString("ID"));
+        pagamenti.setType(rs.getString("Type"));
+        pagamenti.setData(rs.getDate("Data").toLocalDate());
+        pagamenti.setStatus(rs.getBoolean("Status"));
+        pagamenti.setTotal(rs.getBigDecimal("Totale"));
+        return pagamenti;
+    });
 }
+
+}
+
+

@@ -15,4 +15,6 @@ public interface PagamentiRep {
     String insertPayment(Pagamenti pagamenti);
     String updatePayment(String paymentID, Pagamenti pagamenti);
     String deletePayment(String paymentID);
+    Pagamenti findByPaymentId(String paymentId);
+
 }
