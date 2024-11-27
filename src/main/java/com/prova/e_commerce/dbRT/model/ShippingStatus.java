@@ -3,7 +3,9 @@ package com.prova.e_commerce.dbRT.model;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class ShippingStatus {
@@ -11,8 +13,10 @@ public class ShippingStatus {
     @NotBlank(message = "L'ID è obbligatorio")
     private String id; // ID (Obbligatorio)
 
-    @NotBlank(message = "La data di consegna è obbligatoria")
-    private String deliveryDate; // Data di consegna (Obbligatorio)
+    @NotNull(message = "La data di consegna è obbligatoria")
+    private LocalDate deliveryDate; // Data di consegna (Obbligatorio) - Usato LocalDate
+
+    private String deliveryDateStr; // Aggiunto per la conversione da LocalDate a String (per Firebase)
 
     @NotBlank(message = "Lo status è obbligatorio")
     private String status; // Status (Obbligatorio)
@@ -22,7 +26,7 @@ public class ShippingStatus {
     private CurrentLocation currentLocation; // Locazione corrente (Obbligatorio)
 
     @Valid
-    private List<@NotNull(message = "Gli elementi dello storico delle locazioni non possono essere null") HistoricalLocation> locationHistory; // Storico delle locazioni
+    private List<HistoricalLocation> locationHistory; // Storico delle locazioni - Non obbligatorio
 
     // Costruttore
     public ShippingStatus() {}
@@ -36,12 +40,21 @@ public class ShippingStatus {
         this.id = id;
     }
 
-    public String getDeliveryDate() {
+    public LocalDate getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(String deliveryDate) {
+    public void setDeliveryDate(LocalDate deliveryDate) {
         this.deliveryDate = deliveryDate;
+    }
+
+    // Aggiunto getter e setter per il campo deliveryDateStr
+    public String getDeliveryDateStr() {
+        return deliveryDateStr;
+    }
+
+    public void setDeliveryDateStr(String deliveryDateStr) {
+        this.deliveryDateStr = deliveryDateStr;
     }
 
     public String getStatus() {
@@ -74,7 +87,8 @@ public class ShippingStatus {
         private String position; // Posizione (Obbligatorio)
 
         @NotBlank(message = "Il timestamp corrente è obbligatorio")
-        private String timestamp; // Timestamp (Obbligatorio)
+        @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}", message = "Il timestamp deve essere nel formato YYYY-MM-DDTHH:MM:SS")
+        private String timestamp; // Timestamp (Obbligatorio) - Validazione con formato di data e ora
 
         public CurrentLocation() {}
 
@@ -102,6 +116,7 @@ public class ShippingStatus {
         private String position; // Posizione
 
         @NotBlank(message = "Il timestamp nello storico non può essere vuoto")
+        @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}", message = "Il timestamp deve essere nel formato YYYY-MM-DDTHH:MM:SS")
         private String timestamp; // Timestamp
 
         public HistoricalLocation() {}
