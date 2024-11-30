@@ -1,4 +1,4 @@
-package com.prova.e_commerce.Kafka;
+package com.prova.e_commerce.kafka;
 
 import com.prova.e_commerce.dbCol.model.ArchiviazioneOrdini;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneSegnalazioni;

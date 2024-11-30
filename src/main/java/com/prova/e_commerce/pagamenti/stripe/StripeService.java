@@ -44,7 +44,7 @@ public class StripeService {
         pagamento.setType("Stripe");
         pagamento.setData(LocalDate.now());  // Aggiungi la data attuale
         pagamento.setStatus(false);  // Status iniziale come "false" (ancora non completato)
-        pagamento.setTotal(BigDecimal.valueOf(amount)); // Impostiamo l'importo del pagamento
+        //pagamento.setTotal(BigDecimal.valueOf(amount)); // Impostiamo l'importo del pagamento
 
         // Salviamo il pagamento nel database
         pagamentiRep.insertPayment(pagamento);

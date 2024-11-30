@@ -247,6 +247,12 @@
 			<artifactId>spring-cloud-starter-aws-messaging</artifactId>
 			<version>2.2.6.RELEASE</version>
 		</dependency>
+		<dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>2.29.22</version>
+        </dependency>
+
 		<!-- <dependency>
 			<groupId>org.springframework.messaging</groupId>
 			<artifactId>spring-messaging</artifactId>
@@ -269,6 +275,15 @@
 			<artifactId>aws-lambda-java-events</artifactId>
 			<version>3.14.0</version>
 		</dependency>
+
+    <!-- AWS SDK for Lambda -->
+    <dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>lambda</artifactId>
+    <version>2.29.23</version>
+    </dependency>
+
+
 
 		<!-- SES -->
 		<dependency>

@@ -3,11 +3,18 @@ package com.prova.e_commerce.dbRel.oracle.jdbc.service;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.PagamentiRep;
+import com.prova.e_commerce.JsonConvert.JsonUtil;
+
+import software.amazon.awssdk.services.sqs.SqsClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
+
 
 import java.util.List;
 
@@ -22,6 +29,27 @@ public class PagamentiService {
 
     private static final String KAFKA_TOPIC_AGGIUNGI = "pagamenti-topic-aggiungi"; 
     private static final String KAFKA_TOPIC_AGGIORNA = "pagamenti-topic-aggiorna";
+
+
+    @Autowired
+    private SqsClient sqsClient;
+
+    private static final String QUEUE_URL = "https://sqs.eu-west-3.amazonaws.com/211125527920/InputPagamenti"; // URL della tua coda
+
+    public void sendMessageToSQS(String message){
+        SendMessageRequest sendMsgRequest = SendMessageRequest.builder()
+        .queueUrl(QUEUE_URL)
+        .messageBody(message)  // Il messaggio in formato JSON
+        .build();
+
+      // Invia il messaggio alla coda
+      SendMessageResponse sendMsgResponse = sqsClient.sendMessage(sendMsgRequest);
+
+     // Log del risultato per il controllo
+    System.out.println("Messaggio inviato alla coda SQS: " + sendMsgResponse.messageId());
+   }
+
+
 
     /**
      * Metodo per eseguire una query avanzata sui pagamenti in base a parametri dinamici.
@@ -43,8 +71,12 @@ public class PagamentiService {
         
         // Invia un messaggio Kafka che indica l'inserimento di un nuovo pagamento
         kafkaTemplate.send(KAFKA_TOPIC_AGGIUNGI, "Nuovo pagamento inserito: " + pagamenti.getPaymentsID());
-        
+
+        String paymentData = JsonUtil.convertToJson(pagamenti);
+        sendMessageToSQS(paymentData);
+
         return result;
+
     }
 
     /**

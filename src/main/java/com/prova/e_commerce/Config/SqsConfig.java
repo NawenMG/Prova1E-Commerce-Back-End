@@ -12,7 +12,7 @@ public class SqsConfig {
     @Bean
     public AmazonSQS customAmazonSQS() {
         return AmazonSQSClient.builder()
-                              .withRegion("ue-west-1")
+                              .withRegion("eu-west-1")
                               .build();
     }
 }

@@ -273,5 +273,25 @@
     "name": "stripe.publishable.key",
     "type": "java.lang.String",
     "description": "A description for 'stripe.publishable.key'"
+  },
+  {
+    "name": "cloud.aws.sqs.endpoints.shipping",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.sqs.endpoints.shipping'"
+  },
+  {
+    "name": "cloud.aws.sqs.endpoints.notification",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.sqs.endpoints.notification'"
+  },
+  {
+    "name": "cloud.aws.sqs.endpoints.order-processing",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.sqs.endpoints.order-processing'"
+  },
+  {
+    "name": "cloud.aws.sqs.queue-name",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.sqs.queue-name'"
   }
 ]}

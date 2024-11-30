@@ -70,7 +70,7 @@ public class PayPalController {
             pagamenti.setType("PayPal");
             pagamenti.setData(java.time.LocalDate.now());
             pagamenti.setStatus(true);
-            pagamenti.setTotal(new java.math.BigDecimal(50.00)); // Simulazione per esempio
+            //pagamenti.setTotal(new java.math.Long(50.00)); // Simulazione per esempio
 
             return ResponseEntity.ok(pagamenti);
         } catch (PayPalRESTException e) {

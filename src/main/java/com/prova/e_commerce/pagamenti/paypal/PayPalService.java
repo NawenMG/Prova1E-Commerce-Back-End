@@ -76,7 +76,7 @@ public class PayPalService {
         pagamenti.setType("PayPal");
         pagamenti.setData(LocalDate.now());
         pagamenti.setStatus(true); // Imposta come completato
-        pagamenti.setTotal(new BigDecimal(executedPayment.getTransactions().get(0).getAmount().getTotal()));
+        //pagamenti.setTotal(new BigDecimal(executedPayment.getTransactions().get(0).getAmount().getTotal()));
 
         pagamentiRep.insertPayment(pagamenti);
     }

@@ -18,6 +18,9 @@ public class Pagamenti {
     @NotBlank(message = "Il tipo di pagamento è obbligatorio")
     private String type;     // tipo di pagamento
 
+    @NotBlank(message = "Aggiungi una valuta")
+    private String currency;
+
     @NotNull(message = "La data del pagamento è obbligatoria")
     @PastOrPresent(message = "La data del pagamento deve essere nel passato o nel presente")
     private LocalDate data;  // data del pagamento
@@ -47,6 +50,14 @@ public class Pagamenti {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getCurrency(){
+        return currency;
+    }
+
+    public void setCurrency(String currency){
+        this.currency = currency;
     }
 
     public LocalDate getData() {
