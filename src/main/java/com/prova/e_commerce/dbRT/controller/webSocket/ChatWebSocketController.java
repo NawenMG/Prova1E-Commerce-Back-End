@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.multipart.MultipartFile;
+/* import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.IOException; */
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -135,7 +135,7 @@ public class ChatWebSocketController {
     /**
      * Carica un file allegato ad un messaggio in una chat.
      */
-    @MessageMapping("/uploadFile")
+    /* @MessageMapping("/uploadFile")
     @SendTo("/topic/messages")
     public CompletableFuture<String> uploadFile(String chatId, String messageId, MultipartFile file, String fileType) throws IOException {
         // Carica il file tramite il servizio
@@ -148,25 +148,25 @@ public class ChatWebSocketController {
                 throw new RuntimeException("Errore durante il caricamento del file", e);
             }
         });
-    }
+    } */
 
     /**
      * Scarica un file allegato ad un messaggio in una chat.
      */
-    @MessageMapping("/downloadFile")
+    /* @MessageMapping("/downloadFile")
     @SendTo("/topic/messages")
     public CompletableFuture<byte[]> downloadFile(String chatId, String messageId, String fileType) throws IOException {
         byte[] fileContent = chatSystemService.downloadFileFromMessage(chatId, messageId, fileType).readAllBytes();
         return CompletableFuture.supplyAsync(() -> fileContent);
-    }
+    } */
 
     /**
      * Elimina un file allegato da un messaggio di chat.
      */
-    @MessageMapping("/deleteFile")
+    /* @MessageMapping("/deleteFile")
     @SendTo("/topic/messages")
     public CompletableFuture<String> deleteFile(String chatId, String messageId, String fileType) throws IOException {
         chatSystemService.deleteFileFromMessage(chatId, messageId, fileType);
         return CompletableFuture.supplyAsync(() -> "File eliminato con successo");
-    }
+    } */
 }

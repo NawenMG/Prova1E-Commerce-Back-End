@@ -12,12 +12,12 @@ import com.prova.e_commerce.dbKey.model.Carrello;
 import com.prova.e_commerce.dbKey.model.Cronologia;
 import com.prova.e_commerce.dbKey.model.WishList;
 import com.prova.e_commerce.dbRT.model.ShippingStatus;
-import com.prova.e_commerce.dbRel.awsRds.jpa.entity.Users;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Categorie;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Ordini;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Prodotti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Resi;
+import com.prova.e_commerce.dbRel.oracle.jdbc.model.User;
 import com.prova.e_commerce.dbTS.model.SalesMonitoring;
 import com.prova.e_commerce.dbTS.model.ServerResponse;
 import com.prova.e_commerce.dbTS.model.TrafficAnalysis;
@@ -152,13 +152,13 @@ public class KafkaConsumersService {  // RICORDATI CHE OGNI GRUPPO PUO' ESSERE P
      //Users
 
      @KafkaListener(topics = "eventi-utente-topic-aggiungi", groupId = "users-group")
-     public void consumeUsersAggiungi( Users users){
+     public void consumeUsersAggiungi( User users){
             System.out.println("Ricevuto evento da eventi-utente-topic-aggiungi: UserAggiunto");
             System.out.println("Dettagli evento:" + users);
      }
 
      @KafkaListener(topics = "eventi-utente-topic-aggiorna", groupId = "users-group")
-     public void consumeUsersAggiorna( Users users){
+     public void consumeUsersAggiorna( User users){
             System.out.println("Ricevuto evento da eventi-utente-topic-aggiorna: UserAggiornato");
             System.out.println("Dettagli evento:" + users);
      }

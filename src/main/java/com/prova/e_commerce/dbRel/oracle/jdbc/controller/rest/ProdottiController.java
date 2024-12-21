@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+/* import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStream; */
 import java.util.List;
 
 @RestController
@@ -71,7 +71,7 @@ public class ProdottiController {
     /**
      * Endpoint per caricare un'immagine su S3 e associarla a un prodotto.
      */
-    @PostMapping("/{productId}/immagine")
+    /* @PostMapping("/{productId}/immagine")
     public ResponseEntity<String> caricaImmagineProdotto(@PathVariable String productId, @RequestParam("file") MultipartFile file) {
         try {
             String response = prodottiService.caricaImmagineProdotto(productId, file);
@@ -80,11 +80,11 @@ public class ProdottiController {
             return new ResponseEntity<>("Errore nel caricare l'immagine", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+ */
     /**
      * Endpoint per scaricare l'immagine di un prodotto da S3.
      */
-    @GetMapping("/{productId}/immagine")
+    /* @GetMapping("/{productId}/immagine")
     public ResponseEntity<byte[]> scaricaImmagineProdotto(@PathVariable String productId) {
         try {
             InputStream immagine = prodottiService.scaricaImmagineProdotto(productId);
@@ -93,12 +93,12 @@ public class ProdottiController {
         } catch (IOException e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    } */
 
     /**
      * Endpoint per eliminare l'immagine di un prodotto su S3.
      */
-    @DeleteMapping("/{productId}/immagine")
+    /* @DeleteMapping("/{productId}/immagine")
     public ResponseEntity<String> eliminaImmagineProdotto(@PathVariable String productId) {
         try {
             prodottiService.eliminaImmagineProdotto(productId);
@@ -106,5 +106,5 @@ public class ProdottiController {
         } catch (Exception e) {
             return new ResponseEntity<>("Errore nell'eliminazione dell'immagine", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    } */
 }

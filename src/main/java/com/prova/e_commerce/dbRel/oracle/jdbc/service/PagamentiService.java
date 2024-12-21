@@ -3,118 +3,118 @@ package com.prova.e_commerce.dbRel.oracle.jdbc.service;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.PagamentiRep;
-import com.prova.e_commerce.JsonConvert.JsonUtil;
-
-import software.amazon.awssdk.services.sqs.SqsClient;
+import com.prova.e_commerce.RabbitMQ.RabbitProducer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
-
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Service
 public class PagamentiService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PagamentiService.class);
+
     @Autowired
     private PagamentiRep pagamentiRep;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate; // Kafka producer
-
-    private static final String KAFKA_TOPIC_AGGIUNGI = "pagamenti-topic-aggiungi"; 
-    private static final String KAFKA_TOPIC_AGGIORNA = "pagamenti-topic-aggiorna";
-
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    private SqsClient sqsClient;
+    private RabbitProducer rabbitProducer;
 
-    private static final String QUEUE_URL = "https://sqs.eu-west-3.amazonaws.com/211125527920/InputPagamenti"; // URL della tua coda
+    @Autowired
+    private MeterRegistry meterRegistry;
 
-    public void sendMessageToSQS(String message){
-        SendMessageRequest sendMsgRequest = SendMessageRequest.builder()
-        .queueUrl(QUEUE_URL)
-        .messageBody(message)  // Il messaggio in formato JSON
-        .build();
+    @Autowired
+    private Tracer tracer;
 
-      // Invia il messaggio alla coda
-      SendMessageResponse sendMsgResponse = sqsClient.sendMessage(sendMsgRequest);
+    private static final String KAFKA_TOPIC_AGGIUNGI = "pagamenti-topic-aggiungi";
+    private static final String KAFKA_TOPIC_AGGIORNA = "pagamenti-topic-aggiorna";
 
-     // Log del risultato per il controllo
-    System.out.println("Messaggio inviato alla coda SQS: " + sendMsgResponse.messageId());
-   }
+    public PagamentiService(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter("service.pagamenti.query.count");
+        meterRegistry.counter("service.pagamenti.inserisci.count");
+        meterRegistry.counter("service.pagamenti.aggiorna.count");
+        meterRegistry.counter("service.pagamenti.elimina.count");
+    }
 
-
-
-    /**
-     * Metodo per eseguire una query avanzata sui pagamenti in base a parametri dinamici.
-     * Utilizza Caffeine per 10 minuti e Redis per 30 minuti.
-     */
     @Cacheable(value = {"caffeine", "redis"}, key = "#paramQuery.toString() + #pagamenti.toString()")
     public List<Pagamenti> queryPagamenti(ParamQuery paramQuery, Pagamenti pagamenti) {
-        return pagamentiRep.query(paramQuery, pagamenti);
+        logger.info("Esecuzione query avanzata sui pagamenti: paramQuery={}, pagamenti={}", paramQuery, pagamenti);
+        Span span = tracer.spanBuilder("queryPagamenti").startSpan();
+        try {
+            meterRegistry.counter("service.pagamenti.query.count").increment();
+            return pagamentiRep.query(paramQuery, pagamenti);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per inserire un nuovo pagamento.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'inserimento di un nuovo pagamento.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String inserisciPagamento(Pagamenti pagamenti) {
-        String result = pagamentiRep.insertPayment(pagamenti);
-        
-        // Invia un messaggio Kafka che indica l'inserimento di un nuovo pagamento
-        kafkaTemplate.send(KAFKA_TOPIC_AGGIUNGI, "Nuovo pagamento inserito: " + pagamenti.getPaymentsID());
+        logger.info("Inserimento nuovo pagamento: pagamenti={}", pagamenti);
+        Span span = tracer.spanBuilder("inserisciPagamento").startSpan();
+        try {
+            meterRegistry.counter("service.pagamenti.inserisci.count").increment();
+            String result = pagamentiRep.insertPayment(pagamenti);
 
-        String paymentData = JsonUtil.convertToJson(pagamenti);
-        sendMessageToSQS(paymentData);
+            kafkaTemplate.send(KAFKA_TOPIC_AGGIUNGI, "Nuovo pagamento inserito: " + pagamenti.getPaymentsID());
+            rabbitProducer.sendMessage(pagamenti);
 
-        return result;
-
+            return result;
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per aggiornare un pagamento esistente in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'aggiornamento di un pagamento.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String aggiornaPagamento(String paymentID, Pagamenti pagamenti) {
-        String result = pagamentiRep.updatePayment(paymentID, pagamenti);
-        
-        // Invia un messaggio Kafka che indica l'aggiornamento del pagamento
-        kafkaTemplate.send(KAFKA_TOPIC_AGGIORNA, "Pagamento aggiornato: " + paymentID);
-        
-        return result;
+        logger.info("Aggiornamento pagamento: paymentID={}, pagamenti={}", paymentID, pagamenti);
+        Span span = tracer.spanBuilder("aggiornaPagamento").startSpan();
+        try {
+            meterRegistry.counter("service.pagamenti.aggiorna.count").increment();
+            String result = pagamentiRep.updatePayment(paymentID, pagamenti);
+
+            kafkaTemplate.send(KAFKA_TOPIC_AGGIORNA, "Pagamento aggiornato: " + paymentID);
+
+            return result;
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per eliminare un pagamento in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'eliminazione di un pagamento.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String eliminaPagamento(String paymentID) {
-        String result = pagamentiRep.deletePayment(paymentID);
-        
-        return result;
+        logger.info("Eliminazione pagamento: paymentID={}", paymentID);
+        Span span = tracer.spanBuilder("eliminaPagamento").startSpan();
+        try {
+            meterRegistry.counter("service.pagamenti.elimina.count").increment();
+            return pagamentiRep.deletePayment(paymentID);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per generare un numero specificato di pagamenti con dati casuali.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare il salvataggio di pagamenti casuali.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String salvaPagamentiCasuali(int numero) {
-        String result = pagamentiRep.saveAll(numero);
-        
-        return result;
+        logger.info("Salvataggio pagamenti casuali: numero={}", numero);
+        Span span = tracer.spanBuilder("salvaPagamentiCasuali").startSpan();
+        try {
+            meterRegistry.counter("service.pagamenti.salva.casuali.count").increment();
+            return pagamentiRep.saveAll(numero);
+        } finally {
+            span.end();
+        }
     }
 }

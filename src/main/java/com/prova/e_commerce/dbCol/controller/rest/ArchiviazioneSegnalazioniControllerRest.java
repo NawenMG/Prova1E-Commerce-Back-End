@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+/* import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStream; */
 import java.util.List;
 
 @RestController
@@ -85,7 +85,7 @@ public class ArchiviazioneSegnalazioniControllerRest {
     /**
      * Metodo per caricare un file multimediale su S3 e associarlo a una segnalazione.
      */
-    @PostMapping("/{id}/file")
+    /* @PostMapping("/{id}/file")
     public ResponseEntity<String> uploadFile(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         try {
             String fileUrl = archiviazioneSegnalazioniService.caricaFileSegnalazione(id, file);
@@ -94,12 +94,12 @@ public class ArchiviazioneSegnalazioniControllerRest {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Errore durante il caricamento del file: " + e.getMessage());
         }
-    }
+    } */
 
     /**
      * Metodo per scaricare il file multimediale associato a una segnalazione.
      */
-    @GetMapping("/{id}/file")
+    /* @GetMapping("/{id}/file")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String id) {
         try {
             InputStream fileInputStream = archiviazioneSegnalazioniService.scaricaFileSegnalazione(id);
@@ -109,14 +109,14 @@ public class ArchiviazioneSegnalazioniControllerRest {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null); // Ritorna un errore in caso di problemi nel download
         }
-    }
+    } */
 
     /**
      * Metodo per eliminare il file multimediale associato a una segnalazione.
      */
-    @DeleteMapping("/{id}/file")
+    /* @DeleteMapping("/{id}/file")
     public ResponseEntity<Void> deleteFile(@PathVariable String id) {
         archiviazioneSegnalazioniService.eliminaFileSegnalazione(id);
         return ResponseEntity.noContent().build();
-    }
+    } */
 }

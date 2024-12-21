@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+/* import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStream; */
 import java.util.List;
 
 @RestController
@@ -77,7 +77,7 @@ public class RecensioniControllerRest {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Endpoint per caricare un file multimediale associato a una recensione (immagine o video)
+    /* // Endpoint per caricare un file multimediale associato a una recensione (immagine o video)
     @PostMapping("/{recensioneId}/file")
     public ResponseEntity<String> uploadFile(@PathVariable String recensioneId, @RequestParam("file") MultipartFile file, @RequestParam("tipoFile") String tipoFile) {
         try {
@@ -110,5 +110,5 @@ public class RecensioniControllerRest {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
+    } */
 }

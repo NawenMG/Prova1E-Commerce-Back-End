@@ -1,23 +1,17 @@
 package com.prova.e_commerce.dbKey.model;
 
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.List;
-
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 
-@DynamoDbBean
 public class Carrello {
 
     @NotNull(message = "L'ID utente è obbligatorio")
     @Size(min = 3, max = 100, message = "L'ID utente deve avere una lunghezza compresa tra 3 e 100 caratteri")
-    private String userId;  // Chiave primaria (partition key)
+    private String _key;  // La chiave del documento in ArangoDB (equivalente alla partition key)
 
     @NotEmpty(message = "La lista dei prodotti non può essere vuota")
     private List<Prodotto> prodotti;  // Lista di prodotti
@@ -28,16 +22,16 @@ public class Carrello {
     @Min(value = 0, message = "Il prezzo totale deve essere maggiore o uguale a zero")
     private double prezzoTotale;
 
-    @DynamoDbPartitionKey
-    public String getUserId() {
-        return userId;
+    // Getter e setter per la chiave del documento in ArangoDB
+    public String getKey() {
+        return _key;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setKey(String key) {
+        this._key = key;
     }
 
-    @DynamoDbAttribute("prodotti")
+    // Getter e setter per i prodotti
     public List<Prodotto> getProdotti() {
         return prodotti;
     }
@@ -46,7 +40,7 @@ public class Carrello {
         this.prodotti = prodotti;
     }
 
-    @DynamoDbAttribute("quantitaTotale")
+    // Getter e setter per la quantità totale
     public int getQuantitaTotale() {
         return quantitaTotale;
     }
@@ -55,7 +49,7 @@ public class Carrello {
         this.quantitaTotale = quantitaTotale;
     }
 
-    @DynamoDbAttribute("prezzoTotale")
+    // Getter e setter per il prezzo totale
     public double getPrezzoTotale() {
         return prezzoTotale;
     }

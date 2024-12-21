@@ -2,7 +2,7 @@ package com.prova.e_commerce.pagamenti.stripe;
 
 import com.stripe.exception.StripeException;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
-import com.prova.e_commerce.dbRel.oracle.jdbc.repository.classi.PagamentiRepImp;
+import com.prova.e_commerce.dbRel.oracle.jdbc.service.PagamentiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ public class StripeController {
     private StripeService stripeService;
 
     @Autowired
-    private PagamentiRepImp pagamentiRep;
+    private PagamentiService pagamentiService; // Usa PagamentiService invece di PagamentiRepImp
 
     /**
      * Endpoint per creare un PaymentIntent.
@@ -26,7 +26,7 @@ public class StripeController {
     public ResponseEntity<?> createPaymentIntent(@RequestBody Double amount) {
         try {
             // Crea il PaymentIntent e ottieni il client secret
-            String clientSecret = stripeService.createPaymentIntent(amount);
+            String clientSecret = stripeService.createPaymentIntent(amount, "usd");  // Aggiungi la valuta, "usd" come esempio
             return ResponseEntity.ok(clientSecret);
         } catch (StripeException e) {
             e.printStackTrace();
@@ -42,11 +42,16 @@ public class StripeController {
     @PostMapping("/execute-payment")
     public ResponseEntity<?> executePayment(@RequestParam String paymentId) {
         try {
-            // Esegui il pagamento e aggiorna il database
+            // Esegui il pagamento e aggiorna lo stato nel database
             stripeService.executePaymentAndSave(paymentId);
 
-            // Recupera i dettagli del pagamento dal database
-            Pagamenti pagamento = pagamentiRep.findByPaymentId(paymentId);
+            // Recupera i dettagli del pagamento dal database tramite PagamentiService
+            Pagamenti pagamento = pagamentiService.queryPagamenti(null, new Pagamenti())
+                    .stream()
+                    .filter(p -> p.getPaymentsID().equals(paymentId))
+                    .findFirst()
+                    .orElse(null);  // Cerca il pagamento nel risultato della query
+
             if (pagamento != null) {
                 return ResponseEntity.ok(pagamento);  // Restituisci il pagamento aggiornato
             } else {

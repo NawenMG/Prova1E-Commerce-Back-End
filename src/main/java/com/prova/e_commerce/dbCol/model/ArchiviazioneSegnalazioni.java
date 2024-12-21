@@ -29,8 +29,8 @@ public class ArchiviazioneSegnalazioni {
     @Size(min = 1, max = 1000, message = "La descrizione deve essere tra 1 e 1000 caratteri")
     private String descrizione;  // Descrizione della segnalazione
 
-    @Size(max = 255, message = "Il file multimediale può essere al massimo di 255 caratteri")
-    private String fileMultimediali;  // File multimediali associati alla segnalazione
+    // Campo BLOB per il file multimediale
+    private byte[] fileMultimediali;  // Contenuto binario del file multimediale associato alla segnalazione
 
     // Costruttore vuoto
     public ArchiviazioneSegnalazioni() {
@@ -85,11 +85,11 @@ public class ArchiviazioneSegnalazioni {
         this.descrizione = descrizione;
     }
 
-    public String getFileMultimediali() {
+    public byte[] getFileMultimediali() {
         return fileMultimediali;
     }
 
-    public void setFileMultimediali(String fileMultimediali) {
+    public void setFileMultimediali(byte[] fileMultimediali) {
         this.fileMultimediali = fileMultimediali;
     }
 }

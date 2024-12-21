@@ -1,13 +1,8 @@
 package com.prova.e_commerce.dbG.controller.rest;
 
-import com.prova.e_commerce.dbG.model.NodoCategoriaProdotto;
-import com.prova.e_commerce.dbG.model.NodoLocazioneUtente;
-import com.prova.e_commerce.dbG.model.NodoProdotto;
-import com.prova.e_commerce.dbG.model.NodoUtente;
+import com.prova.e_commerce.dbG.model.*;
 import com.prova.e_commerce.dbG.service.ServiceGraphDB;
-
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +25,7 @@ public class ControllerRestGraphDB {
     // POST - Crea un nuovo Prodotto
     @PostMapping("/prodotti")
     public ResponseEntity<NodoProdotto> creaProdotto(@Valid @RequestBody NodoProdotto prodotto) {
-        NodoProdotto nuovoProdotto = (NodoProdotto) serviceGraphDB.creaProdotto(prodotto);
+        NodoProdotto nuovoProdotto = serviceGraphDB.creaProdotto(prodotto);
         return new ResponseEntity<>(nuovoProdotto, HttpStatus.CREATED);
     }
 
@@ -51,88 +46,56 @@ public class ControllerRestGraphDB {
     // PUT - Aggiorna un Utente esistente
     @PutMapping("/utenti/{id}")
     public ResponseEntity<NodoUtente> aggiornaUtente(@PathVariable Long id, @Valid @RequestBody NodoUtente utente) {
-        try {
-            NodoUtente utenteAggiornato = serviceGraphDB.aggiornaUtente(id, utente);
-            return new ResponseEntity<>(utenteAggiornato, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        NodoUtente utenteAggiornato = serviceGraphDB.aggiornaUtente(id, utente);
+        return new ResponseEntity<>(utenteAggiornato, HttpStatus.OK);
     }
 
     // PUT - Aggiorna un Prodotto esistente
     @PutMapping("/prodotti/{id}")
     public ResponseEntity<NodoProdotto> aggiornaProdotto(@PathVariable Long id, @Valid @RequestBody NodoProdotto prodotto) {
-        try {
-            NodoProdotto prodottoAggiornato = serviceGraphDB.aggiornaProdotto(id, prodotto);
-            return new ResponseEntity<>(prodottoAggiornato, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        NodoProdotto prodottoAggiornato = serviceGraphDB.aggiornaProdotto(id, prodotto);
+        return new ResponseEntity<>(prodottoAggiornato, HttpStatus.OK);
     }
 
     // PUT - Aggiorna una CategoriaProdotto esistente
     @PutMapping("/categorie-prodotti/{id}")
     public ResponseEntity<NodoCategoriaProdotto> aggiornaCategoriaProdotto(@PathVariable Long id, @Valid @RequestBody NodoCategoriaProdotto categoriaProdotto) {
-        try {
-            NodoCategoriaProdotto categoriaProdottoAggiornata = serviceGraphDB.aggiornaCategoriaProdotto(id, categoriaProdotto);
-            return new ResponseEntity<>(categoriaProdottoAggiornata, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        NodoCategoriaProdotto categoriaProdottoAggiornata = serviceGraphDB.aggiornaCategoriaProdotto(id, categoriaProdotto);
+        return new ResponseEntity<>(categoriaProdottoAggiornata, HttpStatus.OK);
     }
 
     // PUT - Aggiorna una LocazioneUtente esistente
     @PutMapping("/locazioni-utenti/{id}")
     public ResponseEntity<NodoLocazioneUtente> aggiornaLocazioneUtente(@PathVariable Long id, @Valid @RequestBody NodoLocazioneUtente locazioneUtente) {
-        try {
-            NodoLocazioneUtente locazioneUtenteAggiornata = serviceGraphDB.aggiornaLocazioneUtente(id, locazioneUtente);
-            return new ResponseEntity<>(locazioneUtenteAggiornata, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        NodoLocazioneUtente locazioneUtenteAggiornata = serviceGraphDB.aggiornaLocazioneUtente(id, locazioneUtente);
+        return new ResponseEntity<>(locazioneUtenteAggiornata, HttpStatus.OK);
     }
 
     // DELETE - Elimina un Utente
     @DeleteMapping("/utenti/{id}")
     public ResponseEntity<Void> eliminaUtente(@PathVariable Long id) {
-        try {
-            serviceGraphDB.eliminaUtente(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        serviceGraphDB.eliminaUtente(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // DELETE - Elimina un Prodotto
     @DeleteMapping("/prodotti/{id}")
     public ResponseEntity<Void> eliminaProdotto(@PathVariable Long id) {
-        try {
-            serviceGraphDB.eliminaProdotto(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        serviceGraphDB.eliminaProdotto(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // DELETE - Elimina una CategoriaProdotto
     @DeleteMapping("/categorie-prodotti/{id}")
     public ResponseEntity<Void> eliminaCategoriaProdotto(@PathVariable Long id) {
-        try {
-            serviceGraphDB.eliminaCategoriaProdotto(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        serviceGraphDB.eliminaCategoriaProdotto(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // DELETE - Elimina una LocazioneUtente
     @DeleteMapping("/locazioni-utenti/{id}")
     public ResponseEntity<Void> eliminaLocazioneUtente(@PathVariable Long id) {
-        try {
-            serviceGraphDB.eliminaLocazioneUtente(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        serviceGraphDB.eliminaLocazioneUtente(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

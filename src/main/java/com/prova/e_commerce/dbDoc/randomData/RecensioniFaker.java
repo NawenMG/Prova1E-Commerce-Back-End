@@ -32,8 +32,8 @@ public class RecensioniFaker {
         recensione.setDescrizione(faker.lorem().paragraph(2));
 
         // Immagine e video URL (opzionali)
-        recensione.setImmagine(faker.internet().url() + "/image.jpg");
-        recensione.setVideo(faker.internet().url() + "/video.mp4");
+        /* recensione.setImmagine(faker.internet().url() + "/image.jpg");
+        recensione.setVideo(faker.internet().url() + "/video.mp4"); */
 
         // Like e dislike casuali
         recensione.setLike(faker.number().numberBetween(0, 500));

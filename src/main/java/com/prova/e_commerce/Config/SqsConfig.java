@@ -1,4 +1,4 @@
-package com.prova.e_commerce.Config;
+/* package com.prova.e_commerce.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,3 +16,4 @@ public class SqsConfig {
                               .build();
     }
 }
+ */

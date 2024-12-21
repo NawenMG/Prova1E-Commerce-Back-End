@@ -8,79 +8,101 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Service
 public class ResiService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ResiService.class);
+
     @Autowired
     private ResiRep resiRep;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate; // Kafka producer
+    private KafkaTemplate<String, String> kafkaTemplate;
 
-    private static final String KAFKA_TOPIC_RESI_AGGIUNGI = "resi-topic-aggiungi"; 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    @Autowired
+    private Tracer tracer;
+
+    private static final String KAFKA_TOPIC_RESI_AGGIUNGI = "resi-topic-aggiungi";
     private static final String KAFKA_TOPIC_RESI_AGGIORNA = "resi-topic-aggiorna";
 
-    /**
-     * Metodo per eseguire una query avanzata sui resi in base a parametri dinamici.
-     * Usa Caffeine per 10 minuti e Redis per 30 minuti.
-     */
+    public ResiService(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter("service.resi.query.count");
+        meterRegistry.counter("service.resi.inserisci.count");
+        meterRegistry.counter("service.resi.aggiorna.count");
+        meterRegistry.counter("service.resi.elimina.count");
+    }
+
     @Cacheable(value = {"caffeine", "redis"}, key = "#paramQuery.toString() + #resi.toString()")
     public List<Resi> queryResi(ParamQuery paramQuery, Resi resi) {
-        return resiRep.query(paramQuery, resi);
+        logger.info("Esecuzione query avanzata sui resi: paramQuery={}, resi={}", paramQuery, resi);
+        Span span = tracer.spanBuilder("queryResi").startSpan();
+        try {
+            meterRegistry.counter("service.resi.query.count").increment();
+            return resiRep.query(paramQuery, resi);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per inserire un nuovo reso.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'inserimento di un nuovo reso.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String inserisciReso(Resi resi) {
-        String result = resiRep.insertReturn(resi);
-        
-        // Invia un messaggio Kafka che indica l'inserimento di un nuovo reso
-        kafkaTemplate.send(KAFKA_TOPIC_RESI_AGGIUNGI, "Nuovo reso inserito: " + resi.getReturnsID());
-        
-        return result;
+        logger.info("Inserimento nuovo reso: resi={}", resi);
+        Span span = tracer.spanBuilder("inserisciReso").startSpan();
+        try {
+            meterRegistry.counter("service.resi.inserisci.count").increment();
+            kafkaTemplate.send(KAFKA_TOPIC_RESI_AGGIUNGI, "Nuovo reso inserito: " + resi.getReturnsID());
+            return resiRep.insertReturn(resi);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per aggiornare i dati di un reso specifico in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'aggiornamento di un reso.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String aggiornaReso(String returnID, Resi resi) {
-        String result = resiRep.updateReturn(returnID, resi);
-        
-        // Invia un messaggio Kafka che indica l'aggiornamento del reso
-        kafkaTemplate.send(KAFKA_TOPIC_RESI_AGGIORNA, "Reso aggiornato: " + returnID);
-        
-        return result;
+        logger.info("Aggiornamento reso: returnID={}, resi={}", returnID, resi);
+        Span span = tracer.spanBuilder("aggiornaReso").startSpan();
+        try {
+            meterRegistry.counter("service.resi.aggiorna.count").increment();
+            kafkaTemplate.send(KAFKA_TOPIC_RESI_AGGIORNA, "Reso aggiornato: " + returnID);
+            return resiRep.updateReturn(returnID, resi);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per eliminare un reso in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'eliminazione di un reso.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String eliminaReso(String returnID) {
-        String result = resiRep.deleteReturn(returnID);        
-        return result;
+        logger.info("Eliminazione reso: returnID={}", returnID);
+        Span span = tracer.spanBuilder("eliminaReso").startSpan();
+        try {
+            meterRegistry.counter("service.resi.elimina.count").increment();
+            return resiRep.deleteReturn(returnID);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per generare un numero specificato di resi con dati casuali e salvarli nel database.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare il salvataggio di resi casuali.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String salvaResiCasuali(int numero) {
-        String result = resiRep.saveAll(numero);        
-        return result;
+        logger.info("Salvataggio resi casuali: numero={}", numero);
+        Span span = tracer.spanBuilder("salvaResiCasuali").startSpan();
+        try {
+            meterRegistry.counter("service.resi.salva.casuali.count").increment();
+            return resiRep.saveAll(numero);
+        } finally {
+            span.end();
+        }
     }
 }

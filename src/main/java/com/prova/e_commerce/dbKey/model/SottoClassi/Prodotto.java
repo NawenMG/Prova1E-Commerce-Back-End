@@ -1,17 +1,12 @@
 package com.prova.e_commerce.dbKey.model.SottoClassi;
 
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Pattern;
 
-@DynamoDbBean
 public class Prodotto {
 
     @NotNull(message = "L'ID del prodotto è obbligatorio")
-    private String productId;  // ID del prodotto
+    private String _key;  // ID del prodotto, diventa la chiave in ArangoDB
 
     @NotNull(message = "Il nome del prodotto è obbligatorio")
     private String nome;       // Nome del prodotto
@@ -25,19 +20,19 @@ public class Prodotto {
     @Positive(message = "Il prezzo totale deve essere maggiore di zero")
     private double prezzoTotale;  // Prezzo totale del prodotto (quantita * prezzoUnitario)
 
-    @Pattern(regexp = "^https?://.*", message = "L'URL dell'immagine deve essere valido")
-    private String immagine;    // URL dell'immagine del prodotto
+    // Modifica del tipo immagine: da String (URL) a byte[] (BLOB)
+    private byte[] immagine;    // Immagine del prodotto in formato binario (BLOB)
 
-    @DynamoDbAttribute("productId")
-    public String getProductId() {
-        return productId;
+    // Getter e setter per la chiave _key (equivalente a productId in ArangoDB)
+    public String getKey() {
+        return _key;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setKey(String key) {
+        this._key = key;
     }
 
-    @DynamoDbAttribute("nome")
+    // Getter e setter per gli altri attributi
     public String getNome() {
         return nome;
     }
@@ -46,7 +41,6 @@ public class Prodotto {
         this.nome = nome;
     }
 
-    @DynamoDbAttribute("quantita")
     public int getQuantita() {
         return quantita;
     }
@@ -55,7 +49,6 @@ public class Prodotto {
         this.quantita = quantita;
     }
 
-    @DynamoDbAttribute("prezzoUnitario")
     public double getPrezzoUnitario() {
         return prezzoUnitario;
     }
@@ -64,7 +57,6 @@ public class Prodotto {
         this.prezzoUnitario = prezzoUnitario;
     }
 
-    @DynamoDbAttribute("prezzoTotale")
     public double getPrezzoTotale() {
         return prezzoTotale;
     }
@@ -73,12 +65,11 @@ public class Prodotto {
         this.prezzoTotale = prezzoTotale;
     }
 
-    @DynamoDbAttribute("immagine")
-    public String getImmagine() {
+    public byte[] getImmagine() {
         return immagine;
     }
 
-    public void setImmagine(String immagine) {
+    public void setImmagine(byte[] immagine) {
         this.immagine = immagine;
     }
 }

@@ -1,71 +1,79 @@
 package com.prova.e_commerce.pagamenti.stripe;
 
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
+import com.google.api.client.util.Value;
+import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
+import com.prova.e_commerce.dbRel.oracle.jdbc.service.PagamentiService;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
-import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
-import com.prova.e_commerce.dbRel.oracle.jdbc.repository.classi.PagamentiRepImp;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import com.stripe.exception.StripeException;
+import com.stripe.Stripe;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class StripeService {
 
+    @Autowired
+    private PagamentiService pagamentiService;  // Inietta PagamentiService
+
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
-    @Autowired
-    private PagamentiRepImp pagamentiRep;
-
+    // Inizializzazione della chiave segreta di Stripe
     public StripeService() {
-        // Impostiamo la chiave segreta di Stripe per l'autenticazione
         Stripe.apiKey = stripeSecretKey;
     }
 
-    // Metodo per creare un PaymentIntent e salvarlo nel database
-    public String createPaymentIntent(Double amount) throws StripeException {
-        // Creazione di un PaymentIntent tramite l'API di Stripe
-        PaymentIntentCreateParams params =
-                PaymentIntentCreateParams.builder()
-                        .setAmount(Math.round(amount * 100)) // Convertiamo in centesimi
-                        .setCurrency("usd") // Puoi cambiare la valuta a seconda delle tue esigenze
-                        .build();
+    /**
+     * Metodo per creare un pagamento tramite Stripe.
+     * @param total L'importo del pagamento
+     * @param currency La valuta
+     * @return Il client_secret necessario per completare il pagamento dal frontend
+     */
+    public String createPaymentIntent(Double total, String currency) throws StripeException {
+        long amount = (long) (total * 100);  // Stripe richiede l'importo in centesimi
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount(amount)
+                .setCurrency(currency)
+                .setDescription("Pagamento per acquisto prodotti")
+                .build();
 
+        // Creazione del PaymentIntent tramite Stripe
         PaymentIntent paymentIntent = PaymentIntent.create(params);
 
-        // Crea un'istanza di Pagamenti per salvare i dettagli nel DB
+        // Creazione di un nuovo oggetto Pagamenti
         Pagamenti pagamento = new Pagamenti();
-        pagamento.setPaymentsID(paymentIntent.getId());
-        pagamento.setType("Stripe");
-        pagamento.setData(LocalDate.now());  // Aggiungi la data attuale
-        pagamento.setStatus(false);  // Status iniziale come "false" (ancora non completato)
-        //pagamento.setTotal(BigDecimal.valueOf(amount)); // Impostiamo l'importo del pagamento
+        pagamento.setPaymentsID(paymentIntent.getId());  // Imposta l'ID del pagamento
+        pagamento.setType("Stripe");  // Metodo di pagamento (Stripe)
+        pagamento.setStatus(false);  // Stato iniziale del pagamento (non completato)
+        
+        // Salvataggio del pagamento nel database tramite PagamentiService
+        pagamentiService.inserisciPagamento(pagamento);
 
-        // Salviamo il pagamento nel database
-        pagamentiRep.insertPayment(pagamento);
-
-        // Restituiamo il client secret, che è necessario per il frontend
+        // Restituisce il client_secret per completare il pagamento dal frontend
         return paymentIntent.getClientSecret();
     }
 
-    // Metodo per eseguire il pagamento e aggiornare lo stato nel DB
+    /**
+     * Metodo per eseguire il pagamento e aggiornare lo stato nel database.
+     * @param paymentId L'ID del PaymentIntent
+     */
     public void executePaymentAndSave(String paymentId) throws StripeException {
-        // Recuperiamo il PaymentIntent tramite l'ID
+        // Recupera il PaymentIntent da Stripe
         PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentId);
 
-        // Verifichiamo lo stato del pagamento
+        // Verifica che il pagamento sia stato completato con successo
         if (paymentIntent.getStatus().equals("succeeded")) {
-            // Aggiorniamo il pagamento nel database come completato
-            Pagamenti pagamento = pagamentiRep.findByPaymentId(paymentId);
-            if (pagamento != null) {
-                pagamento.setStatus(true);  // Impostiamo lo stato a "true" per completato
-                pagamentiRep.updatePayment(paymentId, pagamento);  // Salviamo le modifiche nel DB
-            }
+            // Aggiorna lo stato del pagamento nel database tramite PagamentiService
+            Pagamenti pagamento = new Pagamenti();
+            pagamento.setPaymentsID(paymentId);
+            pagamento.setStatus(true);  // Imposta lo stato come completato
+            pagamentiService.aggiornaPagamento(paymentId, pagamento);  // Aggiorna nel database
+        } else {
+            // Gestisci il caso in cui il pagamento non sia riuscito
+            // (puoi aggiungere logica di gestione degli errori qui)
+            System.out.println("Errore: il pagamento non è stato completato.");
         }
     }
 }

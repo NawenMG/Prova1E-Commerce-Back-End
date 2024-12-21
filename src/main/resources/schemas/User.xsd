@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           targetNamespace="http://example.com/user" 
+           xmlns="http://example.com/user" 
+           elementFormDefault="qualified">
+
+    <!-- Tipo complesso per rappresentare un utente -->
+    <xs:complexType name="UserType">
+        <xs:sequence>
+            <xs:element name="id" type="UUIDType"/>
+            <xs:element name="nome" type="String100Type"/>
+            <xs:element name="cognome" type="String100Type"/>
+            <xs:element name="ruolo" type="String50Type"/>
+            <xs:element name="nomeUtente" type="String100Type"/>
+            <xs:element name="email" type="EmailType"/>
+            <xs:element name="password" type="PasswordType"/>
+            <xs:element name="immagine" type="xs:base64Binary" minOccurs="0"/>
+            <xs:element name="createdAt" type="xs:dateTime"/>
+            <xs:element name="updatedAt" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Elemento radice per le richieste di ricerca -->
+    <xs:element name="FindUserByNomeUtenteRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="nomeUtente" type="String100Type"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Elemento radice per le risposte di ricerca -->
+    <xs:element name="FindUserByNomeUtenteResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="UserType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Elemento radice per le richieste di creazione utente -->
+    <xs:element name="CreateUserRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="UserType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Elemento radice per le risposte di creazione utente -->
+    <xs:element name="CreateUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="UserType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Tipo personalizzato per UUID -->
+    <xs:simpleType name="UUIDType">
+        <xs:restriction base="xs:string">
+            <xs:length value="36"/>
+            <xs:pattern value="[a-fA-F0-9\-]{36}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Tipo personalizzato per stringhe di massimo 100 caratteri -->
+    <xs:simpleType name="String100Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Tipo personalizzato per stringhe di massimo 50 caratteri -->
+    <xs:simpleType name="String50Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="50"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Tipo personalizzato per email -->
+    <xs:simpleType name="EmailType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+            <xs:pattern value="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Tipo personalizzato per password -->
+    <xs:simpleType name="PasswordType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+
+
+
+</xs:schema>

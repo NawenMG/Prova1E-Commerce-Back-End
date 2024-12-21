@@ -8,83 +8,103 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Service
 public class CategorieService {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(CategorieService.class);
+
     @Autowired
     private CategorieRep categorieRep;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;  // Template per inviare messaggi Kafka
+    private KafkaTemplate<String, String> kafkaTemplate;
 
-    private static final String TOPIC_EVENTI_CATEGORIA_AGGIUNGI = "eventi-categoria-topic-aggiungi";  
-    private static final String TOPIC_EVENTI_CATEGORIA_AGGIORNA = "eventi-categoria-topic-aggiorna";  
+    @Autowired
+    private MeterRegistry meterRegistry;
 
+    @Autowired
+    private Tracer tracer;
 
-    
-    /**
-     * Metodo per eseguire una query avanzata sulle categorie in base a parametri dinamici.
-     * Utilizza Caffeine per 10 minuti e Redis per 30 minuti.
-     */
+    private static final String TOPIC_EVENTI_CATEGORIA_AGGIUNGI = "eventi-categoria-topic-aggiungi";
+    private static final String TOPIC_EVENTI_CATEGORIA_AGGIORNA = "eventi-categoria-topic-aggiorna";
+
+    public CategorieService(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter("service.categorie.query.count");
+        meterRegistry.counter("service.categorie.inserisci.count");
+        meterRegistry.counter("service.categorie.aggiorna.count");
+        meterRegistry.counter("service.categorie.elimina.count");
+    }
+
     @Cacheable(value = {"caffeine", "redis"}, key = "#paramQuery.toString() + #categorie.toString()")
     public List<Categorie> queryCategorie(ParamQuery paramQuery, Categorie categorie) {
-        return categorieRep.query(paramQuery, categorie);
+        logger.info("Esecuzione query avanzata sulle categorie: paramQuery={}, categorie={}", paramQuery, categorie);
+        Span span = tracer.spanBuilder("queryCategorie").startSpan();
+        try {
+            meterRegistry.counter("service.categorie.query.count").increment();
+            return categorieRep.query(paramQuery, categorie);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per inserire una nuova categoria.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Pubblica un evento Kafka per l'inserimento della categoria.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String inserisciCategoria(Categorie categorie) {
-        String result = categorieRep.insertCategory(categorie);
-
-        // Pubblica un messaggio Kafka per l'inserimento della nuova categoria
-        kafkaTemplate.send(TOPIC_EVENTI_CATEGORIA_AGGIUNGI, "Inserimento", "Categoria inserita: " + categorie.getName());
-
-        return result;
+        logger.info("Inserimento nuova categoria: categorie={}", categorie);
+        Span span = tracer.spanBuilder("inserisciCategoria").startSpan();
+        try {
+            meterRegistry.counter("service.categorie.inserisci.count").increment();
+            String result = categorieRep.insertCategory(categorie);
+            kafkaTemplate.send(TOPIC_EVENTI_CATEGORIA_AGGIUNGI, "Inserimento", "Categoria inserita: " + categorie.getName());
+            return result;
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per aggiornare una categoria esistente in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Pubblica un evento Kafka per l'aggiornamento della categoria.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String aggiornaCategoria(String categoryID, Categorie categorie) {
-        String result = categorieRep.updateCategory(categoryID, categorie);
-
-        // Pubblica un messaggio Kafka per l'aggiornamento della categoria
-        kafkaTemplate.send(TOPIC_EVENTI_CATEGORIA_AGGIORNA, "Aggiornamento", "Categoria aggiornata con ID: " + categoryID);
-
-        return result;
+        logger.info("Aggiornamento categoria: categoryID={}, categorie={}", categoryID, categorie);
+        Span span = tracer.spanBuilder("aggiornaCategoria").startSpan();
+        try {
+            meterRegistry.counter("service.categorie.aggiorna.count").increment();
+            String result = categorieRep.updateCategory(categoryID, categorie);
+            kafkaTemplate.send(TOPIC_EVENTI_CATEGORIA_AGGIORNA, "Aggiornamento", "Categoria aggiornata con ID: " + categoryID);
+            return result;
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per eliminare una categoria in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Pubblica un evento Kafka per l'eliminazione della categoria.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String eliminaCategoria(String categoryID) {
-        String result = categorieRep.deleteCategory(categoryID);
-
-        return result;
+        logger.info("Eliminazione categoria: categoryID={}", categoryID);
+        Span span = tracer.spanBuilder("eliminaCategoria").startSpan();
+        try {
+            meterRegistry.counter("service.categorie.elimina.count").increment();
+            return categorieRep.deleteCategory(categoryID);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per salvare un insieme di categorie generate in modo casuale.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Pubblica un evento Kafka per il salvataggio delle categorie.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String salvaCategorieCasuali(int numero) {
-        String result = categorieRep.saveAll(numero);
-
-        return result;
+        logger.info("Salvataggio categorie casuali: numero={}", numero);
+        Span span = tracer.spanBuilder("salvaCategorieCasuali").startSpan();
+        try {
+            meterRegistry.counter("service.categorie.salva.casuali.count").increment();
+            return categorieRep.saveAll(numero);
+        } finally {
+            span.end();
+        }
     }
 }

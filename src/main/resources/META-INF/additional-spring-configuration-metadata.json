@@ -293,5 +293,75 @@
     "name": "cloud.aws.sqs.queue-name",
     "type": "java.lang.String",
     "description": "A description for 'cloud.aws.sqs.queue-name'"
+  },
+  {
+    "name": "arangodb.host",
+    "type": "java.lang.String",
+    "description": "A description for 'arangodb.host'"
+  },
+  {
+    "name": "arangodb.database",
+    "type": "java.lang.String",
+    "description": "A description for 'arangodb.database'"
+  },
+  {
+    "name": "rabbitmq.routing.key",
+    "type": "java.lang.String",
+    "description": "A description for 'rabbitmq.routing.key'"
+  },
+  {
+    "name": "rabbitmq.queue.name",
+    "type": "java.lang.String",
+    "description": "A description for 'rabbitmq.queue.name'"
+  },
+  {
+    "name": "rabbitmq.exchange.name",
+    "type": "java.lang.String",
+    "description": "A description for 'rabbitmq.exchange.name'"
+  },
+  {
+    "name": "arangodb.password",
+    "type": "java.lang.String",
+    "description": "A description for 'arangodb.password'"
+  },
+  {
+    "name": "aws.s3.region",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.s3.region'"
+  },
+  {
+    "name": "aws.s3.endpoint",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.s3.endpoint'"
+  },
+  {
+    "name": "aws.s3.accessKey",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.s3.accessKey'"
+  },
+  {
+    "name": "aws.s3.secretKey",
+    "type": "java.lang.String",
+    "description": "A description for 'aws.s3.secretKey'"
+  },
+  {
+    "name": "twilio.account.sid",
+    "type": "java.lang.String",
+    "description": "A description for 'twilio.account.sid'"
+  },
+  {
+    "name": "twilio.auth.token",
+    "type": "java.lang.String",
+    "description": "A description for 'twilio.auth.token'"
+  },
+  {
+    "name": "twilio.phone.number",
+    "type": "java.lang.String",
+    "description": "A description for 'twilio.phone.number'"
+  },
+  {
+    "name": "sendgrid.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'sendgrid.api.key'"
   }
 ]}

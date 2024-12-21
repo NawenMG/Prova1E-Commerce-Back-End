@@ -1,9 +1,5 @@
 package com.prova.e_commerce.dbKey.model;
 
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -12,12 +8,11 @@ import java.util.List;
 
 import com.prova.e_commerce.dbKey.model.SottoClassi.Notifica;
 
-@DynamoDbBean
 public class SettingSite {
 
     @NotNull(message = "L'ID utente è obbligatorio")
     @Size(min = 3, max = 100, message = "L'ID utente deve essere tra 3 e 100 caratteri")
-    private String userId;
+    private String _key;  // La chiave del documento in ArangoDB (equivalente a DynamoDB Partition Key)
 
     @NotNull(message = "Il numero di prodotti per pagina non può essere nullo")
     @Min(value = 1, message = "I prodotti per pagina devono essere almeno 1")
@@ -38,18 +33,17 @@ public class SettingSite {
     @NotNull(message = "La lista delle notifiche non può essere nulla")
     private List<Notifica> notifiche;
 
-    // Partition key
-    @DynamoDbPartitionKey
-    @DynamoDbAttribute("UserID")
-    public String getUserId() {
-        return userId;
+    // Metodo per ottenere la chiave del documento in ArangoDB
+    public String getKey() {
+        return _key;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    // Metodo per impostare la chiave del documento in ArangoDB
+    public void setKey(String key) {
+        this._key = key;
     }
 
-    @DynamoDbAttribute("ProdottiPerPagina")
+    // Getter e setter per prodotti per pagina
     public Integer getProdottiPerPagina() {
         return prodottiPerPagina;
     }
@@ -58,7 +52,7 @@ public class SettingSite {
         this.prodottiPerPagina = prodottiPerPagina;
     }
 
-    @DynamoDbAttribute("Tema")
+    // Getter e setter per il tema
     public String getTema() {
         return tema;
     }
@@ -67,7 +61,7 @@ public class SettingSite {
         this.tema = tema;
     }
 
-    @DynamoDbAttribute("Layout")
+    // Getter e setter per il layout
     public String getLayout() {
         return layout;
     }
@@ -76,7 +70,7 @@ public class SettingSite {
         this.layout = layout;
     }
 
-    @DynamoDbAttribute("Lingua")
+    // Getter e setter per la lingua
     public String getLingua() {
         return lingua;
     }
@@ -85,7 +79,7 @@ public class SettingSite {
         this.lingua = lingua;
     }
 
-    @DynamoDbAttribute("Notifiche")
+    // Getter e setter per le notifiche
     public List<Notifica> getNotifiche() {
         return notifiche;
     }

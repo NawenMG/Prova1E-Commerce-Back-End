@@ -4,9 +4,11 @@ import com.prova.e_commerce.dbKey.model.Carrello;
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.repository.interfacce.CarrelloRep;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import software.amazon.awssdk.enhanced.dynamodb.*;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import com.arangodb.ArangoDatabase;
+import com.arangodb.entity.BaseDocument;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,75 +16,96 @@ import java.util.Optional;
 @Repository
 public class CarrelloRepImp implements CarrelloRep {
 
-    private final DynamoDbTable<Carrello> carrelloTable;
+    @Autowired
+    private ArangoDatabase database;
 
-    public CarrelloRepImp(DynamoDbClient dynamoDbClient) {
-        DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
-                .dynamoDbClient(dynamoDbClient)
-                .build();
+    @Autowired
+    private ObjectMapper objectMapper; // Usato per la deserializzazione, Jackson
 
-        this.carrelloTable = enhancedClient.table("Carrello", TableSchema.fromBean(Carrello.class));
-    }
 
     // Aggiungi prodotti al carrello
     public void aggiungiProdotti(String userId, List<Prodotto> nuoviProdotti) {
-        Carrello carrello = carrelloTable.getItem(r -> r.key(k -> k.partitionValue(userId)));
+        try {
+            BaseDocument carrelloDoc = database.collection("Carrello").getDocument(userId, BaseDocument.class);
 
-        if (carrello == null) {
-            // Se il carrello non esiste, lo crea con i nuovi prodotti
-            carrello = new Carrello();
-            carrello.setUserId(userId);
-            carrello.setProdotti(nuoviProdotti);
-            carrello.setQuantitaTotale(nuoviProdotti.stream().mapToInt(Prodotto::getQuantita).sum());
-            carrello.setPrezzoTotale(nuoviProdotti.stream().mapToDouble(p -> p.getPrezzoTotale() * p.getQuantita()).sum());
-        } else {
-            // Aggiorna il carrello esistente aggiungendo i nuovi prodotti
-            List<Prodotto> prodottiEsistenti = carrello.getProdotti();
-            prodottiEsistenti.addAll(nuoviProdotti);
-            carrello.setProdotti(prodottiEsistenti);
-            carrello.setQuantitaTotale(
-                    prodottiEsistenti.stream().mapToInt(Prodotto::getQuantita).sum()
-            );
-            carrello.setPrezzoTotale(
-                    prodottiEsistenti.stream().mapToDouble(p -> p.getPrezzoTotale() * p.getQuantita()).sum()
-            );
+            if (carrelloDoc == null) {
+                // Se il carrello non esiste, creiamo un nuovo documento
+                Carrello carrello = new Carrello();
+                carrello.setKey(userId);
+                carrello.setProdotti(nuoviProdotti);
+                carrello.setQuantitaTotale(nuoviProdotti.stream().mapToInt(Prodotto::getQuantita).sum());
+                carrello.setPrezzoTotale(nuoviProdotti.stream().mapToDouble(p -> p.getPrezzoTotale() * p.getQuantita()).sum());
+
+                // Salva il nuovo carrello
+                database.collection("Carrello").insertDocument(carrello);
+            } else {
+                // Se il carrello esiste, aggiorniamo
+                Carrello carrello = objectMapper.convertValue(carrelloDoc.getProperties(), Carrello.class);
+                List<Prodotto> prodottiEsistenti = carrello.getProdotti();
+                prodottiEsistenti.addAll(nuoviProdotti);
+                carrello.setProdotti(prodottiEsistenti);
+                carrello.setQuantitaTotale(prodottiEsistenti.stream().mapToInt(Prodotto::getQuantita).sum());
+                carrello.setPrezzoTotale(prodottiEsistenti.stream().mapToDouble(p -> p.getPrezzoTotale() * p.getQuantita()).sum());
+
+                // Aggiorna il carrello nel database
+                database.collection("Carrello").updateDocument(userId, carrello);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        carrelloTable.putItem(carrello);
     }
 
-    // Seleziona tutti gli elementi del carrello con la chiave (userId)
+    // Trova carrello per ID utente
     public Optional<Carrello> trovaCarrello(String userId) {
-        return Optional.ofNullable(carrelloTable.getItem(r -> r.key(k -> k.partitionValue(userId))));
+        try {
+            BaseDocument carrelloDoc = database.collection("Carrello").getDocument(userId, BaseDocument.class);
+            if (carrelloDoc != null) {
+                Carrello carrello = objectMapper.convertValue(carrelloDoc.getProperties(), Carrello.class);
+                return Optional.of(carrello);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
-    // Elimina singolo prodotto dal carrello
+    // Elimina un prodotto dal carrello
     public void eliminaProdotto(String userId, String prodottoId) {
-        Carrello carrello = carrelloTable.getItem(r -> r.key(k -> k.partitionValue(userId)));
+        try {
+            BaseDocument carrelloDoc = database.collection("Carrello").getDocument(userId, BaseDocument.class);
+            if (carrelloDoc != null) {
+                Carrello carrello = objectMapper.convertValue(carrelloDoc.getProperties(), Carrello.class);
+                List<Prodotto> prodotti = carrello.getProdotti();
+                prodotti.removeIf(prodotto -> prodotto.getKey().equals(prodottoId)); // Rimuove il prodotto
 
-        if (carrello != null && carrello.getProdotti() != null) {
-            List<Prodotto> prodotti = carrello.getProdotti();
-            prodotti.removeIf(prodotto -> prodotto.getProductId().equals(prodottoId)); // Rimuove il prodotto con l'ID specificato
+                // Aggiorna il carrello
+                carrello.setQuantitaTotale(prodotti.stream().mapToInt(Prodotto::getQuantita).sum());
+                carrello.setPrezzoTotale(prodotti.stream().mapToDouble(p -> p.getPrezzoTotale() * p.getQuantita()).sum());
+                carrello.setProdotti(prodotti);
 
-            // Aggiorna quantità totale e prezzo totale
-            carrello.setQuantitaTotale(prodotti.stream().mapToInt(Prodotto::getQuantita).sum());
-            carrello.setPrezzoTotale(prodotti.stream().mapToDouble(p -> p.getPrezzoTotale() * p.getQuantita()).sum());
-            carrello.setProdotti(prodotti);
-
-            carrelloTable.putItem(carrello); // Salva le modifiche
+                // Salva il carrello aggiornato
+                database.collection("Carrello").updateDocument(userId, carrello);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     // Resetta tutti i prodotti nel carrello
     public void resetCarrello(String userId) {
-        Carrello carrello = carrelloTable.getItem(r -> r.key(k -> k.partitionValue(userId)));
+        try {
+            BaseDocument carrelloDoc = database.collection("Carrello").getDocument(userId, BaseDocument.class);
+            if (carrelloDoc != null) {
+                Carrello carrello = objectMapper.convertValue(carrelloDoc.getProperties(), Carrello.class);
+                carrello.setProdotti(null);
+                carrello.setQuantitaTotale(0);
+                carrello.setPrezzoTotale(0.0);
 
-        if (carrello != null) {
-            carrello.setProdotti(null);
-            carrello.setQuantitaTotale(0);
-            carrello.setPrezzoTotale(0.0);
-
-            carrelloTable.putItem(carrello); // Salva le modifiche
+                // Salva le modifiche nel carrello
+                database.collection("Carrello").updateDocument(userId, carrello);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

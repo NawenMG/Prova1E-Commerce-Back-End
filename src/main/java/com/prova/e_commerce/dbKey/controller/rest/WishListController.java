@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,46 +73,6 @@ public ResponseEntity<?> trovaWishList(@PathVariable String userId) {
         try {
             wishListService.resetWishList(userId);
             return ResponseEntity.ok("Wishlist resettata con successo.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore interno: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/{userId}/prodotti/{prodottoId}/immagine")
-    public ResponseEntity<?> caricaImmagineProdotto(
-            @PathVariable String userId,
-            @PathVariable String prodottoId,
-            @RequestParam("file") MultipartFile file) {
-        try {
-            String fileUrl = wishListService.caricaImmagineProdotto(userId, prodottoId, file);
-            return ResponseEntity.ok("Immagine caricata con successo: " + fileUrl);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore interno: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/{userId}/prodotti/{prodottoId}/immagine")
-    public ResponseEntity<?> scaricaImmagineProdotto(@PathVariable String userId, @PathVariable String prodottoId) {
-        try {
-            @SuppressWarnings("unused")
-            InputStream inputStream = wishListService.scaricaImmagineProdotto(userId, prodottoId);
-            return ResponseEntity.ok().body("Immagine scaricata con successo.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore interno: " + e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{userId}/prodotti/{prodottoId}/immagine")
-    public ResponseEntity<?> eliminaImmagineProdotto(@PathVariable String userId, @PathVariable String prodottoId) {
-        try {
-            wishListService.eliminaImmagineProdotto(userId, prodottoId);
-            return ResponseEntity.ok("Immagine eliminata con successo.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

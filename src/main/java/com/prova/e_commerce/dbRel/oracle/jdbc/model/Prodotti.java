@@ -26,8 +26,8 @@ public class Prodotti {
     @Size(max = 2000, message = "La descrizione non può superare i 2000 caratteri")
     private String descrizione;  // descrizione del prodotto (opzionale)
 
-    @Size(max = 255, message = "Il nome del file immagine non può superare i 255 caratteri")
-    private String immagine;  // immagine del prodotto (opzionale)
+    // Modifica del tipo immagine: da String (URL) a byte[] (BLOB)
+    private byte[] immagine;  // immagine del prodotto (opzionale, memorizzata come BLOB)
 
     @NotNull(message = "La quantità disponibile è obbligatoria")
     @PositiveOrZero(message = "La quantità disponibile deve essere positiva o zero")
@@ -78,11 +78,11 @@ public class Prodotti {
         this.descrizione = descrizione;
     }
 
-    public String getImmagine() {
+    public byte[] getImmagine() {
         return immagine;
     }
 
-    public void setImmagine(String immagine) {
+    public void setImmagine(byte[] immagine) {
         this.immagine = immagine;
     }
 

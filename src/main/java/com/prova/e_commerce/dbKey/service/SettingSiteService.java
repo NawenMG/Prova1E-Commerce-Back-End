@@ -6,50 +6,73 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 @Service
 public class SettingSiteService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SettingSiteService.class);
+
     @Autowired
     private SettingSiteRep settingSiteRep;
 
-    /**
-     * Metodo per recuperare le impostazioni di un utente dalla cache o dal repository.
-     * La cache è attiva per 10 minuti in Caffeine e 30 minuti in Redis.
-     */
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    @Autowired
+    private Tracer tracer;
+
+    public SettingSiteService(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter("service.settingsite.trova.count");
+        meterRegistry.counter("service.settingsite.salva.count");
+        meterRegistry.counter("service.settingsite.reset.count");
+    }
+
     @Cacheable(value = {"caffeine", "redis"}, key = "#userId", unless = "#result == null")
     public Optional<SettingSite> trovaImpostazioni(String userId) {
-        // Chiamata al repository per trovare le impostazioni dell'utente
-        return settingSiteRep.trovaImpostazioni(userId);
+        logger.info("Recupero impostazioni per l'utente: userId={}", userId);
+        Span span = tracer.spanBuilder("trovaImpostazioni").startSpan();
+        try {
+            meterRegistry.counter("service.settingsite.trova.count").increment();
+            return settingSiteRep.trovaImpostazioni(userId);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per aggiungere o aggiornare le impostazioni di un utente.
-     * Invalida la cache dell'utente dopo l'operazione.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void salvaImpostazioni(String userId, SettingSite settings) {
-        // Chiamata al repository per salvare o aggiornare le impostazioni
-        settingSiteRep.salvaImpostazioni(userId, settings);
+        logger.info("Salvataggio impostazioni per l'utente: userId={}, settings={}", userId, settings);
+        Span span = tracer.spanBuilder("salvaImpostazioni").startSpan();
+        try {
+            meterRegistry.counter("service.settingsite.salva.count").increment();
+            settingSiteRep.salvaImpostazioni(userId, settings);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per resettare le impostazioni di un utente.
-     * Invalida la cache dell'utente dopo l'operazione.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void resetImpostazioni(String userId) {
-        // Chiamata al repository per resettare le impostazioni
-        settingSiteRep.resetImpostazioni(userId);
+        logger.info("Reset delle impostazioni per l'utente: userId={}", userId);
+        Span span = tracer.spanBuilder("resetImpostazioni").startSpan();
+        try {
+            meterRegistry.counter("service.settingsite.reset.count").increment();
+            settingSiteRep.resetImpostazioni(userId);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo privato per invalidare la cache specifica dell'utente, chiamato dopo le modifiche.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     private void evictSettingCache(String userId) {
-        // Questo metodo non ha logica visibile, serve solo a invalidare la cache per l'utente specificato
+        logger.info("Invalidazione della cache per l'utente: userId={}", userId);
     }
 }

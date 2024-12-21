@@ -5,6 +5,11 @@ import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
 import com.prova.e_commerce.dbDoc.randomData.SchedeProdottiFaker;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRepCustom;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,6 +25,10 @@ import java.util.Optional;
 @Service
 public class SchedeProdottiService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SchedeProdottiService.class);
+    private static final String TOPIC_SCHEDA_PRODOTTI_SAVE = "scheda-prodotti-topic-save";
+    private static final String TOPIC_SCHEDA_PRODOTTI_UPDATE = "scheda-prodotti-topic-update";
+
     @Autowired
     private SchedeProdottiRep schedeProdottiRep;
 
@@ -32,88 +41,120 @@ public class SchedeProdottiService {
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
 
-    private static final String TOPIC_SCHEDA_PRODOTTI_SAVE = "scheda-prodotti-topic-save"; 
-    private static final String TOPIC_SCHEDA_PRODOTTI_UPDATE = "scheda-prodotti-topic-update";
+    @Autowired
+    private MeterRegistry meterRegistry;
 
-    /**
-     * Cache per cercare prodotti per nome (10 minuti in Caffeine, 30 minuti in Redis).
-     */
+    @Autowired
+    private Tracer tracer;
+
+    public SchedeProdottiService(MeterRegistry meterRegistry) {
+        // Inizializza metriche personalizzate
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter("service.schedeprodotti.save.count");
+        meterRegistry.counter("service.schedeprodotti.update.count");
+        meterRegistry.counter("service.schedeprodotti.query.count");
+    }
+
     @Cacheable(value = {"caffeine", "redis"}, key = "#nome", unless = "#result == null")
     public List<SchedeProdotti> findByNome(String nome) {
-        return schedeProdottiRep.findByNome(nome);
+        logger.info("Finding schede prodotti by nome: {}", nome);
+        Span span = tracer.spanBuilder("findByNome").startSpan();
+        try {
+            return schedeProdottiRep.findByNome(nome);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Cache per cercare prodotti con prezzo inferiore a una certa soglia (10 minuti in Caffeine, 30 minuti in Redis).
-     */
     @Cacheable(value = {"caffeine", "redis"}, key = "#prezzo", unless = "#result == null")
     public List<SchedeProdotti> findByPrezzoLessThan(BigDecimal prezzo) {
-        return schedeProdottiRep.findByPrezzoLessThan(prezzo);
+        logger.info("Finding schede prodotti with prezzo less than: {}", prezzo);
+        Span span = tracer.spanBuilder("findByPrezzoLessThan").startSpan();
+        try {
+            return schedeProdottiRep.findByPrezzoLessThan(prezzo);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Cache per cercare prodotti con criteri dinamici (10 minuti in Caffeine, 30 minuti in Redis).
-     * La cache è memorizzata con la chiave unica della query.
-     */
     @Cacheable(value = {"caffeine", "redis"}, key = "#paramQueryDbDoc.query", unless = "#result == null")
     public List<SchedeProdotti> queryDynamic(ParamQueryDbDoc paramQueryDbDoc, SchedeProdotti schedeProdotti) {
-        return schedeProdottiRepCustom.query(paramQueryDbDoc, schedeProdotti);
+        logger.info("Executing dynamic query for schede prodotti");
+        Span span = tracer.spanBuilder("queryDynamic").startSpan();
+        try {
+            meterRegistry.counter("service.schedeprodotti.query.count").increment();
+            return schedeProdottiRepCustom.query(paramQueryDbDoc, schedeProdotti);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per inserire un nuovo prodotto e invalidare la cache corrispondente.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public SchedeProdotti insert(SchedeProdotti prodotto) {
-     SchedeProdotti savedProdotto = schedeProdottiRep.save(prodotto);
-     // Invia evento Kafka
-     kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_SAVE, "ProdottoCreato", savedProdotto);
-     return savedProdotto;
-    }
-
-
-    /**
-     * Metodo per generare una lista fittizia di schede prodotti.
-     */
-    public List<SchedeProdotti> generateRandomSchedeProdotti(int count) {
-        List<SchedeProdotti> schedeProdottiList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            schedeProdottiList.add(prodottiFaker.generateFakeProduct());
+        logger.info("Inserting new prodotto: {}", prodotto);
+        Span span = tracer.spanBuilder("insert").startSpan();
+        try {
+            meterRegistry.counter("service.schedeprodotti.save.count").increment();
+            SchedeProdotti savedProdotto = schedeProdottiRep.save(prodotto);
+            kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_SAVE, "ProdottoCreato", savedProdotto);
+            return savedProdotto;
+        } finally {
+            span.end();
         }
-        return schedeProdottiList;
     }
 
-    /**
-     * Metodo per aggiornare un prodotto esistente e invalidare la cache corrispondente.
-     */
+    public List<SchedeProdotti> generateRandomSchedeProdotti(int count) {
+        logger.info("Generating {} random schede prodotti", count);
+        Span span = tracer.spanBuilder("generateRandomSchedeProdotti").startSpan();
+        try {
+            List<SchedeProdotti> schedeProdottiList = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                schedeProdottiList.add(prodottiFaker.generateFakeProduct());
+            }
+            return schedeProdottiList;
+        } finally {
+            span.end();
+        }
+    }
+
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     @Transactional
     public SchedeProdotti update(String id, SchedeProdotti prodotto) {
-     Optional<SchedeProdotti> existingProdotto = schedeProdottiRep.findById(id);
-     if (existingProdotto.isPresent()) {
-        SchedeProdotti updatedProdotto = existingProdotto.get();
-        updatedProdotto.setNome(prodotto.getNome());
-        updatedProdotto.setPrezzo(prodotto.getPrezzo());
-        updatedProdotto.setParametriDescrittivi(prodotto.getParametriDescrittivi());
-        SchedeProdotti savedProdotto = schedeProdottiRep.save(updatedProdotto);
-        // Invia evento Kafka
-        kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_UPDATE, "ProdottoAggiornato", savedProdotto);
-        return savedProdotto;
-     } else {
-        throw new RuntimeException("Prodotto con ID " + id + " non trovato.");
-     }
+        logger.info("Updating prodotto with ID: {}", id);
+        Span span = tracer.spanBuilder("update").startSpan();
+        try {
+            meterRegistry.counter("service.schedeprodotti.update.count").increment();
+            Optional<SchedeProdotti> existingProdotto = schedeProdottiRep.findById(id);
+            if (existingProdotto.isPresent()) {
+                SchedeProdotti updatedProdotto = existingProdotto.get();
+                updatedProdotto.setNome(prodotto.getNome());
+                updatedProdotto.setPrezzo(prodotto.getPrezzo());
+                updatedProdotto.setParametriDescrittivi(prodotto.getParametriDescrittivi());
+                SchedeProdotti savedProdotto = schedeProdottiRep.save(updatedProdotto);
+                kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_UPDATE, "ProdottoAggiornato", savedProdotto);
+                return savedProdotto;
+            } else {
+                logger.warn("Prodotto with ID {} not found", id);
+                throw new RuntimeException("Prodotto con ID " + id + " non trovato.");
+            }
+        } finally {
+            span.end();
+        }
     }
 
-
-    /**
-     * Metodo per eliminare un prodotto per ID e invalidare la cache corrispondente.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteById(String id) {
-        if (schedeProdottiRep.existsById(id)) {
-            schedeProdottiRep.deleteById(id);
-        } else {
-            throw new RuntimeException("Prodotto con ID " + id + " non trovato.");
+        logger.info("Deleting prodotto with ID: {}", id);
+        Span span = tracer.spanBuilder("deleteById").startSpan();
+        try {
+            if (schedeProdottiRep.existsById(id)) {
+                schedeProdottiRep.deleteById(id);
+            } else {
+                logger.warn("Prodotto with ID {} not found", id);
+                throw new RuntimeException("Prodotto con ID " + id + " non trovato.");
+            }
+        } finally {
+            span.end();
         }
     }
 }

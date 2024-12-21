@@ -1,4 +1,4 @@
-package com.prova.e_commerce.Config;
+/* package com.prova.e_commerce.Config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -30,3 +30,4 @@ public class SnsConfig {
                 .build();
     }
 }
+ */

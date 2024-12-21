@@ -15,9 +15,21 @@ import com.prova.e_commerce.dbG.repository.interfacce.NodoCategoriaProdottoRep;
 import com.prova.e_commerce.dbG.repository.interfacce.NodoLocazioneUtenteRep;
 import com.prova.e_commerce.dbG.repository.interfacce.NodoProdottoRep;
 import com.prova.e_commerce.dbG.repository.interfacce.NodoUtenteRep;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ServiceGraphDB {
+
+    private static final Logger logger = LoggerFactory.getLogger(ServiceGraphDB.class);
+
+    private static final String TOPIC_EVENTI_VISITA = "eventi-prodotti-topic-visita";
+    private static final String TOPIC_EVENTI_ACQUISTA = "eventi-prodotti-topic-acquista";
+    private static final String TOPIC_EVENTI_APPARTENENZA_CATEGORIA = "eventi-appartenenza-categoria";
+    private static final String TOPIC_EVENTI_PROVENIENZA_UTENTI = "eventi-provenienza-utenti";
 
     @Autowired
     private NodoUtenteRep nodoUtenteRep;
@@ -34,69 +46,119 @@ public class ServiceGraphDB {
     @Autowired
     private CustomRepNeo4j customRepNeo4j;
 
-     @Autowired
+    @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
 
-    private static final String TOPIC_EVENTI_VISITA = "eventi-prodotti-topic-visita";  
-    private static final String TOPIC_EVENTI_ACQUISTA = "eventi-prodotti-topic-acquista";
-    private static final String TOPIC_EVENTI_APPARTENENZA_CATEGORIA = "eventi-appartenenza-categoria";
-    private static final String TOPIC_EVENTI_PROVENIENZA_UTENTI = "eventi-provenienza-utenti";
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    @Autowired
+    private Tracer tracer;
+
+    public ServiceGraphDB(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter("service.graphdb.visita.count");
+        meterRegistry.counter("service.graphdb.acquisto.count");
+        meterRegistry.counter("service.graphdb.appartenenza.count");
+        meterRegistry.counter("service.graphdb.provenienza.count");
+    }
 
     public void visitaProdotto(Long utenteId, Long prodottoId) {
-        customRepNeo4j.visitaProdotto(utenteId, prodottoId);
-        // Invia evento Kafka per la visita
-        kafkaTemplate.send(TOPIC_EVENTI_VISITA, "ProdottoVisitato", "Utente " + utenteId + " ha visitato il prodotto " + prodottoId);
+        logger.info("Visita prodotto: utenteId={}, prodottoId={}", utenteId, prodottoId);
+        Span span = tracer.spanBuilder("visitaProdotto").startSpan();
+        try {
+            meterRegistry.counter("service.graphdb.visita.count").increment();
+            customRepNeo4j.visitaProdotto(utenteId, prodottoId);
+            kafkaTemplate.send(TOPIC_EVENTI_VISITA, "ProdottoVisitato", "Utente " + utenteId + " ha visitato il prodotto " + prodottoId);
+        } finally {
+            span.end();
+        }
     }
-    
 
     public void acquistoProdotto(Long utenteId, Long prodottoId) {
-        customRepNeo4j.acquistoProdotto(utenteId, prodottoId);
-        // Invia evento Kafka per l'acquisto
-        kafkaTemplate.send(TOPIC_EVENTI_ACQUISTA, "ProdottoAcquistato", "Utente " + utenteId + " ha acquistato il prodotto " + prodottoId);
+        logger.info("Acquisto prodotto: utenteId={}, prodottoId={}", utenteId, prodottoId);
+        Span span = tracer.spanBuilder("acquistoProdotto").startSpan();
+        try {
+            meterRegistry.counter("service.graphdb.acquisto.count").increment();
+            customRepNeo4j.acquistoProdotto(utenteId, prodottoId);
+            kafkaTemplate.send(TOPIC_EVENTI_ACQUISTA, "ProdottoAcquistato", "Utente " + utenteId + " ha acquistato il prodotto " + prodottoId);
+        } finally {
+            span.end();
+        }
     }
-    
 
     public void appartenenzaCategoria(Long prodottoId, String categoriaNome) {
-        customRepNeo4j.appartenenzaCategoria(prodottoId, categoriaNome);
-        // Invia evento Kafka per l'appartenenza alla categoria
-        kafkaTemplate.send(TOPIC_EVENTI_APPARTENENZA_CATEGORIA, "ProdottoCategoriaAggiunta", "Prodotto " + prodottoId + " appartiene alla categoria " + categoriaNome);
+        logger.info("Appartenenza categoria: prodottoId={}, categoriaNome={}", prodottoId, categoriaNome);
+        Span span = tracer.spanBuilder("appartenenzaCategoria").startSpan();
+        try {
+            meterRegistry.counter("service.graphdb.appartenenza.count").increment();
+            customRepNeo4j.appartenenzaCategoria(prodottoId, categoriaNome);
+            kafkaTemplate.send(TOPIC_EVENTI_APPARTENENZA_CATEGORIA, "ProdottoCategoriaAggiunta", "Prodotto " + prodottoId + " appartiene alla categoria " + categoriaNome);
+        } finally {
+            span.end();
+        }
     }
-    
 
     public void provenienzaGeografica(Long utenteId, Long prodottoId) {
-        customRepNeo4j.provenienzaGeografica(utenteId, prodottoId);
-        // Invia evento Kafka per la provenienza geografica
-        kafkaTemplate.send(TOPIC_EVENTI_PROVENIENZA_UTENTI, "ProdottoProvenienzaGeografica", "L'utente " + utenteId + " proviene da una certa località per il prodotto " + prodottoId);
+        logger.info("Provenienza geografica: utenteId={}, prodottoId={}", utenteId, prodottoId);
+        Span span = tracer.spanBuilder("provenienzaGeografica").startSpan();
+        try {
+            meterRegistry.counter("service.graphdb.provenienza.count").increment();
+            customRepNeo4j.provenienzaGeografica(utenteId, prodottoId);
+            kafkaTemplate.send(TOPIC_EVENTI_PROVENIENZA_UTENTI, "ProdottoProvenienzaGeografica", "L'utente " + utenteId + " proviene da una certa località per il prodotto " + prodottoId);
+        } finally {
+            span.end();
+        }
     }
-    
 
-    // Metodi POST (Creazione di nodi)
-    
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public NodoUtente creaUtente(NodoUtente utente) {
-        return nodoUtenteRep.save(utente);
+        logger.info("Creazione utente: {}", utente);
+        Span span = tracer.spanBuilder("creaUtente").startSpan();
+        try {
+            return nodoUtenteRep.save(utente);
+        } finally {
+            span.end();
+        }
     }
 
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public NodoProdotto creaProdotto(NodoProdotto prodotto) {
-        return  nodoProdottoRep.save(prodotto);
+        logger.info("Creazione prodotto: {}", prodotto);
+        Span span = tracer.spanBuilder("creaProdotto").startSpan();
+        try {
+            return nodoProdottoRep.save(prodotto);
+        } finally {
+            span.end();
+        }
     }
 
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public NodoCategoriaProdotto creaCategoriaProdotto(NodoCategoriaProdotto categoriaProdotto) {
-        return nodoCategoriaProdottoRep.save(categoriaProdotto);
+        logger.info("Creazione categoria prodotto: {}", categoriaProdotto);
+        Span span = tracer.spanBuilder("creaCategoriaProdotto").startSpan();
+        try {
+            return nodoCategoriaProdottoRep.save(categoriaProdotto);
+        } finally {
+            span.end();
+        }
     }
 
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public NodoLocazioneUtente creaLocazioneUtente(NodoLocazioneUtente locazioneUtente) {
-        return nodoLocazioneUtenteRep.save(locazioneUtente);
+        logger.info("Creazione locazione utente: {}", locazioneUtente);
+        Span span = tracer.spanBuilder("creaLocazioneUtente").startSpan();
+        try {
+            return nodoLocazioneUtenteRep.save(locazioneUtente);
+        } finally {
+            span.end();
+        }
     }
-
-    // Metodi PUT (Aggiornamento di nodi)
 
     @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoUtente aggiornaUtente(Long id, NodoUtente utente) {
         if (nodoUtenteRep.existsById(id)) {
+            logger.info("Aggiornamento utente con ID: {}", id);
             utente.setId(id);
             return nodoUtenteRep.save(utente);
         } else {
@@ -107,6 +169,7 @@ public class ServiceGraphDB {
     @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoProdotto aggiornaProdotto(Long id, NodoProdotto prodotto) {
         if (nodoProdottoRep.existsById(id)) {
+            logger.info("Aggiornamento prodotto con ID: {}", id);
             prodotto.setId(id);
             return nodoProdottoRep.save(prodotto);
         } else {
@@ -117,6 +180,7 @@ public class ServiceGraphDB {
     @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoCategoriaProdotto aggiornaCategoriaProdotto(Long id, NodoCategoriaProdotto categoriaProdotto) {
         if (nodoCategoriaProdottoRep.existsById(id)) {
+            logger.info("Aggiornamento categoria prodotto con ID: {}", id);
             categoriaProdotto.setId(id);
             return nodoCategoriaProdottoRep.save(categoriaProdotto);
         } else {
@@ -127,6 +191,7 @@ public class ServiceGraphDB {
     @Cacheable(value = {"caffeine", "redis"}, key = "#id", unless = "#result == null")
     public NodoLocazioneUtente aggiornaLocazioneUtente(Long id, NodoLocazioneUtente locazioneUtente) {
         if (nodoLocazioneUtenteRep.existsById(id)) {
+            logger.info("Aggiornamento locazione utente con ID: {}", id);
             locazioneUtente.setId(id);
             return nodoLocazioneUtenteRep.save(locazioneUtente);
         } else {
@@ -134,10 +199,9 @@ public class ServiceGraphDB {
         }
     }
 
-    // Metodi DELETE (Eliminazione di nodi)
-
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaUtente(Long id) {
+        logger.info("Eliminazione utente con ID: {}", id);
         if (nodoUtenteRep.existsById(id)) {
             nodoUtenteRep.deleteById(id);
         } else {
@@ -147,6 +211,7 @@ public class ServiceGraphDB {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaProdotto(Long id) {
+        logger.info("Eliminazione prodotto con ID: {}", id);
         if (nodoProdottoRep.existsById(id)) {
             nodoProdottoRep.deleteById(id);
         } else {
@@ -156,6 +221,7 @@ public class ServiceGraphDB {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaCategoriaProdotto(Long id) {
+        logger.info("Eliminazione categoria prodotto con ID: {}", id);
         if (nodoCategoriaProdottoRep.existsById(id)) {
             nodoCategoriaProdottoRep.deleteById(id);
         } else {
@@ -165,6 +231,7 @@ public class ServiceGraphDB {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void eliminaLocazioneUtente(Long id) {
+        logger.info("Eliminazione locazione utente con ID: {}", id);
         if (nodoLocazioneUtenteRep.existsById(id)) {
             nodoLocazioneUtenteRep.deleteById(id);
         } else {

@@ -114,7 +114,7 @@ public class ProdottiRepImp implements ProdottiRep {
             p.setNome(rs.getString("Nome"));
             p.setPrezzo(rs.getBigDecimal("Prezzo"));
             p.setDescrizione(rs.getString("Descrizione"));
-            p.setImmagine(rs.getString("Immagine"));
+            p.setImmagine(rs.getBytes("Immagine"));
             p.setAmountAvailable(rs.getInt("Quantità_Disponibile"));
             p.setCategoria(rs.getString("Categoria"));
             p.setDataDiInserimento(rs.getDate("Data_di_inserimento").toLocalDate());

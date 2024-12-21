@@ -150,30 +150,30 @@
 
 		 <!-- DynamoDB -->
 		 <!-- Dipendenza per AWS SDK -->
-		 <dependency>
+		 <!-- <dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb</artifactId>
 			<version>2.29.15</version>
-		</dependency>
+		</dependency> -->
 		
 	
 		<!-- Dipendenza per Spring Data DynamoDB -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.github.derjust</groupId>
 			<artifactId>spring-data-dynamodb</artifactId>
 			<version>5.1.0</version>
-		</dependency>
+		</dependency> -->
 		
 	
 		<!-- Dipendenza per la configurazione del client DynamoDB -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>aws-sdk-java</artifactId>
 			<version>2.29.9</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- AWS SDK v2 for DynamoDB Enhanced -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb-enhanced</artifactId>
 			<version>2.29.15</version>
@@ -183,7 +183,7 @@
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-dynamodb</artifactId>
 			<version>1.12.500</version>
-		</dependency>
+		</dependency> -->
 		
 		
 
@@ -242,7 +242,7 @@
 
 		<!-- AWS -->
 		 <!-- SQS -->
-		 <dependency>
+		 <!-- <dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-aws-messaging</artifactId>
 			<version>2.2.6.RELEASE</version>
@@ -251,7 +251,7 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>sqs</artifactId>
             <version>2.29.22</version>
-        </dependency>
+        </dependency> -->
 
 		<!-- <dependency>
 			<groupId>org.springframework.messaging</groupId>
@@ -260,7 +260,7 @@
 		</dependency>	 -->	 
 
 		<!-- Lambda-->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.amazonaws.serverless</groupId>
 			<artifactId>aws-serverless-java-container-springboot2</artifactId>
 			<version>1.9.4</version>
@@ -274,30 +274,30 @@
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-lambda-java-events</artifactId>
 			<version>3.14.0</version>
-		</dependency>
+		</dependency> -->
 
     <!-- AWS SDK for Lambda -->
-    <dependency>
+    <!-- <dependency>
     <groupId>software.amazon.awssdk</groupId>
     <artifactId>lambda</artifactId>
     <version>2.29.23</version>
-    </dependency>
+    </dependency> -->
 
 
 
 		<!-- SES -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-ses</artifactId>
 			<version>1.12.777</version>
-		</dependency>
+		</dependency> -->
 
 		 <!-- Dipendenza per Amazon SES SDK -->
-		 <dependency>
+		 <!-- <dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>ses</artifactId>
 			<version>2.29.20</version>
-		</dependency>		
+		</dependency> -->		
 	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -307,11 +307,11 @@
 		
 
 		<!-- SNS -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-sns</artifactId>
 			<version>1.12.777</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- Amazon RedShift -->
 		<!-- <dependency>
@@ -434,11 +434,11 @@
 
 
 		<!--S3-->
-		<dependency>
+		<!-- <dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>s3</artifactId>
 			<version>2.29.15</version>
-		</dependency>
+		</dependency> -->
 
 
 		<!-- Validazione -->
@@ -475,6 +475,251 @@
 
 
 
+		<!-- Security -->
+		  <!-- Spring Boot Starter Security: per la gestione della sicurezza e della protezione delle rotte -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+	 <!-- JJWT: per la gestione dei JSON Web Token (JWT) -->
+    <dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt</artifactId>
+    <version>0.12.6</version>
+</dependency>
+
+
+	<!-- Spring Security OAuth2 (opzionale, se usi OAuth2 oltre al JWT) -->
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-oauth2-jose</artifactId>
+        <version>5.8.0</version> <!-- Controlla la versione più recente -->
+    </dependency>
+
+    <!-- Per la gestione delle sessioni (opzionale se necessario) -->
+    <dependency>
+    <groupId>org.springframework.session</groupId>
+    <artifactId>spring-session-core</artifactId>
+    <version>3.4.0</version>
+</dependency>
+
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version> <!-- Usa una versione >= 0.11.0 -->
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version> <!-- Usa una versione >= 0.11.0 -->
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version> <!-- Usa una versione >= 0.11.0 -->
+</dependency>
+
+<!-- OAuth2-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    <version>3.4.0</version>
+</dependency>
+
+
+<!--ArangoDB key-value-->
+<dependency>
+    <groupId>com.arangodb</groupId>
+    <artifactId>arangodb-java-driver</artifactId>
+    <version>7.14.0</version>
+</dependency>
+
+<!-- Dipendenza per Spring Data ArangoDB (se necessaria per integrazione con Spring) -->
+<dependency>
+    <groupId>com.arangodb</groupId>
+    <artifactId>arangodb-spring-data</artifactId>
+    <version>4.4.2</version>
+</dependency>
+
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.18.2</version>
+</dependency>
+
+<!-- RabbitMQ-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+
+<!-- Apache Ozone
+Possiamo usare il codice s3 per lavorare con Ozone-->
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>s3</artifactId>
+    <version>2.29.31</version>
+</dependency>
+
+
+<!--Soap-->
+<!-- JAXB for XML binding (necessary for SOAP) -->
+ <dependency>
+    <groupId>jakarta.xml.bind</groupId>
+    <artifactId>jakarta.xml.bind-api</artifactId>
+    <version>4.0.2</version>
+</dependency> 
+
+<dependency>
+    <groupId>jakarta.xml.ws</groupId>
+    <artifactId>jakarta.xml.ws-api</artifactId>
+    <version>4.0.2</version>
+</dependency>
+
+
+<dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.3.1</version>
+</dependency>
+
+
+    <!-- JAXB Runtime -->
+<dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+    <version>4.0.5</version>
+</dependency>
+
+
+<!-- Dipendenza per la generazione automatica di WSDL -->
+<dependency>
+    <groupId>wsdl4j</groupId>
+    <artifactId>wsdl4j</artifactId>
+    <version>1.6.3</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web-services</artifactId>
+    <version>3.4.0</version>
+</dependency>
+
+
+<!-- Twilio for sms-->
+<dependency>
+    <groupId>com.twilio.sdk</groupId>
+    <artifactId>twilio</artifactId>
+    <version>10.6.4</version>
+</dependency>
+
+<!-- SendGrid-->
+<dependency>
+    <groupId>com.sendgrid</groupId>
+    <artifactId>sendgrid-java</artifactId>
+    <version>4.10.3</version>
+</dependency>
+
+
+<!-- JWT-->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.2</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.2</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.2</version>
+    <scope>runtime</scope>
+</dependency>
+
+
+
+<!-- GRPC -->
+<dependency>
+    <groupId>io.grpc</groupId>
+    <artifactId>grpc-netty-shaded</artifactId>
+    <version>1.69.0</version>
+</dependency>
+
+<dependency>
+    <groupId>io.grpc</groupId>
+    <artifactId>grpc-protobuf</artifactId>
+    <version>1.69.0</version>
+</dependency>
+
+
+<dependency>
+    <groupId>io.grpc</groupId>
+    <artifactId>grpc-stub</artifactId>
+    <version>1.69.0</version>
+</dependency>
+
+
+
+
+
+<!--Monitoring-->
+
+<!-- Prometheues-->
+<dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+
+
+<!-- Logstash-->
+<dependency>
+    <groupId>net.logstash.logback</groupId>
+    <artifactId>logstash-logback-encoder</artifactId>
+    <version>8.0</version>
+</dependency>
+
+
+<!-- OpenTelemetry-->
+<!-- OpenTelemetry SDK -->
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-sdk</artifactId>
+    <version>1.45.0</version>
+</dependency>
+
+    <!-- OpenTelemetry Exporter per Jaeger -->
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-exporter-jaeger</artifactId>
+    <version>1.34.1</version>
+</dependency>
+
+    <!-- Spring Boot autoconfiguration per OpenTelemetry -->
+    <!-- <dependency>
+        <groupId>io.opentelemetry.instrumentation</groupId>
+        <artifactId>opentelemetry-spring-boot-starter</artifactId>
+        <version>1.27.0</version>
+    </dependency> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		
 		
 		
@@ -502,44 +747,50 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.15.3</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					 Cartella dove si trova il WSDL 
-					<schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
+
+        <!-- <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jaxb2-maven-plugin</artifactId>
+            <version>2.5.0</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>xjc</goal>
+                    </goals>
+                    <configuration>
+                        <schemaDirectory>${project.basedir}/src/main/resources/schemas</schemaDirectory>
+                        <schemaIncludes>
+                            <include>User.xsd</include>
+                        </schemaIncludes>
+                        <generateDirectory>${project.build.directory}/generated-sources/jaxb</generateDirectory>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin> -->
+
+
+		<plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>jaxb2-maven-plugin</artifactId>
+      <version>3.1.0</version>
+      <executions>
+        <execution>
+          <id>xjc</id>
+          <goals>
+            <goal>xjc</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <sources>
+          <source>src/main/resources/schemas/User.xsd</source>
+        </sources>
+        <outputDirectory>src/main/java</outputDirectory>
+        <clearOutputDir>false</clearOutputDir>
+      </configuration>
+    </plugin>
+
 			
-					 Includi tutti i file WSDL nella cartella 
-					<schemaIncludes>
-						<include>*.wsdl</include>
-					</schemaIncludes>
-			
-					 Aggiungi l'argomento -wsdl per indicare che il file è un WSDL 
-					<args>
-						<arg>-wsdl</arg>
-					</args>
-			
-					 Cartella dove generare il codice Java 
-					<generateDirectory>${project.build.directory}/generated-sources/jaxb</generateDirectory>
-			
-					 Il package Java per il codice generato 
-					<generatePackage>com.prova.e_commerce.generated</generatePackage>
-			
-					 Forza la rigenerazione dei file 
-					<forceRegenerate>true</forceRegenerate>
-			
-					 Abilita l'estensione per supporto WSDL 
-					<extension>true</extension>
-				</configuration>
-			</plugin> -->
 			
 			
 		</plugins>

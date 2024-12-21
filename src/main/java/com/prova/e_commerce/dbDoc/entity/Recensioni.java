@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.bson.types.Binary;
 
 import javax.validation.constraints.*;
 import java.util.List;
@@ -40,13 +41,13 @@ public class Recensioni {
     @Size(max = 2000, message = "La descrizione non può superare i 2000 caratteri")
     private String descrizione; // Descrizione della recensione
 
+    // Modifica il tipo del campo immagine da String a Binary (BLOB)
     @Field("immagine")
-    @Size(max = 500, message = "L'URL dell'immagine non può superare i 500 caratteri")
-    private String immagine; // URL dell'immagine (opzionale)
+    private Binary immagine; // File immagine (come BLOB)
 
+    // Modifica il tipo del campo video da String a Binary (BLOB)
     @Field("video")
-    @Size(max = 500, message = "L'URL del video non può superare i 500 caratteri")
-    private String video; // URL del video (opzionale)
+    private Binary video; // File video (come BLOB)
 
     @Field("like")
     @PositiveOrZero(message = "Il numero di like deve essere maggiore o uguale a zero")
@@ -108,19 +109,19 @@ public class Recensioni {
         this.descrizione = descrizione;
     }
 
-    public String getImmagine() {
+    public Binary getImmagine() {
         return immagine;
     }
 
-    public void setImmagine(String immagine) {
+    public void setImmagine(Binary immagine) {
         this.immagine = immagine;
     }
 
-    public String getVideo() {
+    public Binary getVideo() {
         return video;
     }
 
-    public void setVideo(String video) {
+    public void setVideo(Binary video) {
         this.video = video;
     }
 

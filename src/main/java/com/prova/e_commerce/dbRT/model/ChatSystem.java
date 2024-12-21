@@ -56,9 +56,9 @@ public class ChatSystem {
         @NotBlank(message = "Il testo del messaggio è obbligatorio")
         private String text; // Testo del messaggio (Obbligatorio)
 
-        private String image; // URL o percorso dell'immagine (Opzionale)
-        private String audio; // URL o percorso dell'audio (Opzionale)
-        private String video; // URL o percorso del video (Opzionale)
+        private byte[] image; // File immagine del messaggio (Opzionale, memorizzato come BLOB)
+        private byte[] audio; // File audio del messaggio (Opzionale, memorizzato come BLOB)
+        private byte[] video; // File video del messaggio (Opzionale, memorizzato come BLOB)
 
         private long timestamp; // Timestamp del messaggio
 
@@ -92,27 +92,27 @@ public class ChatSystem {
             this.text = text;
         }
 
-        public String getImage() {
+        public byte[] getImage() {
             return image;
         }
 
-        public void setImage(String image) {
+        public void setImage(byte[] image) {
             this.image = image;
         }
 
-        public String getAudio() {
+        public byte[] getAudio() {
             return audio;
         }
 
-        public void setAudio(String audio) {
+        public void setAudio(byte[] audio) {
             this.audio = audio;
         }
 
-        public String getVideo() {
+        public byte[] getVideo() {
             return video;
         }
 
-        public void setVideo(String video) {
+        public void setVideo(byte[] video) {
             this.video = video;
         }
 

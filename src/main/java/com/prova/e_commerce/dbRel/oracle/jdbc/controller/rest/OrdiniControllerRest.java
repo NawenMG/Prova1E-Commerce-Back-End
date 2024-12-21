@@ -1,6 +1,7 @@
 package com.prova.e_commerce.dbRel.oracle.jdbc.controller.rest;
 
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Ordini;
+import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.service.OrdiniService;
 
@@ -32,8 +33,8 @@ public class OrdiniControllerRest {
      * Endpoint per inserire un nuovo ordine.
      */
     @PostMapping("/inserisci")
-    public ResponseEntity<String> inserisciOrdine(@Valid @RequestBody Ordini ordini) {
-        String response = ordiniService.inserisciOrdine(ordini);
+    public ResponseEntity<String> inserisciOrdine(@Valid @RequestBody Pagamenti pagamenti, @Valid @RequestBody Ordini ordini) {
+        String response = ordiniService.processaOrdine(pagamenti, ordini);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

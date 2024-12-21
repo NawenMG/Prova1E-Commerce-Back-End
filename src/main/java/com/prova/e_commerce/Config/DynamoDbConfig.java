@@ -1,4 +1,4 @@
-package com.prova.e_commerce.Config;
+/* package com.prova.e_commerce.Config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,3 +32,4 @@ public class DynamoDbConfig {
                 .build();
     }
 }
+ */

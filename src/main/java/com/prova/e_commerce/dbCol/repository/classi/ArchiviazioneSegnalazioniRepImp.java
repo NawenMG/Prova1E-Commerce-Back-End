@@ -280,10 +280,10 @@ import com.datastax.oss.driver.api.core.cql.*;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneSegnalazioniRep;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneSegnalazioni;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -370,7 +370,15 @@ public class ArchiviazioneSegnalazioniRepImp implements ArchiviazioneSegnalazion
         segnalazione.setData(row.getInstant("Data"));
         segnalazione.setTitolo(row.getString("Titolo"));
         segnalazione.setDescrizione(row.getString("Descrizione"));
-        segnalazione.setFileMultimediali(row.getString("File_multimediali"));
+        
+        // Gestione del campo BLOB
+        ByteBuffer fileMultimedialiBuffer = row.getByteBuffer("File_multimediali");
+        if (fileMultimedialiBuffer != null) {
+            byte[] fileMultimediali = new byte[fileMultimedialiBuffer.remaining()];
+            fileMultimedialiBuffer.get(fileMultimediali);
+            segnalazione.setFileMultimediali(fileMultimediali);
+        }
+        
         return segnalazione;
     }
 
@@ -379,6 +387,13 @@ public class ArchiviazioneSegnalazioniRepImp implements ArchiviazioneSegnalazion
         String query = "INSERT INTO ArchiviazioneSegnalazioni (ID, Utente, Riferimento, Data, Titolo, Descrizione, File_multimediali) " +
                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement statement = session.prepare(query);
+        
+        // Convertire il file multimediale in ByteBuffer per il salvataggio
+        ByteBuffer fileMultimedialiBuffer = null;
+        if (segnalazione.getFileMultimediali() != null) {
+            fileMultimedialiBuffer = ByteBuffer.wrap(segnalazione.getFileMultimediali());
+        }
+
         session.execute(statement.bind(
             segnalazione.getId(),
             segnalazione.getUtente(),
@@ -386,7 +401,7 @@ public class ArchiviazioneSegnalazioniRepImp implements ArchiviazioneSegnalazion
             segnalazione.getData(),
             segnalazione.getTitolo(),
             segnalazione.getDescrizione(),
-            segnalazione.getFileMultimediali()
+            fileMultimedialiBuffer // Passaggio del BLOB come ByteBuffer
         ));
     }
 
@@ -395,13 +410,20 @@ public class ArchiviazioneSegnalazioniRepImp implements ArchiviazioneSegnalazion
         String query = "UPDATE ArchiviazioneSegnalazioni SET Utente = ?, Riferimento = ?, Data = ?, Titolo = ?, " +
                        "Descrizione = ?, File_multimediali = ? WHERE ID = ?";
         PreparedStatement statement = session.prepare(query);
+        
+        // Convertire il file multimediale in ByteBuffer per l'aggiornamento
+        ByteBuffer fileMultimedialiBuffer = null;
+        if (segnalazione.getFileMultimediali() != null) {
+            fileMultimedialiBuffer = ByteBuffer.wrap(segnalazione.getFileMultimediali());
+        }
+
         session.execute(statement.bind(
             segnalazione.getUtente(),
             segnalazione.getRiferimento(),
             segnalazione.getData(),
             segnalazione.getTitolo(),
             segnalazione.getDescrizione(),
-            segnalazione.getFileMultimediali(),
+            fileMultimedialiBuffer, // Passaggio del BLOB come ByteBuffer
             id
         ));
     }

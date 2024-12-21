@@ -1,89 +1,132 @@
 package com.prova.e_commerce.dbRel.oracle.jdbc.service;
 
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Ordini;
+import com.prova.e_commerce.dbRel.oracle.jdbc.model.Pagamenti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.OrdiniRep;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Service
 public class OrdiniService {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(OrdiniService.class);
+
     @Autowired
     private OrdiniRep ordiniRep;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate; // Kafka producer
+    private RabbitTemplate rabbitTemplate;
 
-    private static final String KAFKA_TOPIC_ORDINI_AGGIUNGI = "ordini-topic-aggiungi"; 
-    private static final String KAFKA_TOPIC_ORDINI_AGGIORNA = "ordini-topic-aggiorna"; 
+    @Autowired
+    private MeterRegistry meterRegistry;
 
+    @Autowired
+    private Tracer tracer;
 
-    /**
-     * Metodo per eseguire una query avanzata sugli ordini in base a parametri dinamici.
-     * Utilizza Caffeine per 10 minuti e Redis per 30 minuti.
-     */
+    private static final String PAYMENT_QUEUE = "paymentQueue";
+    private static final String SHIPPING_QUEUE = "shippingQueue";
+
+    public OrdiniService(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter("service.ordini.query.count");
+        meterRegistry.counter("service.ordini.processa.count");
+        meterRegistry.counter("service.ordini.aggiorna.count");
+        meterRegistry.counter("service.ordini.elimina.count");
+    }
+
     @Cacheable(value = {"caffeine", "redis"}, key = "#paramQuery.toString() + #ordini.toString()")
     public List<Ordini> queryOrdini(ParamQuery paramQuery, Ordini ordini) {
-        return ordiniRep.query(paramQuery, ordini);
+        logger.info("Esecuzione query avanzata sugli ordini: paramQuery={}, ordini={}", paramQuery, ordini);
+        Span span = tracer.spanBuilder("queryOrdini").startSpan();
+        try {
+            meterRegistry.counter("service.ordini.query.count").increment();
+            return ordiniRep.query(paramQuery, ordini);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per inserire un nuovo ordine.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'inserimento di un nuovo ordine.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
-    public String inserisciOrdine(Ordini ordini) {
-        String result = ordiniRep.insertOrdini(ordini);
-        
-        // Invia un messaggio Kafka che indica l'inserimento di un nuovo ordine
-        kafkaTemplate.send(KAFKA_TOPIC_ORDINI_AGGIUNGI, "Nuovo ordine inserito: " + ordini.getOrderID());
-        
-        return result;
+    public String processaOrdine(Pagamenti pagamenti, Ordini ordini) {
+        logger.info("Processamento ordine: pagamenti={}, ordini={}", pagamenti, ordini);
+        Span span = tracer.spanBuilder("processaOrdine").startSpan();
+        try {
+            meterRegistry.counter("service.ordini.processa.count").increment();
+
+            rabbitTemplate.convertAndSend(PAYMENT_QUEUE, pagamenti);
+            boolean pagamentoEsito = verificaPagamentoEsito();
+
+            if (pagamentoEsito) {
+                rabbitTemplate.convertAndSend(SHIPPING_QUEUE, ordini);
+                boolean spedizioneEsito = verificaSpedizioneEsito();
+
+                if (spedizioneEsito) {
+                    return ordiniRep.insertOrdini(ordini);
+                } else {
+                    throw new RuntimeException("Errore durante la spedizione.");
+                }
+            } else {
+                throw new RuntimeException("Pagamento rifiutato.");
+            }
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per aggiornare un ordine esistente in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'aggiornamento di un ordine.
-     */
+    private boolean verificaPagamentoEsito() {
+        logger.info("Verifica esito pagamento.");
+        return true;
+    }
+
+    private boolean verificaSpedizioneEsito() {
+        logger.info("Verifica esito spedizione.");
+        return true;
+    }
+
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String aggiornaOrdine(String orderID, Ordini ordini) {
-        String result = ordiniRep.updateOrdini(orderID, ordini);
-        
-        // Invia un messaggio Kafka che indica l'aggiornamento dell'ordine
-        kafkaTemplate.send(KAFKA_TOPIC_ORDINI_AGGIORNA, "Ordine aggiornato: " + orderID);
-        
-        return result;
+        logger.info("Aggiornamento ordine: orderID={}, ordini={}", orderID, ordini);
+        Span span = tracer.spanBuilder("aggiornaOrdine").startSpan();
+        try {
+            meterRegistry.counter("service.ordini.aggiorna.count").increment();
+            return ordiniRep.updateOrdini(orderID, ordini);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per eliminare un ordine in base all'ID.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare l'eliminazione di un ordine.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String eliminaOrdine(String orderID) {
-        String result = ordiniRep.deleteOrdini(orderID);
-        
-        return result;
+        logger.info("Eliminazione ordine: orderID={}", orderID);
+        Span span = tracer.spanBuilder("eliminaOrdine").startSpan();
+        try {
+            meterRegistry.counter("service.ordini.elimina.count").increment();
+            return ordiniRep.deleteOrdini(orderID);
+        } finally {
+            span.end();
+        }
     }
 
-    /**
-     * Metodo per generare un numero specificato di ordini con dati casuali.
-     * Rimuove la cache per garantire che i dati siano aggiornati.
-     * Produce un messaggio Kafka per notificare il salvataggio di ordini casuali.
-     */
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String salvaOrdiniCasuali(int numero) {
-        String result = ordiniRep.saveAll(numero);
-        
-        return result;
+        logger.info("Salvataggio ordini casuali: numero={}", numero);
+        Span span = tracer.spanBuilder("salvaOrdiniCasuali").startSpan();
+        try {
+            meterRegistry.counter("service.ordini.salva.casuali.count").increment();
+            return ordiniRep.saveAll(numero);
+        } finally {
+            span.end();
+        }
     }
 }
