@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class FedExService implements ShippingProviderService {
+public class FedExService1 implements ShippingProviderService {
 
     // Metodo per creare un'etichetta di spedizione tramite FedEx
     @Override

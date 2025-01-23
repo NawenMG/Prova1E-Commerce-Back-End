@@ -90,7 +90,7 @@ public class SettingSiteRepImp implements SettingSiteRep {
     // Mappatura da BaseDocument a SettingSite
     private SettingSite mapToSettingSite(BaseDocument document) {
         SettingSite settings = new SettingSite();
-        settings.setKey(document.getKey());
+        settings.setUserId(document.getKey());
         settings.setProdottiPerPagina((Integer) document.getAttribute("prodottiPerPagina"));
         settings.setTema((String) document.getAttribute("tema"));
         settings.setLayout((String) document.getAttribute("layout"));

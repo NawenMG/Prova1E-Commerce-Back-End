@@ -3,6 +3,8 @@ package com.prova.e_commerce.dbCol.service;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneOrdini;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneOrdiniRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -21,7 +23,7 @@ public class ArchiviazioneOrdiniService {
 
     private static final Logger logger = LoggerFactory.getLogger(ArchiviazioneOrdiniService.class);
     private static final String TOPIC_ORDINI_SAVE = "ordini-topic-save";
-    private static final String TOPIC_ORDINI_UPDATE = "ordini-topic-update";
+    //private static final String TOPIC_ORDINI_UPDATE = "ordini-topic-update";
 
     @Autowired
     private ArchiviazioneOrdiniRep archiviazioneOrdiniRep;
@@ -83,14 +85,14 @@ public class ArchiviazioneOrdiniService {
         Span span = tracer.spanBuilder("saveOrdine").startSpan();
         try {
             meterRegistry.counter("service.ordine.save.count").increment();
-            archiviazioneOrdiniRep.saveOrdine(ordine);
+            archiviazioneOrdiniRep.saveOrdine(ordine, SecurityUtils.getCurrentUsername());
             kafkaTemplate.send(TOPIC_ORDINI_SAVE, "OrdineCreato", ordine);
         } finally {
             span.end();
         }
     }
 
-    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
+    /* @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void updateOrdine(String id, ArchiviazioneOrdini ordine) {
         logger.info("Updating order with ID: {}", id);
         Span span = tracer.spanBuilder("updateOrdine").startSpan();
@@ -101,7 +103,7 @@ public class ArchiviazioneOrdiniService {
         } finally {
             span.end();
         }
-    }
+    } */
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteOrdine(String id) {

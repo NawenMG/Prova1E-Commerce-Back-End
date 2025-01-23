@@ -5,6 +5,8 @@ import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
 import com.prova.e_commerce.dbDoc.randomData.RecensioniFaker;
 import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.RecensioniRepCustom;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RecensioniService {
@@ -103,7 +106,7 @@ public class RecensioniService {
         Span span = tracer.spanBuilder("saveRecensione").startSpan();
         try {
             meterRegistry.counter("service.recensioni.save.count").increment();
-            Recensioni savedRecensione = recensioniRep.save(recensione);
+            Recensioni savedRecensione = recensioniRep.save(recensione, SecurityUtils.getCurrentUsername());
             kafkaTemplate.send(TOPIC_RECENSIONI_SAVE, "RecensioneCreata", savedRecensione);
             return savedRecensione;
         } finally {
@@ -117,13 +120,23 @@ public class RecensioniService {
         Span span = tracer.spanBuilder("updateRecensione").startSpan();
         try {
             meterRegistry.counter("service.recensioni.update.count").increment();
-            if (recensioniRep.existsById(id)) {
+
+            // Recupera lo username dell'utente autenticato
+            String currentUser = SecurityUtils.getCurrentUsername();
+
+            // Verifica se l'ID esiste e se l'utente è proprietario della recensione
+            Recensioni existingRecensione = recensioniRep.findById(id).orElse(null);
+            if (existingRecensione != null && existingRecensione.getUserId().equals(currentUser)) {
                 recensione.setId(id);
+                recensione.setUserId(currentUser); // Garantisce che l'utente rimanga invariato
                 Recensioni updatedRecensione = recensioniRep.save(recensione);
+
+                // Invia un messaggio al topic Kafka
                 kafkaTemplate.send(TOPIC_RECENSIONI_UPDATE, "RecensioneAggiornata", updatedRecensione);
+
                 return updatedRecensione;
             } else {
-                logger.warn("Recensione with ID {} not found", id);
+                logger.warn("Recensione with ID {} not found or user is not authorized", id);
                 return null;
             }
         } finally {
@@ -136,10 +149,30 @@ public class RecensioniService {
         logger.info("Deleting recensione with ID: {}", id);
         Span span = tracer.spanBuilder("deleteRecensione").startSpan();
         try {
-            if (recensioniRep.existsById(id)) {
-                recensioniRep.deleteById(id);
-                return true;
+            // Recupera il ruolo e lo username dell'utente autenticato
+            String currentUser = SecurityUtils.getCurrentUsername();
+            Set<String> roles = SecurityUtils.getCurrentUserRoles();
+
+            // Recupera la recensione
+            Recensioni existingRecensione = recensioniRep.findById(id).orElse(null);
+
+            if (existingRecensione != null) {
+                // Controllo: Admin può eliminare qualsiasi recensione
+                if (roles.contains("ROLE_ADMIN")) {
+                    recensioniRep.deleteById(id);
+                    return true;
+                }
+
+                // Controllo: l'utente può eliminare solo le proprie recensioni
+                if (existingRecensione.getUserId().equals(currentUser)) {
+                    recensioniRep.deleteById(id);
+                    return true;
+                }
+
+                logger.warn("User {} is not authorized to delete recensione with ID {}", currentUser, id);
+                return false;
             }
+
             logger.warn("Recensione with ID {} not found", id);
             return false;
         } finally {

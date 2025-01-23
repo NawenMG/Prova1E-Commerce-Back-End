@@ -13,10 +13,12 @@ db.createCollection("Recensioni");
 
 // Indice univoco per 'ID' nella collezione 'schedeProdotti'
 db.schedeProdotti.createIndex({ "ID": 1 }, { unique: true });
+db.schedeProdotti.createIndex({ "User_id": 1 }, { unique: true });
+
 
 // Indice per 'Product_id' e 'User_id' nella collezione 'Recensioni'
-db.Recensioni.createIndex({ "Product_id": 1 });
-db.Recensioni.createIndex({ "User_id": 1 });
+db.Recensioni.createIndex({ "Product_id": 1 }, { unique: true });
+db.Recensioni.createIndex({ "User_id": 1 }, { unique: true });
 
 // Log di conferma
 print("Le collezioni 'schedeProdotti' e 'Recensioni' sono state create.");

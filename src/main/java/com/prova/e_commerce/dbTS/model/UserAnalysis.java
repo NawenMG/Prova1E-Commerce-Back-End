@@ -11,6 +11,11 @@ import java.time.Instant;
 @Measurement(name = "UserAnalysis")
 public class UserAnalysis {
 
+    @NotNull(message = "L'ID utente non può essere null")
+    @Column(tag = true)
+    private String userId;
+
+
     // Tag: Utente
     @NotBlank(message = "Il campo 'utente' non può essere vuoto o null")
     @Column(tag = true)
@@ -47,6 +52,16 @@ public class UserAnalysis {
     }
 
     // Getters e Setters
+
+    // Getters e Setters
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
     public String getUtente() {
         return utente;
     }

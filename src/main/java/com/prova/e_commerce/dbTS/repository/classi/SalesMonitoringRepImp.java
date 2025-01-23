@@ -9,6 +9,7 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import com.prova.e_commerce.dbTS.model.SalesMonitoring;
 import com.prova.e_commerce.dbTS.repository.interfacce.SalesMonitoringRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -31,13 +32,13 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
         this.bucket = bucket;
     }
 
-    // Inserisci singolo monitoraggio vendite
+    @Override
     public void insert(SalesMonitoring salesMonitoring) {
         WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
 
-        // Creazione di un punto per InfluxDB
         writeApi.writePoint(
             Point.measurement("SalesMonitoring")
+                .addTag("userId", SecurityUtils.getCurrentUsername())
                 .addTag("prodotto", salesMonitoring.getProdotto())
                 .addTag("categoriaProdotto", salesMonitoring.getCategoriaProdotto())
                 .addTag("venditore", salesMonitoring.getVenditore())
@@ -48,43 +49,45 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
         );
     }
 
-    // Inserisci un batch di monitoraggi vendite
+    @Override
     public void insertBatch(List<SalesMonitoring> salesMonitoringList) {
         WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
+        List<Point> points = new ArrayList<>();
         
         for (SalesMonitoring salesMonitoring : salesMonitoringList) {
-            writeApi.writePoint(
-                Point.measurement("SalesMonitoring")
-                    .addTag("prodotto", salesMonitoring.getProdotto())
-                    .addTag("categoriaProdotto", salesMonitoring.getCategoriaProdotto())
-                    .addTag("venditore", salesMonitoring.getVenditore())
-                    .addField("numeroOrdini", salesMonitoring.getNumeroOrdini())
-                    .addField("numeroUnitaVendute", salesMonitoring.getNumeroUnitaVendute())
-                    .addField("ricavo", salesMonitoring.getRicavo())
-                    .time(salesMonitoring.getTime(), WritePrecision.NS)
+            points.add(Point.measurement("SalesMonitoring")
+                .addTag("userId", SecurityUtils.getCurrentUsername())
+                .addTag("prodotto", salesMonitoring.getProdotto())
+                .addTag("categoriaProdotto", salesMonitoring.getCategoriaProdotto())
+                .addTag("venditore", salesMonitoring.getVenditore())
+                .addField("numeroOrdini", salesMonitoring.getNumeroOrdini())
+                .addField("numeroUnitaVendute", salesMonitoring.getNumeroUnitaVendute())
+                .addField("ricavo", salesMonitoring.getRicavo())
+                .time(salesMonitoring.getTime(), WritePrecision.NS)
             );
         }
+        writeApi.writePoints(points);
     }
 
-    // Metodo per aggiornare un record (scrittura di un nuovo punto, visto che InfluxDB non supporta aggiornamenti tradizionali)
+    @Override
     public void update(SalesMonitoring oldMonitoring, SalesMonitoring newMonitoring) {
-        insert(newMonitoring); // In realtà, scriviamo un nuovo punto
+        insert(newMonitoring);
     }
 
-    // Elimina i record per un venditore specifico
+    @Override
     public void deleteByTag(String venditore) {
-        // Query per eliminare tutte le serie che hanno il tag "venditore" con il valore specificato
         String dropSeriesQuery = String.format("""
-            DROP SERIES FROM "SalesMonitoring"
-            WHERE "venditore" = '%s'
-        """, venditore);
+            from(bucket: "%s")
+                |> range(start: -30d)
+                |> filter(fn: (r) => r[\"venditore\"] == \"%s\")
+                |> drop(columns: [\"venditore\"])
+            """, bucket, venditore);
 
-        // Esegui la query di eliminazione
         QueryApi queryApi = influxDBClient.getQueryApi();
         queryApi.query(dropSeriesQuery, bucket);
     }
 
-    // Query per un intervallo temporale
+    @Override
     public List<SalesMonitoring> findByTimeRange(Instant startTime, Instant endTime) {
         String flux = String.format("""
             from(bucket: "%s")
@@ -94,15 +97,13 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
                         columnKey: ["_field"], 
                         valueColumn: "_value")
             """,
-            bucket,
-            startTime.toString(),
-            endTime.toString()
+            bucket, startTime.toString(), endTime.toString()
         );
 
         return executeQuery(flux);
     }
 
-    // Query per prodotto specifico
+    @Override
     public List<SalesMonitoring> findByProduct(String prodotto) {
         String flux = String.format("""
             from(bucket: "%s")
@@ -112,14 +113,13 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
                         columnKey: ["_field"], 
                         valueColumn: "_value")
             """,
-            bucket,
-            prodotto
+            bucket, prodotto
         );
 
         return executeQuery(flux);
     }
 
-    // Query per venditore
+    @Override
     public List<SalesMonitoring> findByVendor(String venditore) {
         String flux = String.format("""
             from(bucket: "%s")
@@ -129,14 +129,13 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
                         columnKey: ["_field"], 
                         valueColumn: "_value")
             """,
-            bucket,
-            venditore
+            bucket, venditore
         );
 
         return executeQuery(flux);
     }
 
-    // Query per categoria prodotto
+    @Override
     public List<SalesMonitoring> findByCategory(String categoriaProdotto) {
         String flux = String.format("""
             from(bucket: "%s")
@@ -146,14 +145,13 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
                         columnKey: ["_field"], 
                         valueColumn: "_value")
             """,
-            bucket,
-            categoriaProdotto
+            bucket, categoriaProdotto
         );
 
         return executeQuery(flux);
     }
 
-    // Query per ricavo medio per prodotto
+    @Override
     public Map<String, Double> getAverageRevenueByProduct() {
         String flux = String.format("""
             from(bucket: "%s")
@@ -180,7 +178,6 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
         return results;
     }
 
-    // Metodo helper per eseguire le query e mappare i risultati
     private List<SalesMonitoring> executeQuery(String flux) {
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(flux, bucket);
@@ -188,14 +185,16 @@ public class SalesMonitoringRepImp implements SalesMonitoringRep {
 
         for (FluxTable table : tables) {
             for (FluxRecord record : table.getRecords()) {
-                String prodotto = record.getValueByKey("prodotto") != null ? record.getValueByKey("prodotto").toString() : "";
-                String categoriaProdotto = record.getValueByKey("categoriaProdotto") != null ? record.getValueByKey("categoriaProdotto").toString() : "";
-                String venditore = record.getValueByKey("venditore") != null ? record.getValueByKey("venditore").toString() : "";
-                Integer numeroOrdini = record.getValueByKey("numeroOrdini") != null ? (Integer) record.getValueByKey("numeroOrdini") : 0;
-                Integer numeroUnitaVendute = record.getValueByKey("numeroUnitaVendute") != null ? (Integer) record.getValueByKey("numeroUnitaVendute") : 0;
-                Double ricavo = record.getValueByKey("ricavo") != null ? (Double) record.getValueByKey("ricavo") : 0.0;
-
-                results.add(new SalesMonitoring(prodotto, categoriaProdotto, venditore, numeroOrdini, numeroUnitaVendute, ricavo, record.getTime()));
+                SalesMonitoring salesMonitoring = new SalesMonitoring(
+                    record.getValueByKey("prodotto") != null ? record.getValueByKey("prodotto").toString() : "",
+                    record.getValueByKey("categoriaProdotto") != null ? record.getValueByKey("categoriaProdotto").toString() : "",
+                    record.getValueByKey("venditore") != null ? record.getValueByKey("venditore").toString() : "",
+                    record.getValueByKey("numeroOrdini") != null ? Integer.parseInt(record.getValueByKey("numeroOrdini").toString()) : 0,
+                    record.getValueByKey("numeroUnitaVendute") != null ? Integer.parseInt(record.getValueByKey("numeroUnitaVendute").toString()) : 0,
+                    record.getValueByKey("ricavo") != null ? Double.parseDouble(record.getValueByKey("ricavo").toString()) : 0.0,
+                    record.getTime()
+                );
+                results.add(salesMonitoring);
             }
         }
 

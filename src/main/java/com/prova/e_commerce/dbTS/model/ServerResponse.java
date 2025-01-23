@@ -13,6 +13,10 @@ import java.time.Instant;
 @Measurement(name = "ServerResponse")
 public class ServerResponse {
 
+    @NotNull(message = "L'ID utente non può essere null")
+    @Column(tag = true)
+    private String userId;
+
     // Tag: Server
     @NotBlank(message = "Il nome del server non può essere vuoto")
     @Column(tag = true)
@@ -57,6 +61,15 @@ public class ServerResponse {
     }
 
     // Getters e Setters
+    // Getters e Setters
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
     public String getServer() {
         return server;
     }

@@ -5,6 +5,8 @@ import com.prova.e_commerce.dbDoc.parametri.ParamQueryDbDoc;
 import com.prova.e_commerce.dbDoc.randomData.SchedeProdottiFaker;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRep;
 import com.prova.e_commerce.dbDoc.repository.interfacce.SchedeProdottiRepCustom;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -95,7 +97,7 @@ public class SchedeProdottiService {
         Span span = tracer.spanBuilder("insert").startSpan();
         try {
             meterRegistry.counter("service.schedeprodotti.save.count").increment();
-            SchedeProdotti savedProdotto = schedeProdottiRep.save(prodotto);
+            SchedeProdotti savedProdotto = schedeProdottiRep.save(prodotto, SecurityUtils.getCurrentUsername());
             kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_SAVE, "ProdottoCreato", savedProdotto);
             return savedProdotto;
         } finally {
@@ -124,14 +126,32 @@ public class SchedeProdottiService {
         Span span = tracer.spanBuilder("update").startSpan();
         try {
             meterRegistry.counter("service.schedeprodotti.update.count").increment();
+
+            // Recupera lo username dell'utente autenticato
+            String currentUser = SecurityUtils.getCurrentUsername();
+
+            // Trova il prodotto esistente
             Optional<SchedeProdotti> existingProdotto = schedeProdottiRep.findById(id);
             if (existingProdotto.isPresent()) {
                 SchedeProdotti updatedProdotto = existingProdotto.get();
+
+                // Verifica se l'utente autenticato è lo stesso che ha aggiunto il prodotto
+                if (!updatedProdotto.getUserId().equals(currentUser)) {
+                    logger.warn("User {} is not authorized to update prodotto with ID {}", currentUser, id);
+                    throw new SecurityException("Non sei autorizzato a modificare questo prodotto.");
+                }
+
+                // Aggiorna i campi del prodotto
                 updatedProdotto.setNome(prodotto.getNome());
                 updatedProdotto.setPrezzo(prodotto.getPrezzo());
                 updatedProdotto.setParametriDescrittivi(prodotto.getParametriDescrittivi());
-                SchedeProdotti savedProdotto = schedeProdottiRep.save(updatedProdotto);
+
+                // Salva il prodotto aggiornato
+                SchedeProdotti savedProdotto = schedeProdottiRep.save(updatedProdotto, currentUser);
+
+                // Invia un messaggio al topic Kafka
                 kafkaTemplate.send(TOPIC_SCHEDA_PRODOTTI_UPDATE, "ProdottoAggiornato", savedProdotto);
+
                 return savedProdotto;
             } else {
                 logger.warn("Prodotto with ID {} not found", id);
@@ -141,6 +161,7 @@ public class SchedeProdottiService {
             span.end();
         }
     }
+
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteById(String id) {

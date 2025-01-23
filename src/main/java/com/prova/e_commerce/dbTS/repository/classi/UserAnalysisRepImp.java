@@ -9,6 +9,7 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import com.prova.e_commerce.dbTS.model.UserAnalysis;
 import com.prova.e_commerce.dbTS.repository.interfacce.UserAnalysisRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,7 @@ public class UserAnalysisRepImp implements UserAnalysisRep {
         // Creazione di un punto per InfluxDB
         writeApi.writePoint(
             Point.measurement("UserAnalysis")
+                .addTag("userId", SecurityUtils.getCurrentUsername())
                 .addTag("utente", analysis.getUtente())
                 .addTag("tipoDiDispositivo", analysis.getTipoDiDispositivo())
                 .addTag("azione", analysis.getAzione())
@@ -53,6 +55,7 @@ public class UserAnalysisRepImp implements UserAnalysisRep {
         for (UserAnalysis analysis : analysisList) {
             writeApi.writePoint(
                 Point.measurement("UserAnalysis")
+                    .addTag("userId", SecurityUtils.getCurrentUsername())
                     .addTag("utente", analysis.getUtente())
                     .addTag("tipoDiDispositivo", analysis.getTipoDiDispositivo())
                     .addTag("azione", analysis.getAzione())

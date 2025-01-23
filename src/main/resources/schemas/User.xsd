@@ -1,36 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           targetNamespace="http://example.com/user" 
-           xmlns="http://example.com/user" 
-           elementFormDefault="qualified">
+<xs:schema 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    targetNamespace="http://example.com/user"
+    xmlns="http://example.com/user"
+    elementFormDefault="qualified">
 
-    <!-- Tipo complesso per rappresentare un utente -->
+    <!-- =======================================================
+         1) TIPI SEMPLICI PER VALIDAZIONI (Stringa max 100, Email, ecc.)
+    ======================================================== -->
+    <xs:simpleType name="String100Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="EmailType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+            <xs:pattern value="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- =======================================================
+         2) ENUMERAZIONE DEI RUOLI (se il tuo Role1 prevede determinati valori)
+    ======================================================== -->
+    <xs:simpleType name="RoleEnum">
+    <xs:restriction base="xs:string">
+        <!-- Deve corrispondere ai "nome costanti" in Java, se usi "valueOf(...)" -->
+        <xs:enumeration value="USER"/>
+        <xs:enumeration value="ADMIN"/>
+        <xs:enumeration value="CONTROLLER"/>
+        <xs:enumeration value="USERAI"/>
+        <xs:enumeration value="USERMONITORING"/>
+        <xs:enumeration value="USERTRANSITION"/>
+        <xs:enumeration value="USERDELIVERY"/>
+    </xs:restriction>
+    </xs:simpleType>
+
+    <!-- =======================================================
+         3) TIPO COMPLESSO "UserType"
+         che rispecchia la tua entità 'User1'
+    ======================================================== -->
     <xs:complexType name="UserType">
         <xs:sequence>
-            <xs:element name="id" type="UUIDType"/>
+            <!-- Nota: userId è Long -->
+            <xs:element name="id" type="xs:long" minOccurs="0"/>
             <xs:element name="nome" type="String100Type"/>
             <xs:element name="cognome" type="String100Type"/>
-            <xs:element name="ruolo" type="String50Type"/>
-            <xs:element name="nomeUtente" type="String100Type"/>
+            <xs:element name="username" type="String100Type"/>
+            <xs:element name="password" type="String100Type"/>
             <xs:element name="email" type="EmailType"/>
-            <xs:element name="password" type="PasswordType"/>
+            <!-- immagine come base64 -->
             <xs:element name="immagine" type="xs:base64Binary" minOccurs="0"/>
-            <xs:element name="createdAt" type="xs:dateTime"/>
-            <xs:element name="updatedAt" type="xs:dateTime"/>
+            <!-- Timestamp di creazione e aggiornamento -->
+            <xs:element name="createdAt" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="updatedAt" type="xs:dateTime" minOccurs="0"/>
+            <!-- booleani e roles -->
+            <xs:element name="twoFactorEnabled" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="blocked" type="xs:boolean" minOccurs="0"/>
+
+            <!-- Rappresentazione dei ruoli: lista di RoleEnum -->
+            <xs:element name="roles" type="RoleEnum" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
-    <!-- Elemento radice per le richieste di ricerca -->
-    <xs:element name="FindUserByNomeUtenteRequest">
+    <!-- =======================================================
+         4) MESSAGGI PER LE OPERAZIONI SOAP
+         (Request / Response)
+    ======================================================== -->
+
+    <!-- 4.a) GetUser by Username -->
+    <xs:element name="GetUserRequest">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="nomeUtente" type="String100Type"/>
+                <xs:element name="username" type="String100Type"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
-    <!-- Elemento radice per le risposte di ricerca -->
-    <xs:element name="FindUserByNomeUtenteResponse">
+    <xs:element name="GetUserResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="user" type="UserType" minOccurs="0"/>
@@ -38,7 +86,7 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Elemento radice per le richieste di creazione utente -->
+    <!-- 4.b) CreateUser -->
     <xs:element name="CreateUserRequest">
         <xs:complexType>
             <xs:sequence>
@@ -47,8 +95,18 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Elemento radice per le risposte di creazione utente -->
     <xs:element name="CreateUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="UserType" minOccurs="0"/>
+                <xs:element name="success" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- 4.c) UpdateUser -->
+    <xs:element name="UpdateUserRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="user" type="UserType"/>
@@ -56,45 +114,54 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Tipo personalizzato per UUID -->
-    <xs:simpleType name="UUIDType">
-        <xs:restriction base="xs:string">
-            <xs:length value="36"/>
-            <xs:pattern value="[a-fA-F0-9\-]{36}"/>
-        </xs:restriction>
-    </xs:simpleType>
+    <xs:element name="UpdateUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="UserType" minOccurs="0"/>
+                <xs:element name="success" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-    <!-- Tipo personalizzato per stringhe di massimo 100 caratteri -->
-    <xs:simpleType name="String100Type">
-        <xs:restriction base="xs:string">
-            <xs:maxLength value="100"/>
-        </xs:restriction>
-    </xs:simpleType>
+    <!-- 4.d) BlockUser (blocca o sblocca) -->
+    <xs:element name="BlockUserRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="String100Type"/>
+                <xs:element name="block" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-    <!-- Tipo personalizzato per stringhe di massimo 50 caratteri -->
-    <xs:simpleType name="String50Type">
-        <xs:restriction base="xs:string">
-            <xs:maxLength value="50"/>
-        </xs:restriction>
-    </xs:simpleType>
+    <xs:element name="BlockUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="UserType" minOccurs="0"/>
+                <xs:element name="success" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-    <!-- Tipo personalizzato per email -->
-    <xs:simpleType name="EmailType">
-        <xs:restriction base="xs:string">
-            <xs:maxLength value="100"/>
-            <xs:pattern value="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"/>
-        </xs:restriction>
-    </xs:simpleType>
+    <!-- 4.e) SetTwoFactor -->
+    <xs:element name="SetTwoFactorRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="String100Type"/>
+                <xs:element name="enabled" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-    <!-- Tipo personalizzato per password -->
-    <xs:simpleType name="PasswordType">
-        <xs:restriction base="xs:string">
-            <xs:maxLength value="255"/>
-        </xs:restriction>
-    </xs:simpleType>
-
-
-
-
+    <xs:element name="SetTwoFactorResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="UserType" minOccurs="0"/>
+                <xs:element name="success" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
 </xs:schema>

@@ -2,12 +2,14 @@
 // Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 // Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.12.21 alle 08:27:10 AM CET 
+// Generato il: 2025.01.23 alle 08:22:31 AM CET 
 //
 
 
 package com.example.user;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -26,16 +28,18 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="id" type="{http://example.com/user}UUIDType"/&gt;
+ *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/&gt;
  *         &lt;element name="nome" type="{http://example.com/user}String100Type"/&gt;
  *         &lt;element name="cognome" type="{http://example.com/user}String100Type"/&gt;
- *         &lt;element name="ruolo" type="{http://example.com/user}String50Type"/&gt;
- *         &lt;element name="nomeUtente" type="{http://example.com/user}String100Type"/&gt;
+ *         &lt;element name="username" type="{http://example.com/user}String100Type"/&gt;
+ *         &lt;element name="password" type="{http://example.com/user}String100Type"/&gt;
  *         &lt;element name="email" type="{http://example.com/user}EmailType"/&gt;
- *         &lt;element name="password" type="{http://example.com/user}PasswordType"/&gt;
  *         &lt;element name="immagine" type="{http://www.w3.org/2001/XMLSchema}base64Binary" minOccurs="0"/&gt;
- *         &lt;element name="createdAt" type="{http://www.w3.org/2001/XMLSchema}dateTime"/&gt;
- *         &lt;element name="updatedAt" type="{http://www.w3.org/2001/XMLSchema}dateTime"/&gt;
+ *         &lt;element name="createdAt" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/&gt;
+ *         &lt;element name="updatedAt" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/&gt;
+ *         &lt;element name="twoFactorEnabled" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
+ *         &lt;element name="blocked" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
+ *         &lt;element name="roles" type="{http://example.com/user}RoleEnum" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -49,47 +53,48 @@ import jakarta.xml.bind.annotation.XmlType;
     "id",
     "nome",
     "cognome",
-    "ruolo",
-    "nomeUtente",
-    "email",
+    "username",
     "password",
+    "email",
     "immagine",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "twoFactorEnabled",
+    "blocked",
+    "roles"
 })
 public class UserType {
 
-    @XmlElement(required = true)
-    protected String id;
+    protected Long id;
     @XmlElement(required = true)
     protected String nome;
     @XmlElement(required = true)
     protected String cognome;
     @XmlElement(required = true)
-    protected String ruolo;
-    @XmlElement(required = true)
-    protected String nomeUtente;
-    @XmlElement(required = true)
-    protected String email;
+    protected String username;
     @XmlElement(required = true)
     protected String password;
-    protected byte[] immagine;
     @XmlElement(required = true)
+    protected String email;
+    protected byte[] immagine;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar createdAt;
-    @XmlElement(required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar updatedAt;
+    protected Boolean twoFactorEnabled;
+    protected Boolean blocked;
+    @XmlSchemaType(name = "string")
+    protected List<RoleEnum> roles;
 
     /**
      * Recupera il valore della proprietà id.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Long }
      *     
      */
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -98,10 +103,10 @@ public class UserType {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Long }
      *     
      */
-    public void setId(String value) {
+    public void setId(Long value) {
         this.id = value;
     }
 
@@ -154,75 +159,27 @@ public class UserType {
     }
 
     /**
-     * Recupera il valore della proprietà ruolo.
+     * Recupera il valore della proprietà username.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getRuolo() {
-        return ruolo;
+    public String getUsername() {
+        return username;
     }
 
     /**
-     * Imposta il valore della proprietà ruolo.
+     * Imposta il valore della proprietà username.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setRuolo(String value) {
-        this.ruolo = value;
-    }
-
-    /**
-     * Recupera il valore della proprietà nomeUtente.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getNomeUtente() {
-        return nomeUtente;
-    }
-
-    /**
-     * Imposta il valore della proprietà nomeUtente.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setNomeUtente(String value) {
-        this.nomeUtente = value;
-    }
-
-    /**
-     * Recupera il valore della proprietà email.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Imposta il valore della proprietà email.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEmail(String value) {
-        this.email = value;
+    public void setUsername(String value) {
+        this.username = value;
     }
 
     /**
@@ -247,6 +204,30 @@ public class UserType {
      */
     public void setPassword(String value) {
         this.password = value;
+    }
+
+    /**
+     * Recupera il valore della proprietà email.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Imposta il valore della proprietà email.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEmail(String value) {
+        this.email = value;
     }
 
     /**
@@ -317,6 +298,83 @@ public class UserType {
      */
     public void setUpdatedAt(XMLGregorianCalendar value) {
         this.updatedAt = value;
+    }
+
+    /**
+     * Recupera il valore della proprietà twoFactorEnabled.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isTwoFactorEnabled() {
+        return twoFactorEnabled;
+    }
+
+    /**
+     * Imposta il valore della proprietà twoFactorEnabled.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setTwoFactorEnabled(Boolean value) {
+        this.twoFactorEnabled = value;
+    }
+
+    /**
+     * Recupera il valore della proprietà blocked.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isBlocked() {
+        return blocked;
+    }
+
+    /**
+     * Imposta il valore della proprietà blocked.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setBlocked(Boolean value) {
+        this.blocked = value;
+    }
+
+    /**
+     * Gets the value of the roles property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the roles property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRoles().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link RoleEnum }
+     * 
+     * 
+     */
+    public List<RoleEnum> getRoles() {
+        if (roles == null) {
+            roles = new ArrayList<RoleEnum>();
+        }
+        return this.roles;
     }
 
 }

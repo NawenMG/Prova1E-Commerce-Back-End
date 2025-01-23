@@ -4,12 +4,14 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.*;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneTransizioniRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneTransizioni;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class ArchiviazioneTransizioniRepImp implements ArchiviazioneTransizioniRep {
@@ -58,6 +60,14 @@ public class ArchiviazioneTransizioniRepImp implements ArchiviazioneTransizioniR
         // Clausole WHERE
         cql.append(paramQuery.buildWhereClause());
 
+        // Controllo del ruolo e aggiunta di filtri
+        Set<String> roles = SecurityUtils.getCurrentUserRoles();
+        if (roles.contains("UserTransition")) {
+            // Nessun filtro aggiuntivo: accesso a tutte le transizioni
+        } else {
+            throw new SecurityException("Accesso non autorizzato: solo utenti con il ruolo UserTransition possono accedere alle transizioni totali");
+        }
+
         // Clausola ORDER BY
         if (paramQuery.isOrderBy() && !paramQuery.getOrderByColumn().isEmpty()) {
             cql.append("ORDER BY ").append(paramQuery.getOrderByColumn()).append(" ");
@@ -92,13 +102,14 @@ public class ArchiviazioneTransizioniRepImp implements ArchiviazioneTransizioniR
         return transizioni;
     }
 
-    public void saveTransizione(ArchiviazioneTransizioni transizione) {
-        String query = "INSERT INTO ArchiviazioneTransizioni (ID, Order_ID, Transizione_date, Importo_totale, " +
+    public void saveTransizione(ArchiviazioneTransizioni transizione, String UserName) {
+        String query = "INSERT INTO ArchiviazioneTransizioni (ID, Order_ID, User_ID, Transizione_date, Importo_totale, " +
                        "Metodo_di_pagamento, Status) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement statement = session.prepare(query);
         session.execute(statement.bind(
             transizione.getId(),
             transizione.getOrderId(),
+            UserName,
             transizione.getTransizioneDate(),
             transizione.getImportoTotale(),
             transizione.getMetodoDiPagamento(),
@@ -106,19 +117,20 @@ public class ArchiviazioneTransizioniRepImp implements ArchiviazioneTransizioniR
         ));
     }
 
-    public void updateTransizione(String id, ArchiviazioneTransizioni transizione) {
-        String query = "UPDATE ArchiviazioneTransizioni SET Order_ID = ?, Transizione_date = ?, Importo_totale = ?, " +
+    /* public void updateTransizione(String id, ArchiviazioneTransizioni transizione) {
+        String query = "UPDATE ArchiviazioneTransizioni SET Order_ID = ?, User_ID = ?, Transizione_date = ?, Importo_totale = ?, " +
                        "Metodo_di_pagamento = ?, Status = ? WHERE ID = ?";
         PreparedStatement statement = session.prepare(query);
         session.execute(statement.bind(
             transizione.getOrderId(),
+            transizione.getUserId(),
             transizione.getTransizioneDate(),
             transizione.getImportoTotale(),
             transizione.getMetodoDiPagamento(),
             transizione.getStatus(),
             id
         ));
-    }
+    } */
 
     public void deleteTransizione(String id) {
         String query = "DELETE FROM ArchiviazioneTransizioni WHERE ID = ?";

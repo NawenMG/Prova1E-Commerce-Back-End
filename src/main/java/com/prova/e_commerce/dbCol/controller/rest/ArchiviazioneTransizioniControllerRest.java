@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,21 +45,22 @@ public class ArchiviazioneTransizioniControllerRest {
     }
 
     // Crea una nuova transizione
-    @PostMapping
+    @PostMapping("/post")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createTransizione(@Valid @RequestBody ArchiviazioneTransizioni transizione) {
         archiviazioneTransizioniService.saveTransizione(transizione);
         return ResponseEntity.status(201).build();  // 201 Created
     }
 
-    // Aggiorna una transizione esistente
-    @PutMapping("/{id}")
+    /* // Aggiorna una transizione esistente
+    @PutMapping("/put/{id}")
     public ResponseEntity<Void> updateTransizione(@PathVariable String id, @Valid @RequestBody ArchiviazioneTransizioni transizione) {
         archiviazioneTransizioniService.updateTransizione(id, transizione);
         return ResponseEntity.ok().build();  // 200 OK
-    }
+    } */
 
     // Elimina una transizione per ID
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTransizione(@PathVariable String id) {
         archiviazioneTransizioniService.deleteTransizione(id);
         return ResponseEntity.noContent().build();  // 204 No Content

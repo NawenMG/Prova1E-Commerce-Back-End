@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -35,7 +36,8 @@ public class SchedeProdottiControllerRest {
     }
 
     // Endpoint per inserire un nuovo prodotto
-    @PostMapping
+    @PostMapping("/post")
+    @PreAuthorize("hasRole(USER)")
     public ResponseEntity<SchedeProdotti> createSchedaProdotto(@Valid @RequestBody SchedeProdotti prodotto) {
         SchedeProdotti nuovoProdotto = schedeProdottiService.insert(prodotto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuovoProdotto);
@@ -48,6 +50,7 @@ public class SchedeProdottiControllerRest {
 
     // Endpoint per aggiornare un prodotto esistente
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole(USER)")
     public ResponseEntity<SchedeProdotti> updateSchedaProdotto(
             @PathVariable String id,
             @Valid @RequestBody SchedeProdotti prodotto) {

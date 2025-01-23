@@ -9,12 +9,14 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/archiviazioneOrdini")
+
 public class ArchiviazioneOrdiniControllerRest {
 
     @Autowired
@@ -39,21 +41,24 @@ public class ArchiviazioneOrdiniControllerRest {
     }
 
     // Crea un nuovo ordine
-    @PostMapping
+    @PostMapping("/post")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createOrdine(@Valid @RequestBody ArchiviazioneOrdini ordine) {
         archiviazioneOrdiniService.saveOrdine(ordine);
         return ResponseEntity.status(HttpStatus.CREATED).build();  // Restituisce 201 Created
     }
 
-    // Aggiorna un ordine esistente
-    @PutMapping("/{id}")
+    /* // Aggiorna un ordine esistente
+    @PutMapping("/put/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> updateOrdine(@PathVariable String id, @Valid @RequestBody ArchiviazioneOrdini ordine) {
         archiviazioneOrdiniService.updateOrdine(id, ordine);
         return ResponseEntity.ok().build();  // Restituisce 200 OK se l'ordine è stato aggiornato
-    }
+    } */
 
     // Elimina un ordine per ID
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteOrdine(@PathVariable String id) {
         archiviazioneOrdiniService.deleteOrdine(id);
         return ResponseEntity.noContent().build();  // Restituisce 204 No Content se l'ordine è stato eliminato

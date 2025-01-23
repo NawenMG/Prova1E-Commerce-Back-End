@@ -1,101 +1,64 @@
 package com.prova.e_commerce.dbG.controller.rest;
 
-import com.prova.e_commerce.dbG.model.*;
 import com.prova.e_commerce.dbG.service.ServiceGraphDB;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/graphdb")
 public class ControllerRestGraphDB {
 
     @Autowired
     private ServiceGraphDB serviceGraphDB;
 
-    // POST - Crea un nuovo Utente
-    @PostMapping("/utenti")
-    public ResponseEntity<NodoUtente> creaUtente(@Valid @RequestBody NodoUtente utente) {
-        NodoUtente nuovoUtente = serviceGraphDB.creaUtente(utente);
-        return new ResponseEntity<>(nuovoUtente, HttpStatus.CREATED);
+    @PostMapping("/visita")
+    public ResponseEntity<Void> visitaProdotto(@RequestParam Long utenteId, @RequestParam Long prodottoId) {
+        serviceGraphDB.visitaProdotto(utenteId, prodottoId);
+        return ResponseEntity.ok().build();
     }
 
-    // POST - Crea un nuovo Prodotto
-    @PostMapping("/prodotti")
-    public ResponseEntity<NodoProdotto> creaProdotto(@Valid @RequestBody NodoProdotto prodotto) {
-        NodoProdotto nuovoProdotto = serviceGraphDB.creaProdotto(prodotto);
-        return new ResponseEntity<>(nuovoProdotto, HttpStatus.CREATED);
+    @PostMapping("/acquisto")
+    public ResponseEntity<Void> acquistoProdotto(@RequestParam Long utenteId, @RequestParam Long prodottoId) {
+        serviceGraphDB.acquistoProdotto(utenteId, prodottoId);
+        return ResponseEntity.ok().build();
     }
 
-    // POST - Crea una nuova CategoriaProdotto
-    @PostMapping("/categorie-prodotti")
-    public ResponseEntity<NodoCategoriaProdotto> creaCategoriaProdotto(@Valid @RequestBody NodoCategoriaProdotto categoriaProdotto) {
-        NodoCategoriaProdotto nuovaCategoria = serviceGraphDB.creaCategoriaProdotto(categoriaProdotto);
-        return new ResponseEntity<>(nuovaCategoria, HttpStatus.CREATED);
+    @PostMapping("/categoria")
+    public ResponseEntity<Void> appartenenzaCategoria(@RequestParam Long prodottoId, @RequestParam String categoriaNome) {
+        serviceGraphDB.appartenenzaCategoria(prodottoId, categoriaNome);
+        return ResponseEntity.ok().build();
     }
 
-    // POST - Crea una nuova LocazioneUtente
-    @PostMapping("/locazioni-utenti")
-    public ResponseEntity<NodoLocazioneUtente> creaLocazioneUtente(@Valid @RequestBody NodoLocazioneUtente locazioneUtente) {
-        NodoLocazioneUtente nuovaLocazione = serviceGraphDB.creaLocazioneUtente(locazioneUtente);
-        return new ResponseEntity<>(nuovaLocazione, HttpStatus.CREATED);
+    @PostMapping("/provenienza")
+    public ResponseEntity<Void> provenienzaGeografica(@RequestParam Long utenteId, @RequestParam Long prodottoId) {
+        serviceGraphDB.provenienzaGeografica(utenteId, prodottoId);
+        return ResponseEntity.ok().build();
     }
 
-    // PUT - Aggiorna un Utente esistente
-    @PutMapping("/utenti/{id}")
-    public ResponseEntity<NodoUtente> aggiornaUtente(@PathVariable Long id, @Valid @RequestBody NodoUtente utente) {
-        NodoUtente utenteAggiornato = serviceGraphDB.aggiornaUtente(id, utente);
-        return new ResponseEntity<>(utenteAggiornato, HttpStatus.OK);
+    @GetMapping("/visite")
+    public ResponseEntity<List<String>> getVisiteUtente(@RequestParam Long utenteId) {
+        List<String> visite = serviceGraphDB.getVisiteUtente(utenteId);
+        return ResponseEntity.ok(visite);
     }
 
-    // PUT - Aggiorna un Prodotto esistente
-    @PutMapping("/prodotti/{id}")
-    public ResponseEntity<NodoProdotto> aggiornaProdotto(@PathVariable Long id, @Valid @RequestBody NodoProdotto prodotto) {
-        NodoProdotto prodottoAggiornato = serviceGraphDB.aggiornaProdotto(id, prodotto);
-        return new ResponseEntity<>(prodottoAggiornato, HttpStatus.OK);
+    @GetMapping("/acquisti")
+    public ResponseEntity<List<String>> getAcquistiUtente(@RequestParam Long utenteId) {
+        List<String> acquisti = serviceGraphDB.getAcquistiUtente(utenteId);
+        return ResponseEntity.ok(acquisti);
     }
 
-    // PUT - Aggiorna una CategoriaProdotto esistente
-    @PutMapping("/categorie-prodotti/{id}")
-    public ResponseEntity<NodoCategoriaProdotto> aggiornaCategoriaProdotto(@PathVariable Long id, @Valid @RequestBody NodoCategoriaProdotto categoriaProdotto) {
-        NodoCategoriaProdotto categoriaProdottoAggiornata = serviceGraphDB.aggiornaCategoriaProdotto(id, categoriaProdotto);
-        return new ResponseEntity<>(categoriaProdottoAggiornata, HttpStatus.OK);
+    @GetMapping("/categorie")
+    public ResponseEntity<List<String>> getCategorieProdotto(@RequestParam Long prodottoId) {
+        List<String> categorie = serviceGraphDB.getCategorieProdotto(prodottoId);
+        return ResponseEntity.ok(categorie);
     }
 
-    // PUT - Aggiorna una LocazioneUtente esistente
-    @PutMapping("/locazioni-utenti/{id}")
-    public ResponseEntity<NodoLocazioneUtente> aggiornaLocazioneUtente(@PathVariable Long id, @Valid @RequestBody NodoLocazioneUtente locazioneUtente) {
-        NodoLocazioneUtente locazioneUtenteAggiornata = serviceGraphDB.aggiornaLocazioneUtente(id, locazioneUtente);
-        return new ResponseEntity<>(locazioneUtenteAggiornata, HttpStatus.OK);
-    }
-
-    // DELETE - Elimina un Utente
-    @DeleteMapping("/utenti/{id}")
-    public ResponseEntity<Void> eliminaUtente(@PathVariable Long id) {
-        serviceGraphDB.eliminaUtente(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    // DELETE - Elimina un Prodotto
-    @DeleteMapping("/prodotti/{id}")
-    public ResponseEntity<Void> eliminaProdotto(@PathVariable Long id) {
-        serviceGraphDB.eliminaProdotto(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    // DELETE - Elimina una CategoriaProdotto
-    @DeleteMapping("/categorie-prodotti/{id}")
-    public ResponseEntity<Void> eliminaCategoriaProdotto(@PathVariable Long id) {
-        serviceGraphDB.eliminaCategoriaProdotto(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    // DELETE - Elimina una LocazioneUtente
-    @DeleteMapping("/locazioni-utenti/{id}")
-    public ResponseEntity<Void> eliminaLocazioneUtente(@PathVariable Long id) {
-        serviceGraphDB.eliminaLocazioneUtente(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @GetMapping("/provenienze")
+    public ResponseEntity<List<String>> getProvenienzeUtente(@RequestParam Long utenteId) {
+        List<String> provenienze = serviceGraphDB.getProvenienzeUtente(utenteId);
+        return ResponseEntity.ok(provenienze);
     }
 }

@@ -9,9 +9,13 @@ import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 
 public class Carrello {
 
-    @NotNull(message = "L'ID utente è obbligatorio")
+    /* @NotNull(message = "L'ID utente è obbligatorio")
     @Size(min = 3, max = 100, message = "L'ID utente deve avere una lunghezza compresa tra 3 e 100 caratteri")
-    private String _key;  // La chiave del documento in ArangoDB (equivalente alla partition key)
+    private String _key; */  // La chiave del documento in ArangoDB (equivalente alla partition key)
+
+    @NotNull(message = "L'ID utente è obbligatorio")
+    @Size(min = 3, max = 50, message = "L'ID utente deve avere una lunghezza compresa tra 3 e 50 caratteri")
+    private String userId;   // ID dell'utente associato al carrello, chiave per recuperare i dati
 
     @NotEmpty(message = "La lista dei prodotti non può essere vuota")
     private List<Prodotto> prodotti;  // Lista di prodotti
@@ -23,12 +27,21 @@ public class Carrello {
     private double prezzoTotale;
 
     // Getter e setter per la chiave del documento in ArangoDB
-    public String getKey() {
+    /* public String getKey() {
         return _key;
     }
 
     public void setKey(String key) {
         this._key = key;
+    } */
+
+    // Getter e setter per userId
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     // Getter e setter per i prodotti

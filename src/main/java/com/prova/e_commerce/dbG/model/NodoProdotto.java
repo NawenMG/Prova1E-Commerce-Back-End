@@ -12,6 +12,9 @@ public class NodoProdotto {
     @Id
     private Long id;
 
+    @NotNull(message = "ID utente obbligatorio")
+    private Long idUtente;
+
     @NotNull(message = "Il nome del prodotto è obbligatorio")  // Assicurati che il nome non sia nullo
     @Size(min = 3, max = 100, message = "Il nome del prodotto deve avere tra 3 e 100 caratteri")  // Limita la lunghezza del nome
     private String nome;

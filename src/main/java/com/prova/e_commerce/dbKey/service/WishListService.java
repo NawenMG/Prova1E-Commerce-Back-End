@@ -3,6 +3,8 @@ package com.prova.e_commerce.dbKey.service;
 import com.prova.e_commerce.dbKey.model.WishList;
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.repository.interfacce.WishListRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.cache.annotation.Cacheable;
@@ -46,6 +48,7 @@ public class WishListService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void aggiungiProdotti(String userId, List<Prodotto> nuoviProdotti) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Aggiunta prodotti alla wishlist: userId={}, prodotti={}", userId, nuoviProdotti);
         Span span = tracer.spanBuilder("aggiungiProdotti").startSpan();
         try {
@@ -63,6 +66,7 @@ public class WishListService {
 
     @Cacheable(value = {"caffeine", "redis"}, key = "#userId", unless = "#result == null")
     public Optional<WishList> trovaWishList(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Recupero wishlist per l'utente: userId={}", userId);
         Span span = tracer.spanBuilder("trovaWishList").startSpan();
         try {
@@ -78,6 +82,7 @@ public class WishListService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void rimuoviProdotto(String userId, String prodottoId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Rimozione prodotto dalla wishlist: userId={}, prodottoId={}", userId, prodottoId);
         Span span = tracer.spanBuilder("rimuoviProdotto").startSpan();
         try {
@@ -96,6 +101,7 @@ public class WishListService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void resetWishList(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Reset della wishlist per l'utente: userId={}", userId);
         Span span = tracer.spanBuilder("resetWishList").startSpan();
         try {

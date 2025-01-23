@@ -9,6 +9,7 @@ import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 /* import org.springframework.web.multipart.MultipartFile;
 
@@ -57,7 +58,8 @@ public class ArchiviazioneSegnalazioniControllerRest {
     /**
      * Metodo per creare una nuova segnalazione.
      */
-    @PostMapping
+    @PostMapping("/post")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createSegnalazione(@Valid @RequestBody ArchiviazioneSegnalazioni segnalazione) {
         archiviazioneSegnalazioniService.saveSegnalazione(segnalazione);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -66,17 +68,19 @@ public class ArchiviazioneSegnalazioniControllerRest {
     /**
      * Metodo per aggiornare una segnalazione esistente.
      */
-    @PutMapping("/{id}")
+    /* @PutMapping("/put/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> updateSegnalazione(@PathVariable String id,
                                                   @Valid @RequestBody ArchiviazioneSegnalazioni segnalazione) {
         archiviazioneSegnalazioniService.updateSegnalazione(id, segnalazione);
         return ResponseEntity.ok().build();
-    }
+    } */
 
     /**
      * Metodo per eliminare una segnalazione.
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSegnalazione(@PathVariable String id) {
         archiviazioneSegnalazioniService.deleteSegnalazione(id);
         return ResponseEntity.noContent().build();

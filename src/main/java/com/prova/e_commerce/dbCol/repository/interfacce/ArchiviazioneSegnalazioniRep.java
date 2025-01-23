@@ -11,10 +11,10 @@ public interface ArchiviazioneSegnalazioniRep {
     List<ArchiviazioneSegnalazioni> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneSegnalazioni segnalazione);
 
     // Metodo per salvare una nuova segnalazione
-    void saveSegnalazione(ArchiviazioneSegnalazioni segnalazione);
+    void saveSegnalazione(ArchiviazioneSegnalazioni segnalazione, String UserName);
 
     // Metodo per aggiornare una segnalazione esistente
-    void updateSegnalazione(String id, ArchiviazioneSegnalazioni segnalazione);
+    //void updateSegnalazione(String id, ArchiviazioneSegnalazioni segnalazione);
 
     // Metodo per eliminare una segnalazione
     void deleteSegnalazione(String id);

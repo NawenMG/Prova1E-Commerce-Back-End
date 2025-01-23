@@ -1,6 +1,7 @@
 package com.prova.e_commerce.dbCol.service;
 
 import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneTransizioniRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneTransizioni;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -83,14 +84,14 @@ public class ArchiviazioneTransizioniService {
         Span span = tracer.spanBuilder("saveTransizione").startSpan();
         try {
             meterRegistry.counter("service.transizione.save.count").increment();
-            archiviazioneTransizioniRep.saveTransizione(transizione);
+            archiviazioneTransizioniRep.saveTransizione(transizione,SecurityUtils.getCurrentUsername());
             kafkaTemplate.send(TOPIC_TRANSIZIONI_SAVE, "TransizioneCreata", transizione);
         } finally {
             span.end();
         }
     }
 
-    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
+    /* @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void updateTransizione(String id, ArchiviazioneTransizioni transizione) {
         logger.info("Updating transizione with ID: {}", id);
         Span span = tracer.spanBuilder("updateTransizione").startSpan();
@@ -101,7 +102,7 @@ public class ArchiviazioneTransizioniService {
         } finally {
             span.end();
         }
-    }
+    } */
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteTransizione(String id) {

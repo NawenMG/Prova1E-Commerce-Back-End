@@ -3,6 +3,7 @@ package com.prova.e_commerce.dbCol.service;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneSegnalazioni;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneSegnalazioniRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 import com.prova.e_commerce.storage.OzoneService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.trace.Span;
@@ -87,14 +88,14 @@ public class ArchiviazioneSegnalazioniService {
         Span span = tracer.spanBuilder("saveSegnalazione").startSpan();
         try {
             meterRegistry.counter("service.segnalazione.save.count").increment();
-            archiviazioneSegnalazioniRep.saveSegnalazione(segnalazione);
+            archiviazioneSegnalazioniRep.saveSegnalazione(segnalazione, SecurityUtils.getCurrentUsername());
             kafkaTemplate.send(TOPIC_SEGNALAZIONI_SAVE, "SegnalazioneCreata", segnalazione);
         } finally {
             span.end();
         }
     }
 
-    @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
+    /* @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void updateSegnalazione(String id, ArchiviazioneSegnalazioni segnalazione) {
         logger.info("Updating segnalazione with ID: {}", id);
         Span span = tracer.spanBuilder("updateSegnalazione").startSpan();
@@ -105,7 +106,7 @@ public class ArchiviazioneSegnalazioniService {
         } finally {
             span.end();
         }
-    }
+    } */
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteSegnalazione(String id) {

@@ -2,7 +2,7 @@
 // Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 // Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.12.21 alle 08:27:10 AM CET 
+// Generato il: 2025.01.23 alle 08:22:31 AM CET 
 //
 
 
@@ -37,19 +37,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindUserByNomeUtenteRequest }
+     * Create an instance of {@link GetUserRequest }
      * 
      */
-    public FindUserByNomeUtenteRequest createFindUserByNomeUtenteRequest() {
-        return new FindUserByNomeUtenteRequest();
+    public GetUserRequest createGetUserRequest() {
+        return new GetUserRequest();
     }
 
     /**
-     * Create an instance of {@link FindUserByNomeUtenteResponse }
+     * Create an instance of {@link GetUserResponse }
      * 
      */
-    public FindUserByNomeUtenteResponse createFindUserByNomeUtenteResponse() {
-        return new FindUserByNomeUtenteResponse();
+    public GetUserResponse createGetUserResponse() {
+        return new GetUserResponse();
     }
 
     /**
@@ -74,6 +74,54 @@ public class ObjectFactory {
      */
     public CreateUserResponse createCreateUserResponse() {
         return new CreateUserResponse();
+    }
+
+    /**
+     * Create an instance of {@link UpdateUserRequest }
+     * 
+     */
+    public UpdateUserRequest createUpdateUserRequest() {
+        return new UpdateUserRequest();
+    }
+
+    /**
+     * Create an instance of {@link UpdateUserResponse }
+     * 
+     */
+    public UpdateUserResponse createUpdateUserResponse() {
+        return new UpdateUserResponse();
+    }
+
+    /**
+     * Create an instance of {@link BlockUserRequest }
+     * 
+     */
+    public BlockUserRequest createBlockUserRequest() {
+        return new BlockUserRequest();
+    }
+
+    /**
+     * Create an instance of {@link BlockUserResponse }
+     * 
+     */
+    public BlockUserResponse createBlockUserResponse() {
+        return new BlockUserResponse();
+    }
+
+    /**
+     * Create an instance of {@link SetTwoFactorRequest }
+     * 
+     */
+    public SetTwoFactorRequest createSetTwoFactorRequest() {
+        return new SetTwoFactorRequest();
+    }
+
+    /**
+     * Create an instance of {@link SetTwoFactorResponse }
+     * 
+     */
+    public SetTwoFactorResponse createSetTwoFactorResponse() {
+        return new SetTwoFactorResponse();
     }
 
 }

@@ -1,6 +1,5 @@
 package com.prova.e_commerce.dbKey.repository.classi;
 
-import com.arangodb.ArangoDatabase;
 import com.arangodb.ArangoCollection;
 import com.arangodb.entity.BaseDocument;
 import com.prova.e_commerce.dbKey.model.WishList;
@@ -18,9 +17,6 @@ import java.util.stream.Collectors;
 public class WishListRepImp implements WishListRep {
 
     @Autowired
-    private ArangoDatabase arangoDatabase;
-
-    @Autowired
     private ArangoCollection wishListCollection;
 
     // Aggiungi prodotti alla wishlist
@@ -33,7 +29,7 @@ public class WishListRepImp implements WishListRep {
         if (existingWishList.isEmpty()) {
             // Se la wishlist non esiste, creala
             wishList = new WishList();
-            wishList.setKey(userId);
+            wishList.setUserId(userId);
             wishList.setProducts(nuoviProdotti);
         } else {
             // Se esiste, aggiungi i nuovi prodotti
@@ -60,7 +56,7 @@ public class WishListRepImp implements WishListRep {
             if (document != null) {
                 // Mappa il documento a un oggetto WishList
                 WishList wishList = new WishList();
-                wishList.setKey(document.getKey());
+                wishList.setUserId(userId);
                 wishList.setProducts((List<Prodotto>) document.getAttribute("products"));
                 return Optional.of(wishList);
             }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface RecensioniRep extends MongoRepository<Recensioni, String> {
     List<Recensioni> findByProductId(String productId);
     List<Recensioni> findByUserId(String userId);
+    Recensioni save(Recensioni recensione, String currentUsername);
 }

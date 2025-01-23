@@ -9,9 +9,9 @@ public interface ArchiviazioneTransizioniRep {
 
     List<ArchiviazioneTransizioni> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneTransizioni transizione);
 
-    void saveTransizione(ArchiviazioneTransizioni transizione);
+    void saveTransizione(ArchiviazioneTransizioni transizione, String UserName);
 
-    void updateTransizione(String id, ArchiviazioneTransizioni transizione);
+    //void updateTransizione(String id, ArchiviazioneTransizioni transizione);
 
     void deleteTransizione(String id);
 

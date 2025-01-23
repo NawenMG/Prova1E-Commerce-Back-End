@@ -432,7 +432,7 @@ type ArchiviazioneOrdini {
 # Input per creare o aggiornare un Ordine
 input ArchiviazioneOrdiniInput {
     id: String
-    userId: String
+    #userId: String
     orderDate: String
     status: String
     importoTotale: Float

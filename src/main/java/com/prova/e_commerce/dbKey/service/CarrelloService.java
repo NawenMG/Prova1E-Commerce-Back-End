@@ -3,6 +3,8 @@ package com.prova.e_commerce.dbKey.service;
 import com.prova.e_commerce.dbKey.model.Carrello;
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.repository.interfacce.CarrelloRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -46,6 +48,7 @@ public class CarrelloService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void aggiungiProdotti(String userId, List<Prodotto> nuoviProdotti) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Aggiunta prodotti al carrello: userId={}, prodotti={}", userId, nuoviProdotti);
         Span span = tracer.spanBuilder("aggiungiProdotti").startSpan();
         try {
@@ -62,6 +65,7 @@ public class CarrelloService {
 
     @Cacheable(value = {"caffeine", "redis"}, key = "#userId", unless = "#result == null")
     public Optional<Carrello> getCarrello(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Recupero carrello per l'utente: userId={}", userId);
         Span span = tracer.spanBuilder("getCarrello").startSpan();
         try {
@@ -77,6 +81,7 @@ public class CarrelloService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void rimuoviProdotto(String userId, String prodottoId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Rimozione prodotto dal carrello: userId={}, prodottoId={}", userId, prodottoId);
         Span span = tracer.spanBuilder("rimuoviProdotto").startSpan();
         try {
@@ -95,6 +100,7 @@ public class CarrelloService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void svuotaCarrello(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Svuotamento carrello per l'utente: userId={}", userId);
         Span span = tracer.spanBuilder("svuotaCarrello").startSpan();
         try {
@@ -103,6 +109,21 @@ public class CarrelloService {
             }
             meterRegistry.counter("service.carrello.svuota.count").increment();
             carrelloRep.resetCarrello(userId);
+        } finally {
+            span.end();
+        }
+    }
+
+    @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
+    public void creaCarrelloVuoto(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
+        logger.info("Creazione carrello vuoto per l'utente: userId={}", userId);
+        Span span = tracer.spanBuilder("creaCarrelloVuoto").startSpan();
+        try {
+            if (userId == null || userId.isEmpty()) {
+                throw new IllegalArgumentException("L'userId non può essere null o vuoto.");
+            }
+            carrelloRep.creaCarrelloVuoto(userId);
         } finally {
             span.end();
         }

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 /* import org.springframework.web.multipart.MultipartFile;
 
@@ -51,14 +52,16 @@ public class RecensioniControllerRest {
     }
 
     // Endpoint per creare una nuova recensione
-    @PostMapping
+    @PostMapping("/post")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Recensioni> createRecensione(@RequestBody Recensioni recensione) {
         Recensioni savedRecensione = recensioniService.saveRecensione(recensione);
         return new ResponseEntity<>(savedRecensione, HttpStatus.CREATED);
     }
 
     // Endpoint per aggiornare una recensione esistente
-    @PutMapping("/{id}")
+    @PutMapping("/put/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Recensioni> updateRecensione(@PathVariable String id, @Valid @RequestBody Recensioni recensione) {
         Recensioni updatedRecensione = recensioniService.updateRecensione(id, recensione);
         if (updatedRecensione == null) {
@@ -68,7 +71,8 @@ public class RecensioniControllerRest {
     }
 
     // Endpoint per eliminare una recensione
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteRecensione(@PathVariable String id) {
         boolean deleted = recensioniService.deleteRecensione(id);
         if (!deleted) {

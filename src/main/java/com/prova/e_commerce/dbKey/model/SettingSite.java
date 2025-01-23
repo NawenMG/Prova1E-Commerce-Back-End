@@ -10,9 +10,13 @@ import com.prova.e_commerce.dbKey.model.SottoClassi.Notifica;
 
 public class SettingSite {
 
-    @NotNull(message = "L'ID utente è obbligatorio")
+    /* @NotNull(message = "L'ID utente è obbligatorio")
     @Size(min = 3, max = 100, message = "L'ID utente deve essere tra 3 e 100 caratteri")
-    private String _key;  // La chiave del documento in ArangoDB (equivalente a DynamoDB Partition Key)
+    private String _key;  // La chiave del documento in ArangoDB (equivalente a DynamoDB Partition Key) */
+
+    @NotNull(message = "L'ID utente è obbligatorio")
+    @Size(min = 3, max = 50, message = "L'ID utente deve avere una lunghezza compresa tra 3 e 50 caratteri")
+    private String userId;   // ID dell'utente associato al carrello, chiave per prendere i dati
 
     @NotNull(message = "Il numero di prodotti per pagina non può essere nullo")
     @Min(value = 1, message = "I prodotti per pagina devono essere almeno 1")
@@ -33,7 +37,7 @@ public class SettingSite {
     @NotNull(message = "La lista delle notifiche non può essere nulla")
     private List<Notifica> notifiche;
 
-    // Metodo per ottenere la chiave del documento in ArangoDB
+    /* // Metodo per ottenere la chiave del documento in ArangoDB
     public String getKey() {
         return _key;
     }
@@ -41,6 +45,15 @@ public class SettingSite {
     // Metodo per impostare la chiave del documento in ArangoDB
     public void setKey(String key) {
         this._key = key;
+    } */
+
+    // Getter e setter per userId
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     // Getter e setter per prodotti per pagina

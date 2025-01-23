@@ -3,6 +3,8 @@ package com.prova.e_commerce.dbKey.service;
 import com.prova.e_commerce.dbKey.model.Cronologia;
 import com.prova.e_commerce.dbKey.model.SottoClassi.Prodotto;
 import com.prova.e_commerce.dbKey.repository.interfacce.CronologiaRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -46,6 +48,7 @@ public class CronologiaService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void aggiungiDatiCronologici(String userId, List<Prodotto> nuoviProdotti) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Aggiunta prodotti alla cronologia: userId={}, prodotti={}", userId, nuoviProdotti);
         Span span = tracer.spanBuilder("aggiungiDatiCronologici").startSpan();
         try {
@@ -63,6 +66,7 @@ public class CronologiaService {
 
     @Cacheable(value = {"caffeine", "redis"}, key = "#userId", unless = "#result == null")
     public Optional<Cronologia> visualizzaCronologia(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Visualizzazione cronologia per l'utente: userId={}", userId);
         Span span = tracer.spanBuilder("visualizzaCronologia").startSpan();
         try {
@@ -75,6 +79,7 @@ public class CronologiaService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void eliminaSingolaRicerca(String userId, String productId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Eliminazione singola ricerca dalla cronologia: userId={}, productId={}", userId, productId);
         Span span = tracer.spanBuilder("eliminaSingolaRicerca").startSpan();
         try {
@@ -90,6 +95,7 @@ public class CronologiaService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void eliminaTutteLeRicerche(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Eliminazione di tutte le ricerche dalla cronologia: userId={}", userId);
         Span span = tracer.spanBuilder("eliminaTutteLeRicerche").startSpan();
         try {

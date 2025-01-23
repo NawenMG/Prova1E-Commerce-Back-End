@@ -17,5 +17,7 @@ public interface SchedeProdottiRep extends MongoRepository<SchedeProdotti, Strin
     // Metodo di query per trovare prodotti con un prezzo inferiore a una certa soglia
     List<SchedeProdotti> findByPrezzoLessThan(BigDecimal prezzo);
 
+    SchedeProdotti save(SchedeProdotti prodotto, String currentUsername);
+
     
 }

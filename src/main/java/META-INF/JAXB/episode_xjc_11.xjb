@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings version="3.0" xmlns="https://jakarta.ee/xml/ns/jaxb">
+  <!--
+
+Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+Vedere https://eclipse-ee4j.github.io/jaxb-ri 
+Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
+Generato il: 2025.01.23 alle 08:22:31 AM CET 
+
+  -->
+  <bindings scd="x-schema::tns" xmlns:tns="http://example.com/user">
+    <schemaBindings map="false">
+      <package name="com.example.user"/>
+    </schemaBindings>
+    <bindings scd="tns:GetUserRequest">
+      <class ref="com.example.user.GetUserRequest"/>
+    </bindings>
+    <bindings scd="tns:GetUserResponse">
+      <class ref="com.example.user.GetUserResponse"/>
+    </bindings>
+    <bindings scd="~tns:UserType">
+      <class ref="com.example.user.UserType"/>
+    </bindings>
+    <bindings scd="tns:CreateUserRequest">
+      <class ref="com.example.user.CreateUserRequest"/>
+    </bindings>
+    <bindings scd="tns:CreateUserResponse">
+      <class ref="com.example.user.CreateUserResponse"/>
+    </bindings>
+    <bindings scd="tns:UpdateUserRequest">
+      <class ref="com.example.user.UpdateUserRequest"/>
+    </bindings>
+    <bindings scd="tns:UpdateUserResponse">
+      <class ref="com.example.user.UpdateUserResponse"/>
+    </bindings>
+    <bindings scd="tns:BlockUserRequest">
+      <class ref="com.example.user.BlockUserRequest"/>
+    </bindings>
+    <bindings scd="tns:BlockUserResponse">
+      <class ref="com.example.user.BlockUserResponse"/>
+    </bindings>
+    <bindings scd="tns:SetTwoFactorRequest">
+      <class ref="com.example.user.SetTwoFactorRequest"/>
+    </bindings>
+    <bindings scd="tns:SetTwoFactorResponse">
+      <class ref="com.example.user.SetTwoFactorResponse"/>
+    </bindings>
+    <bindings scd="~tns:RoleEnum">
+      <typesafeEnumClass ref="com.example.user.RoleEnum"/>
+    </bindings>
+  </bindings>
+</bindings>
+

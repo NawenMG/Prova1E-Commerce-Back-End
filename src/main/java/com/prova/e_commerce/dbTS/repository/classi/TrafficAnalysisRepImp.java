@@ -9,6 +9,8 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import com.prova.e_commerce.dbTS.model.TrafficAnalysis;
 import com.prova.e_commerce.dbTS.repository.interfacce.TrafficAnalysisRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +37,7 @@ public class TrafficAnalysisRepImp implements TrafficAnalysisRep {
         // Creazione di un punto per InfluxDB
         writeApi.writePoint(
             Point.measurement("TrafficAnalysis")
+                .addTag("userId", SecurityUtils.getCurrentUsername())
                 .addTag("urlPagina", analysis.getUrlPagina())
                 .addField("numeroDiVisite", analysis.getNumeroDiVisite())
                 .addField("numeroDiVisitatoriUnici", analysis.getNumeroDiVisitatoriUnici())
@@ -50,6 +53,7 @@ public class TrafficAnalysisRepImp implements TrafficAnalysisRep {
         for (TrafficAnalysis analysis : analysisList) {
             writeApi.writePoint(
                 Point.measurement("TrafficAnalysis")
+                    .addTag("userId", SecurityUtils.getCurrentUsername())
                     .addTag("urlPagina", analysis.getUrlPagina())
                     .addField("numeroDiVisite", analysis.getNumeroDiVisite())
                     .addField("numeroDiVisitatoriUnici", analysis.getNumeroDiVisitatoriUnici())

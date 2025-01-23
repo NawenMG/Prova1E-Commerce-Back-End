@@ -2,6 +2,8 @@ package com.prova.e_commerce.dbKey.service;
 
 import com.prova.e_commerce.dbKey.model.SettingSite;
 import com.prova.e_commerce.dbKey.repository.interfacce.SettingSiteRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -37,6 +39,7 @@ public class SettingSiteService {
 
     @Cacheable(value = {"caffeine", "redis"}, key = "#userId", unless = "#result == null")
     public Optional<SettingSite> trovaImpostazioni(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Recupero impostazioni per l'utente: userId={}", userId);
         Span span = tracer.spanBuilder("trovaImpostazioni").startSpan();
         try {
@@ -49,6 +52,7 @@ public class SettingSiteService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void salvaImpostazioni(String userId, SettingSite settings) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Salvataggio impostazioni per l'utente: userId={}, settings={}", userId, settings);
         Span span = tracer.spanBuilder("salvaImpostazioni").startSpan();
         try {
@@ -61,6 +65,7 @@ public class SettingSiteService {
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#userId", allEntries = false)
     public void resetImpostazioni(String userId) {
+        userId = SecurityUtils.getCurrentUsername();
         logger.info("Reset delle impostazioni per l'utente: userId={}", userId);
         Span span = tracer.spanBuilder("resetImpostazioni").startSpan();
         try {

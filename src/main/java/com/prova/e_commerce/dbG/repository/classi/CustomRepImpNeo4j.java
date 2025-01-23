@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import com.prova.e_commerce.dbG.repository.interfacce.CustomRepNeo4j;
 
+import java.util.List;
+
 @Repository
 public class CustomRepImpNeo4j implements CustomRepNeo4j {
 
@@ -54,5 +56,53 @@ public class CustomRepImpNeo4j implements CustomRepNeo4j {
                 .bind(utenteId).to("utenteId")
                 .bind(prodottoId).to("prodottoId")
                 .run();
+    }
+
+    @Override
+    public List<String> getVisiteUtente(Long utenteId) {
+        return (List<String>) neo4jClient.query(
+                "MATCH (u:Utente)-[:VISITA]->(p:Prodotto) " +
+                "WHERE u.id = $utenteId " +
+                "RETURN p.id AS prodottoId")
+                .bind(utenteId).to("utenteId")
+                .fetchAs(String.class)
+                .mappedBy((typeSystem, record) -> "Utente " + utenteId + " ha visitato il prodotto " + record.get("prodottoId").asString())
+                .all();
+    }
+
+    @Override
+    public List<String> getAcquistiUtente(Long utenteId) {
+        return (List<String>) neo4jClient.query(
+                "MATCH (u:Utente)-[:ACQUISTA]->(p:Prodotto) " +
+                "WHERE u.id = $utenteId " +
+                "RETURN p.id AS prodottoId")
+                .bind(utenteId).to("utenteId")
+                .fetchAs(String.class)
+                .mappedBy((typeSystem, record) -> "Utente " + utenteId + " ha acquistato il prodotto " + record.get("prodottoId").asString())
+                .all();
+    }
+
+    @Override
+    public List<String> getCategorieProdotto(Long prodottoId) {
+        return (List<String>) neo4jClient.query(
+                "MATCH (p:Prodotto)-[:APPARTIENE_A]->(c:CategoriaProdotto) " +
+                "WHERE p.id = $prodottoId " +
+                "RETURN c.nome AS categoriaNome")
+                .bind(prodottoId).to("prodottoId")
+                .fetchAs(String.class)
+                .mappedBy((typeSystem, record) -> "Prodotto " + prodottoId + " appartiene alla categoria " + record.get("categoriaNome").asString())
+                .all();
+    }
+
+    @Override
+    public List<String> getProvenienzeUtente(Long utenteId) {
+        return (List<String>) neo4jClient.query(
+                "MATCH (u:Utente)-[:PROVIENE_DA]->(loc:Locazione) " +
+                "WHERE u.id = $utenteId " +
+                "RETURN loc.nome AS localita")
+                .bind(utenteId).to("utenteId")
+                .fetchAs(String.class)
+                .mappedBy((typeSystem, record) -> "L'utente " + utenteId + " proviene da " + record.get("localita").asString())
+                .all();
     }
 }

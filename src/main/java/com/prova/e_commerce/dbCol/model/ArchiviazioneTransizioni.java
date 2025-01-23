@@ -15,6 +15,10 @@ public class ArchiviazioneTransizioni {
     @Size(min = 1, max = 255, message = "L'Order_ID deve essere tra 1 e 255 caratteri")
     private String orderId; // Order_ID
 
+    @NotNull(message = "UserId non può essere nullo")
+    @Size(min = 1, max = 50, message = "UserId deve essere compreso tra 1 e 50 caratteri")
+    private String userId;
+
     @NotNull(message = "La data della transizione è obbligatoria")
     private Instant transizioneDate; // Transizione_date
 
@@ -48,6 +52,14 @@ public class ArchiviazioneTransizioni {
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Instant getTransizioneDate() {

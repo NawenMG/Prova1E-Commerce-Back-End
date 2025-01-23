@@ -9,6 +9,7 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import com.prova.e_commerce.dbTS.model.ServerResponse;
 import com.prova.e_commerce.dbTS.repository.interfacce.ServerResponseRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,7 @@ public class ServerResponseRepImp implements ServerResponseRep {
         // Creazione di un punto per InfluxDB
         writeApi.writePoint(
             Point.measurement("ServerResponse")
+                .addTag("userId", SecurityUtils.getCurrentUsername())
                 .addTag("server", serverResponse.getServer())
                 .addTag("endpoint", serverResponse.getEndpoint())
                 .addField("responseTimeAverage", serverResponse.getResponseTimeAverage())
@@ -54,6 +56,7 @@ public class ServerResponseRepImp implements ServerResponseRep {
         for (ServerResponse serverResponse : serverResponseList) {
             writeApi.writePoint(
                 Point.measurement("ServerResponse")
+                    .addTag("userId", SecurityUtils.getCurrentUsername())
                     .addTag("server", serverResponse.getServer())
                     .addTag("endpoint", serverResponse.getEndpoint())
                     .addField("responseTimeAverage", serverResponse.getResponseTimeAverage())

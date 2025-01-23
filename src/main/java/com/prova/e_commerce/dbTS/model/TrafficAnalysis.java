@@ -13,6 +13,11 @@ import java.time.Instant;
 @Measurement(name = "TrafficAnalysis")
 public class TrafficAnalysis {
 
+    @NotNull(message = "L'ID utente non può essere null")
+    @Column(tag = true)
+    private String userId;
+
+
     // Tag: URL della pagina
     @NotBlank(message = "L'URL della pagina non può essere vuoto")
     @Column(tag = true)
@@ -51,6 +56,16 @@ public class TrafficAnalysis {
     }
 
     // Getters e Setters
+
+    // Getters e Setters
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
     public String getUrlPagina() {
         return urlPagina;
     }

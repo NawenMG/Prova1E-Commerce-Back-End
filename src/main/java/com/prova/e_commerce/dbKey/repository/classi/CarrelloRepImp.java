@@ -31,7 +31,7 @@ public class CarrelloRepImp implements CarrelloRep {
             if (carrelloDoc == null) {
                 // Se il carrello non esiste, creiamo un nuovo documento
                 Carrello carrello = new Carrello();
-                carrello.setKey(userId);
+                carrello.setUserId(userId);
                 carrello.setProdotti(nuoviProdotti);
                 carrello.setQuantitaTotale(nuoviProdotti.stream().mapToInt(Prodotto::getQuantita).sum());
                 carrello.setPrezzoTotale(nuoviProdotti.stream().mapToDouble(p -> p.getPrezzoTotale() * p.getQuantita()).sum());
@@ -108,4 +108,30 @@ public class CarrelloRepImp implements CarrelloRep {
             e.printStackTrace();
         }
     }
+
+
+    // Creazione di un carrello vuoto
+public void creaCarrelloVuoto(String userId) {
+    try {
+        // Verifica se esiste già un carrello per l'utente
+        BaseDocument existingDoc = database.collection("Carrello").getDocument(userId, BaseDocument.class);
+        if (existingDoc != null) {
+            throw new RuntimeException("Un carrello per questo utente esiste già: " + userId);
+        }
+
+        // Crea un nuovo carrello vuoto
+        Carrello carrello = new Carrello();
+        carrello.setUserId(userId); // Imposta l'ID del carrello uguale all'ID utente
+        carrello.setUserId(userId);
+        carrello.setProdotti(List.of()); // Lista vuota di prodotti
+        carrello.setQuantitaTotale(0);
+        carrello.setPrezzoTotale(0.0);
+
+        // Salva il carrello nel database
+        database.collection("Carrello").insertDocument(carrello);
+    } catch (Exception e) {
+        throw new RuntimeException("Impossibile creare il carrello vuoto", e);
+    }
+}
+
 }

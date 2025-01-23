@@ -34,7 +34,7 @@ public class CronologiaRepImp implements CronologiaRep {
             if (cronologiaDoc == null) {
                 // Se la cronologia non esiste, crea un nuovo oggetto Cronologia
                 cronologia = new Cronologia();
-                cronologia.setKey(userId);
+                cronologia.setUserId(userId);
                 cronologia.setProdotti(nuoviProdotti);
             } else {
                 // Se la cronologia esiste, aggiungi i nuovi prodotti

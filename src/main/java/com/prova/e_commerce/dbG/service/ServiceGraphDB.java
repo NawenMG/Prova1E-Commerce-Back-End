@@ -15,9 +15,15 @@ import com.prova.e_commerce.dbG.repository.interfacce.NodoCategoriaProdottoRep;
 import com.prova.e_commerce.dbG.repository.interfacce.NodoLocazioneUtenteRep;
 import com.prova.e_commerce.dbG.repository.interfacce.NodoProdottoRep;
 import com.prova.e_commerce.dbG.repository.interfacce.NodoUtenteRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +67,42 @@ public class ServiceGraphDB {
         meterRegistry.counter("service.graphdb.acquisto.count");
         meterRegistry.counter("service.graphdb.appartenenza.count");
         meterRegistry.counter("service.graphdb.provenienza.count");
+    }
+
+    // Metodo per ottenere tutte le visite effettuate da un utente su prodotti
+    @Cacheable(value = {"caffeine", "redis"}, key = "'visiteUtente-findAll'")
+    public List<String> getVisiteUtente(Long utenteId) {
+        logger.info("Recupero visite per utenteId={}", utenteId);
+        return customRepNeo4j.getVisiteUtente(utenteId).stream()
+                .map(visita -> "Utente " + utenteId + " ha visitato il prodotto " + visita)
+                .collect(Collectors.toList());
+    }
+
+    // Metodo per ottenere tutti gli acquisti effettuati da un utente
+    @Cacheable(value = {"caffeine", "redis"}, key = "'acquistiUtente-findAll'")
+    public List<String> getAcquistiUtente(Long utenteId) {
+        logger.info("Recupero acquisti per utenteId={}", utenteId);
+        return customRepNeo4j.getAcquistiUtente(utenteId).stream()
+                .map(acquisto -> "Utente " + utenteId + " ha acquistato il prodotto " + acquisto)
+                .collect(Collectors.toList());
+    }
+
+    // Metodo per ottenere tutte le categorie assegnate a un prodotto
+    @Cacheable(value = {"caffeine", "redis"}, key = "'categorieProdotto-findAll'")
+    public List<String> getCategorieProdotto(Long prodottoId) {
+        logger.info("Recupero categorie per prodottoId={}", prodottoId);
+        return customRepNeo4j.getCategorieProdotto(prodottoId).stream()
+                .map(categoria -> "Prodotto " + prodottoId + " appartiene alla categoria " + categoria)
+                .collect(Collectors.toList());
+    }
+
+    // Metodo per ottenere la provenienza geografica di un utente
+    @Cacheable(value = {"caffeine", "redis"}, key = "'provenienzeUtente-findAll'")
+    public List<String> getProvenienzeUtente(Long utenteId) {
+        logger.info("Recupero provenienze per utenteId={}", utenteId);
+        return customRepNeo4j.getProvenienzeUtente(utenteId).stream()
+                .map(provenienza -> "L'utente " + utenteId + " proviene da " + provenienza)
+                .collect(Collectors.toList());
     }
 
     public void visitaProdotto(Long utenteId, Long prodottoId) {
@@ -116,7 +158,7 @@ public class ServiceGraphDB {
         logger.info("Creazione utente: {}", utente);
         Span span = tracer.spanBuilder("creaUtente").startSpan();
         try {
-            return nodoUtenteRep.save(utente);
+            return nodoUtenteRep.save(utente, SecurityUtils.getCurrentUsername());
         } finally {
             span.end();
         }
@@ -127,7 +169,7 @@ public class ServiceGraphDB {
         logger.info("Creazione prodotto: {}", prodotto);
         Span span = tracer.spanBuilder("creaProdotto").startSpan();
         try {
-            return nodoProdottoRep.save(prodotto);
+            return nodoProdottoRep.save(prodotto, SecurityUtils.getCurrentUsername());
         } finally {
             span.end();
         }
@@ -138,7 +180,7 @@ public class ServiceGraphDB {
         logger.info("Creazione categoria prodotto: {}", categoriaProdotto);
         Span span = tracer.spanBuilder("creaCategoriaProdotto").startSpan();
         try {
-            return nodoCategoriaProdottoRep.save(categoriaProdotto);
+            return nodoCategoriaProdottoRep.save(categoriaProdotto, SecurityUtils.getCurrentUsername());
         } finally {
             span.end();
         }
@@ -149,7 +191,7 @@ public class ServiceGraphDB {
         logger.info("Creazione locazione utente: {}", locazioneUtente);
         Span span = tracer.spanBuilder("creaLocazioneUtente").startSpan();
         try {
-            return nodoLocazioneUtenteRep.save(locazioneUtente);
+            return nodoLocazioneUtenteRep.save(locazioneUtente, SecurityUtils.getCurrentUsername());
         } finally {
             span.end();
         }

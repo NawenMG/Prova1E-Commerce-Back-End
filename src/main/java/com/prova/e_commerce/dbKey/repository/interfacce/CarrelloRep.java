@@ -19,4 +19,6 @@ public interface CarrelloRep {
 
     // Resetta tutti i prodotti nel carrello
     void resetCarrello(String userId);
+
+    void creaCarrelloVuoto(String userId);
 }

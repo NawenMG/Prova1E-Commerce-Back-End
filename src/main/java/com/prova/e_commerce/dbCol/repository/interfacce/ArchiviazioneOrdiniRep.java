@@ -10,10 +10,10 @@ public interface ArchiviazioneOrdiniRep {
     List<ArchiviazioneOrdini> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneOrdini ordine);
 
     // Metodo per salvare un nuovo ordine
-    void saveOrdine(ArchiviazioneOrdini ordine);
+    void saveOrdine(ArchiviazioneOrdini ordine, String UserName);
 
     // Metodo per aggiornare un ordine esistente
-    void updateOrdine(String id, ArchiviazioneOrdini ordine);
+    //void updateOrdine(String id, ArchiviazioneOrdini ordine);
 
     // Metodo per eliminare un ordine
     void deleteOrdine(String id);

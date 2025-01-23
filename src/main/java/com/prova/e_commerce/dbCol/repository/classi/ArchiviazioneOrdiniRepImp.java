@@ -4,18 +4,21 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.*;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneOrdiniRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneOrdini;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class ArchiviazioneOrdiniRepImp implements ArchiviazioneOrdiniRep {
 
     @Autowired
     private CqlSession session;
+
 
     public List<ArchiviazioneOrdini> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneOrdini ordine) {
         StringBuilder cql = new StringBuilder("SELECT ");
@@ -67,6 +70,18 @@ public class ArchiviazioneOrdiniRepImp implements ArchiviazioneOrdiniRep {
         // Clausole WHERE
         cql.append(paramQuery.buildWhereClause());
 
+        // Controllo del ruolo e aggiunta di filtri
+        Set<String> roles = SecurityUtils.getCurrentUserRoles();
+        if (roles.contains("USERDELIVERY")) {
+            // Nessun filtro aggiuntivo: accesso a tutti gli ordini
+        } else if (roles.contains("User")) {
+            // Filtro per User_ID basato sullo username corrente
+            String currentUser = SecurityUtils.getCurrentUsername();
+            cql.append(" AND User_ID = '").append(currentUser).append("' ");
+        } else {
+            throw new SecurityException("Accesso non autorizzato");
+        }
+
         // Clausola ORDER BY
         if (paramQuery.isOrderBy() && !paramQuery.getOrderByColumn().isEmpty()) {
             cql.append("ORDER BY ").append(paramQuery.getOrderByColumn()).append(" ");
@@ -104,14 +119,15 @@ public class ArchiviazioneOrdiniRepImp implements ArchiviazioneOrdiniRep {
         return ordine;
     }
 
-    public void saveOrdine(ArchiviazioneOrdini ordine) {
+
+    public void saveOrdine(ArchiviazioneOrdini ordine, String UserName) {
         String query = "INSERT INTO ArchiviazioneOrdini (ID, User_ID, Order_date, Status, Importo_totale, " +
                        "Indirizzo_della_spedizione, Lista_articoli_dell_ordine, Consegna, Corriere) " +
                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement statement = session.prepare(query);
         session.execute(statement.bind(
                 ordine.getId(),
-                ordine.getUserId(),
+                UserName,
                 ordine.getOrderDate(),
                 ordine.getStatus(),
                 ordine.getImportoTotale(),
@@ -122,7 +138,7 @@ public class ArchiviazioneOrdiniRepImp implements ArchiviazioneOrdiniRep {
         ));
     }
 
-     // Metodo per aggiornare un ordine
+     /* // Metodo per aggiornare un ordine
      public void updateOrdine(String id, ArchiviazioneOrdini ordine) {
         String query = "UPDATE ArchiviazioneOrdini SET User_ID = ?, Order_date = ?, Status = ?, Importo_totale = ?, " +
                        "Indirizzo_della_spedizione = ?, Lista_articoli_dell_ordine = ?, Consegna = ?, Corriere = ? " +
@@ -139,7 +155,7 @@ public class ArchiviazioneOrdiniRepImp implements ArchiviazioneOrdiniRep {
                 ordine.getCorriere(),
                 id
         ));
-    }
+    } */
 
     // Metodo per eliminare un ordine
     public void deleteOrdine(String id) {
