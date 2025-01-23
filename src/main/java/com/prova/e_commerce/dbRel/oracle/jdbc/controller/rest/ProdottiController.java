@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 /* import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +36,8 @@ public class ProdottiController {
     /**
      * Endpoint per inserire un nuovo prodotto.
      */
-    @PostMapping
+    @PostMapping("/post")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> inserisciProdotto(@Valid @RequestBody Prodotti prodotto) {
         String response = prodottiService.inserisciProdotto(prodotto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -44,7 +46,8 @@ public class ProdottiController {
     /**
      * Endpoint per aggiornare un prodotto esistente in base all'ID.
      */
-    @PutMapping("/{productId}")
+    @PutMapping("/put/{productId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> aggiornaProdotto(@PathVariable String productId, @Valid @RequestBody Prodotti prodotto) {
         String response = prodottiService.aggiornaProdotto(productId, prodotto);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -53,7 +56,8 @@ public class ProdottiController {
     /**
      * Endpoint per eliminare un prodotto in base all'ID.
      */
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/delete/{productId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> eliminaProdotto(@PathVariable String productId) {
         String response = prodottiService.eliminaProdotto(productId);
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);

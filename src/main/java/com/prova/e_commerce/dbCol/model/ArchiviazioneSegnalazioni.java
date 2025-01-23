@@ -2,16 +2,22 @@ package com.prova.e_commerce.dbCol.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 
 public class ArchiviazioneSegnalazioni {
 
+    @PrimaryKeyColumn(name = "segnaltions_id", type = PrimaryKeyType.PARTITIONED)
     @NotNull(message = "ID della segnalazione è obbligatorio")
     private String id;  // Primary Key
 
     @NotNull(message = "L'utente è obbligatorio")
     @Size(min = 1, max = 100, message = "Il nome dell'utente deve essere tra 1 e 100 caratteri")
+    @PrimaryKeyColumn(name = "username", type = PrimaryKeyType.CLUSTERED)
     private String utente;  // Utente che ha fatto la segnalazione
 
     @NotNull(message = "Il riferimento della segnalazione è obbligatorio")

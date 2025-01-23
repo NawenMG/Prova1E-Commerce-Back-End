@@ -500,6 +500,35 @@ input ArchiviazioneSegnalazioniInput{
   fileMultimediali: String
 }
 
+type ArchiviazioneResi {
+    returnsID: String
+    userID: String
+    status: Boolean
+    accettazioneReso: Boolean
+    dataRichiesta: String
+}
+
+input ParamQueryCassandra {
+    distinct: Boolean
+    all: Boolean
+    condizioneWhere: String
+    valoriWhere: String
+    like: String
+    in: String
+    orderBy: Boolean
+    orderByColumn: String
+    allowFiltering: Boolean
+}
+
+input ArchiviazioneResiInput {
+    returnsID: String
+    userID: String
+    status: Boolean
+    accettazioneReso: Boolean
+    dataRichiesta: String
+}
+
+
 
 # Definizione del tipo Query unificato
 type Query {
@@ -579,7 +608,10 @@ type Query {
     findSegnalazioneById(id: String!): ArchiviazioneSegnalazioni
     # Esegui una query dinamica
     queryDinamica(paramQuery: ParamQueryCassandraInput, segnalazione: ArchiviazioneSegnalazioniInput): [ArchiviazioneSegnalazioni]
-
+     
+    getResoByID(id: String!): ArchiviazioneResi
+    getAllResi: [ArchiviazioneResi]
+    queryDinamica(paramQuery: ParamQueryCassandra, reso: ArchiviazioneResiInput): [ArchiviazioneResi]
 
 
 

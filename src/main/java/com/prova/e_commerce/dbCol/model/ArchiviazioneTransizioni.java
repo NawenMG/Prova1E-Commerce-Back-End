@@ -2,12 +2,17 @@ package com.prova.e_commerce.dbCol.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 public class ArchiviazioneTransizioni {
 
+    @PrimaryKeyColumn(name = "transitions_id", type = PrimaryKeyType.PARTITIONED)
     @NotNull(message = "L'ID della transizione è obbligatorio")
     private String id; // ID (Primary Key)
 
@@ -17,6 +22,7 @@ public class ArchiviazioneTransizioni {
 
     @NotNull(message = "UserId non può essere nullo")
     @Size(min = 1, max = 50, message = "UserId deve essere compreso tra 1 e 50 caratteri")
+    @PrimaryKeyColumn(name = "users_id", type = PrimaryKeyType.CLUSTERED)
     private String userId;
 
     @NotNull(message = "La data della transizione è obbligatoria")

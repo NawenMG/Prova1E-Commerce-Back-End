@@ -12,7 +12,7 @@ public interface ProdottiRep {
 
     List<Prodotti> query(ParamQuery parmQuery, Prodotti prodotti);
     String saveAll(int number);
-    String insertProduct(Prodotti prodotti);
+    String insertProduct(Prodotti prodotti, String UserID);
     String updateProduct(String productID, Prodotti prodotti);
     String deleteProduct(String productID);
 }

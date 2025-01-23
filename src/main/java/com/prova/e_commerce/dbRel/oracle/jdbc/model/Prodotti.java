@@ -15,6 +15,10 @@ public class Prodotti {
     @Size(max = 50, message = "L'ID del prodotto non può superare i 50 caratteri")
     private String productID;  // chiave primaria
 
+    @NotBlank(message = "L'ID utente è obbligatorio")
+    @Size(max = 50, message = "L'ID utente non può superare i 50 caratteri")
+    private String userId; // nuovo attributo userId
+
     @NotBlank(message = "Il nome del prodotto è obbligatorio")
     @Size(max = 100, message = "Il nome del prodotto non può superare i 100 caratteri")
     private String nome;  // nome del prodotto
@@ -52,6 +56,14 @@ public class Prodotti {
 
     public void setProductId(String productID) {
         this.productID = productID;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getNome() {

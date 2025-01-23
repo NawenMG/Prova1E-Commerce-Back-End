@@ -115,6 +115,7 @@ import com.example.user.UserType;
 import com.prova.e_commerce.security.security1.User1;
 import com.prova.e_commerce.security.security1.User1Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -138,6 +139,7 @@ public class UserEndpoint {
     /**
      * Operazione: GetUser
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetUserRequest")
     @ResponsePayload
     public GetUserResponse getUser(@RequestPayload GetUserRequest request) {

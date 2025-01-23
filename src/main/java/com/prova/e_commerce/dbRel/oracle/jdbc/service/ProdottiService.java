@@ -3,6 +3,7 @@ package com.prova.e_commerce.dbRel.oracle.jdbc.service;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Prodotti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.ProdottiRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 import com.prova.e_commerce.storage.OzoneService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,12 +64,13 @@ public class ProdottiService {
 
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public String inserisciProdotto(Prodotti prodotto) {
+        String UserId = SecurityUtils.getCurrentUsername();
         logger.info("Inserimento nuovo prodotto: prodotto={}", prodotto);
         Span span = tracer.spanBuilder("inserisciProdotto").startSpan();
         try {
             meterRegistry.counter("service.prodotti.inserisci.count").increment();
             kafkaTemplate.send(KAFKA_TOPIC_PRODOTTI_AGGIUNGI, "Nuovo prodotto inserito: " + prodotto.getProductId());
-            return prodottiRep.insertProduct(prodotto);
+            return prodottiRep.insertProduct(prodotto, UserId);
         } finally {
             span.end();
         }

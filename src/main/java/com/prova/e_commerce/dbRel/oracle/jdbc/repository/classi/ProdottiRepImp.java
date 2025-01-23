@@ -13,6 +13,7 @@ import com.prova.e_commerce.dbRel.oracle.jdbc.randomData.ProdottiFaker;
 import com.prova.e_commerce.dbRel.oracle.jdbc.model.Prodotti;
 import com.prova.e_commerce.dbRel.oracle.jdbc.parametri.ParamQuery;
 import com.prova.e_commerce.dbRel.oracle.jdbc.repository.interfacce.ProdottiRep;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 
 @Repository
 public class ProdottiRepImp implements ProdottiRep {
@@ -147,10 +148,12 @@ public class ProdottiRepImp implements ProdottiRep {
     }
 
     // Insert
-    public String insertProduct(Prodotti prodotti) {
-        String sql = "INSERT INTO Prodotti (ID, Nome, Prezzo, Descrizione, Immagine, Quantità_Disponibile, Categoria, Data_di_inserimento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public String insertProduct(Prodotti prodotti, String userId) {
+        userId = SecurityUtils.getCurrentUsername();
+        String sql = "INSERT INTO Prodotti (ID, UserId, Nome, Prezzo, Descrizione, Immagine, Quantità_Disponibile, Categoria, Data_di_inserimento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
             prodotti.getProductId(),
+            userId,
             prodotti.getNome(),
             prodotti.getPrezzo(),
             prodotti.getDescrizione(),
@@ -163,25 +166,57 @@ public class ProdottiRepImp implements ProdottiRep {
     }
 
     // Update
-    public String updateProduct(String productID, Prodotti prodotti) {
-        String sql = "UPDATE Prodotti SET Nome = ?, Prezzo = ?, Descrizione = ?, Immagine = ?, Quantità_Disponibile = ?, Categoria = ?, Posizione = ? WHERE ID = ?";
-        jdbcTemplate.update(sql,
-            prodotti.getNome(),
-            prodotti.getPrezzo(),
-            prodotti.getDescrizione(),
-            prodotti.getImmagine(),
-            prodotti.getAmountAvailable(),
-            prodotti.getCategoria(),
-            prodotti.getDataDiInserimento(),
-            productID
-        );
-        return "Dati aggiornati con successo";
+public String updateProduct(String productID, Prodotti prodotti) {
+    // Ottieni l'ID dell'utente attualmente autenticato
+    String currentUserId = SecurityUtils.getCurrentUsername();
+
+    // Verifica che il prodotto appartenga all'utente corrente
+    String checkOwnershipSql = "SELECT COUNT(*) FROM Prodotti WHERE ID = ? AND UserId = ?";
+    Integer count = jdbcTemplate.queryForObject(checkOwnershipSql, 
+            new Object[]{productID, currentUserId}, 
+            (rs, rowNum) -> rs.getInt(1)); // Utilizzo di RowMapper per evitare deprecazione
+
+    if (count == null || count == 0) {
+        // L'utente non è autorizzato a modificare questo prodotto
+        throw new SecurityException("Non sei autorizzato a modificare questo prodotto.");
     }
 
+    // Esegui l'aggiornamento del prodotto
+    String sql = "UPDATE Prodotti SET Nome = ?, Prezzo = ?, Descrizione = ?, Immagine = ?, Quantità_Disponibile = ?, Categoria = ?, Data_Di_Inserimento = ? WHERE ID = ?";
+    jdbcTemplate.update(sql,
+        prodotti.getNome(),
+        prodotti.getPrezzo(),
+        prodotti.getDescrizione(),
+        prodotti.getImmagine(),
+        prodotti.getAmountAvailable(),
+        prodotti.getCategoria(),
+        prodotti.getDataDiInserimento(),
+        productID
+    );
+
+    return "Dati aggiornati con successo";
+}
+
+
     // Delete
-    public String deleteProduct(String productID) {
-        String sql = "DELETE FROM Prodotti WHERE ID = ?";
-        jdbcTemplate.update(sql, productID);
-        return "Dati eliminati con successo";
+public String deleteProduct(String productID) {
+    // Ottieni l'ID dell'utente attualmente autenticato
+    String currentUserId = SecurityUtils.getCurrentUsername();
+
+    // Verifica che il prodotto appartenga all'utente corrente
+    String checkOwnershipSql = "SELECT COUNT(*) FROM Prodotti WHERE ID = ? AND UserId = ?";
+    Integer count = jdbcTemplate.queryForObject(checkOwnershipSql, new Object[]{productID, currentUserId}, Integer.class);
+
+    if (count == null || count == 0) {
+        // L'utente non è autorizzato a cancellare questo prodotto
+        throw new SecurityException("Non sei autorizzato a eliminare questo prodotto.");
     }
+
+    // Esegui l'eliminazione
+    String deleteSql = "DELETE FROM Prodotti WHERE ID = ?";
+    jdbcTemplate.update(deleteSql, productID);
+
+    return "Prodotto eliminato con successo.";
+}
+
 }
