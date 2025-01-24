@@ -2,21 +2,20 @@ package com.prova.e_commerce.dbRT.service;
 
 import com.prova.e_commerce.dbRT.model.ShippingStatus;
 import com.prova.e_commerce.dbRT.repository.interfacce.ShippingStatusRep;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class ShippingStatusService {
@@ -30,6 +29,9 @@ public class ShippingStatusService {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
     private MeterRegistry meterRegistry;
 
     @Autowired
@@ -38,12 +40,17 @@ public class ShippingStatusService {
     private static final String KAFKA_TOPIC_SHIPPING_AGGIUNGI = "shipping-status-topic-aggiungi";
     private static final String KAFKA_TOPIC_SHIPPING_AGGIORNA = "shipping-status-topic-aggiorna";
 
+    private static final String INPUT_QUEUE = "shippingStatusInputQueue";
+    private static final String OUTPUT_QUEUE = "shippingStatusOutputQueue";
+
     public ShippingStatusService(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
         meterRegistry.counter("service.shipping.create.count");
         meterRegistry.counter("service.shipping.update.count");
         meterRegistry.counter("service.shipping.delete.count");
         meterRegistry.counter("service.shipping.locations.count");
+        meterRegistry.counter("service.shipping.rabbitmq.send.count");
+        meterRegistry.counter("service.shipping.rabbitmq.receive.count");
     }
 
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
@@ -164,8 +171,36 @@ public class ShippingStatusService {
             span.end();
         }
     }
+
+    /**
+     * Invio di uno stato di spedizione a RabbitMQ (Input Queue).
+     *
+     * @param shippingStatus Stato di spedizione da inviare.
+     * @return CompletableFuture<Void>.
+     */
+    public CompletableFuture<Void> sendToRabbitMQ(ShippingStatus shippingStatus) {
+        logger.info("Invio stato di spedizione a RabbitMQ: {}", shippingStatus.getId());
+        return CompletableFuture.runAsync(() -> {
+            rabbitTemplate.convertAndSend(INPUT_QUEUE, shippingStatus);
+            logger.info("Stato di spedizione inviato a RabbitMQ.");
+        });
+    }
+
+    /**
+     * Ricezione di uno stato di spedizione da RabbitMQ (Output Queue).
+     *
+     * @return CompletableFuture<ShippingStatus>.
+     */
+    public CompletableFuture<ShippingStatus> receiveFromRabbitMQ() {
+        logger.info("Ricezione stato di spedizione da RabbitMQ.");
+        return CompletableFuture.supplyAsync(() -> {
+            ShippingStatus receivedStatus = (ShippingStatus) rabbitTemplate.receiveAndConvert(OUTPUT_QUEUE);
+            if (receivedStatus != null) {
+                logger.info("Stato di spedizione ricevuto da RabbitMQ: {}", receivedStatus.getId());
+            } else {
+                logger.warn("Nessun messaggio presente nella coda RabbitMQ.");
+            }
+            return receivedStatus;
+        });
+    }
 }
-
-
-
-

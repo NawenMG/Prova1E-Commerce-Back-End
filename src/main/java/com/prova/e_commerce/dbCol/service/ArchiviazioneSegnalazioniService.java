@@ -23,7 +23,7 @@ public class ArchiviazioneSegnalazioniService {
 
     private static final Logger logger = LoggerFactory.getLogger(ArchiviazioneSegnalazioniService.class);
     private static final String TOPIC_SEGNALAZIONI_SAVE = "segnalazioni-topic-save";
-    private static final String TOPIC_SEGNALAZIONI_UPDATE = "segnalazioni-topic-update";
+    //private static final String TOPIC_SEGNALAZIONI_UPDATE = "segnalazioni-topic-update";
 
     @Autowired
     private ArchiviazioneSegnalazioniRep archiviazioneSegnalazioniRep;

@@ -9,6 +9,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,8 +22,12 @@ import java.util.List;
 public class ArchiviazioneTransizioniService {
 
     private static final Logger logger = LoggerFactory.getLogger(ArchiviazioneTransizioniService.class);
+
     private static final String TOPIC_TRANSIZIONI_SAVE = "transizioni-topic-save";
-    private static final String TOPIC_TRANSIZIONI_UPDATE = "transizioni-topic-update";
+    //private static final String TOPIC_TRANSIZIONI_UPDATE = "transizioni-topic-update";
+
+    private static final String INPUT_QUEUE = "transizioniInputQueue";
+    private static final String OUTPUT_QUEUE = "transizioniOutputQueue";
 
     @Autowired
     private ArchiviazioneTransizioniRep archiviazioneTransizioniRep;
@@ -31,17 +36,21 @@ public class ArchiviazioneTransizioniService {
     private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
     private MeterRegistry meterRegistry;
 
     @Autowired
     private Tracer tracer;
 
     public ArchiviazioneTransizioniService(MeterRegistry meterRegistry) {
-        // Inizializza metriche personalizzate
         this.meterRegistry = meterRegistry;
         meterRegistry.counter("service.transizione.save.count");
         meterRegistry.counter("service.transizione.update.count");
         meterRegistry.counter("service.transizione.query.count");
+        meterRegistry.counter("service.transizione.rabbitmq.send.count");
+        meterRegistry.counter("service.transizione.rabbitmq.receive.count");
     }
 
     @Cacheable(value = {"caffeine", "redis"}, key = "#paramQuery.toString() + #transizione.toString()")
@@ -84,25 +93,12 @@ public class ArchiviazioneTransizioniService {
         Span span = tracer.spanBuilder("saveTransizione").startSpan();
         try {
             meterRegistry.counter("service.transizione.save.count").increment();
-            archiviazioneTransizioniRep.saveTransizione(transizione,SecurityUtils.getCurrentUsername());
+            archiviazioneTransizioniRep.saveTransizione(transizione, SecurityUtils.getCurrentUsername());
             kafkaTemplate.send(TOPIC_TRANSIZIONI_SAVE, "TransizioneCreata", transizione);
         } finally {
             span.end();
         }
     }
-
-    /* @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
-    public void updateTransizione(String id, ArchiviazioneTransizioni transizione) {
-        logger.info("Updating transizione with ID: {}", id);
-        Span span = tracer.spanBuilder("updateTransizione").startSpan();
-        try {
-            meterRegistry.counter("service.transizione.update.count").increment();
-            archiviazioneTransizioniRep.updateTransizione(id, transizione);
-            kafkaTemplate.send(TOPIC_TRANSIZIONI_UPDATE, "TransizioneAggiornata", transizione);
-        } finally {
-            span.end();
-        }
-    } */
 
     @CacheEvict(value = {"caffeine", "redis"}, key = "#id")
     public void deleteTransizione(String id) {
@@ -110,6 +106,49 @@ public class ArchiviazioneTransizioniService {
         Span span = tracer.spanBuilder("deleteTransizione").startSpan();
         try {
             archiviazioneTransizioniRep.deleteTransizione(id);
+        } finally {
+            span.end();
+        }
+    }
+
+    // ===========================
+    // RabbitMQ Integration
+    // ===========================
+
+    /**
+     * Invio di una transizione a RabbitMQ (Input Queue).
+     *
+     * @param transizione Oggetto ArchiviazioneTransizioni da inviare.
+     */
+    public void sendToRabbitMQ(ArchiviazioneTransizioni transizione) {
+        logger.info("Invio transizione a RabbitMQ: {}", transizione.getId());
+        Span span = tracer.spanBuilder("sendToRabbitMQ").startSpan();
+        try {
+            meterRegistry.counter("service.transizione.rabbitmq.send.count").increment();
+            rabbitTemplate.convertAndSend(INPUT_QUEUE, transizione);
+            logger.info("Transizione inviata a RabbitMQ.");
+        } finally {
+            span.end();
+        }
+    }
+
+    /**
+     * Ricezione di una transizione da RabbitMQ (Output Queue).
+     *
+     * @return Transizione ricevuta da RabbitMQ.
+     */
+    public ArchiviazioneTransizioni receiveFromRabbitMQ() {
+        logger.info("Ricezione transizione da RabbitMQ.");
+        Span span = tracer.spanBuilder("receiveFromRabbitMQ").startSpan();
+        try {
+            meterRegistry.counter("service.transizione.rabbitmq.receive.count").increment();
+            ArchiviazioneTransizioni receivedTransizione = (ArchiviazioneTransizioni) rabbitTemplate.receiveAndConvert(OUTPUT_QUEUE);
+            if (receivedTransizione != null) {
+                logger.info("Transizione ricevuta da RabbitMQ: {}", receivedTransizione.getId());
+            } else {
+                logger.warn("Nessuna transizione trovata nella coda RabbitMQ.");
+            }
+            return receivedTransizione;
         } finally {
             span.end();
         }
