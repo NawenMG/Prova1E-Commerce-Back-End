@@ -1,9 +1,9 @@
 package com.prova.e_commerce.dbCol.service;
 
 import com.prova.e_commerce.dbCol.repository.interfacce.ArchiviazioneTransizioniRep;
-import com.prova.e_commerce.security.security1.SecurityUtils;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneTransizioni;
+import com.prova.e_commerce.security.security1.SecurityUtils;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -25,6 +25,8 @@ public class ArchiviazioneTransizioniService {
     private static final Logger logger = LoggerFactory.getLogger(ArchiviazioneTransizioniService.class);
 
     private static final String TOPIC_TRANSIZIONI_SAVE = "transizioni-topic-save";
+
+    // Code per l’input/output del servizio ArchiviazioneTransizioni
     private static final String INPUT_QUEUE = "transizioniInputQueue";
     private static final String OUTPUT_QUEUE = "transizioniOutputQueue";
 
@@ -145,7 +147,9 @@ public class ArchiviazioneTransizioniService {
         Span span = tracer.spanBuilder("receiveFromRabbitMQ").startSpan();
         try {
             meterRegistry.counter("service.transizione.rabbitmq.receive.count").increment();
-            ArchiviazioneTransizioni receivedTransizione = (ArchiviazioneTransizioni) rabbitTemplate.receiveAndConvert(OUTPUT_QUEUE);
+            ArchiviazioneTransizioni receivedTransizione = 
+                (ArchiviazioneTransizioni) rabbitTemplate.receiveAndConvert(OUTPUT_QUEUE);
+
             if (receivedTransizione != null) {
                 logger.info("Transizione ricevuta da RabbitMQ: {}", receivedTransizione.getId());
             } else {
@@ -166,5 +170,58 @@ public class ArchiviazioneTransizioniService {
     public void processReceivedMessage(ArchiviazioneTransizioni transizione) {
         logger.info("Transizione ricevuta dal listener RabbitMQ: {}", transizione.getId());
         // Logica di elaborazione della transizione ricevuta
+    }
+
+    // =========================================
+    // Integrazione col router (routerQueue, ecc.)
+    // =========================================
+
+    /**
+     * Invia una transizione alla coda "routerQueue", 
+     * che verrà gestita dal router C++ (paypal/stripe).
+     */
+    public void sendToRouterQueue(ArchiviazioneTransizioni transizione) {
+        logger.info("Invio transizione al routerQueue: {}", transizione.getId());
+        Span span = tracer.spanBuilder("sendToRouterQueue").startSpan();
+        try {
+            // Usa le costanti dalla config, se vuoi: RabbitMQConfig.ROUTER_QUEUE
+            rabbitTemplate.convertAndSend("routerQueue", transizione);
+            logger.info("Transizione inviata a routerQueue con successo.");
+        } finally {
+            span.end();
+        }
+    }
+
+    /**
+     * Ricevi una transizione dalla coda "routerResponseQueue" (in polling).
+     *
+     * @return l'oggetto ArchiviazioneTransizioni, o null se non c'è nulla in coda.
+     */
+    public ArchiviazioneTransizioni receiveFromRouterResponseQueue() {
+        logger.info("Ricezione transizione dalla coda routerResponseQueue.");
+        Span span = tracer.spanBuilder("receiveFromRouterResponseQueue").startSpan();
+        try {
+            ArchiviazioneTransizioni received =
+                (ArchiviazioneTransizioni) rabbitTemplate.receiveAndConvert("routerResponseQueue");
+
+            if (received != null) {
+                logger.info("Transizione ricevuta dalla routerResponseQueue: {}", received.getId());
+            } else {
+                logger.warn("Nessuna transizione trovata nella routerResponseQueue.");
+            }
+            return received;
+        } finally {
+            span.end();
+        }
+    }
+
+    /**
+     * Listener per ricevere risposte dal router su "routerResponseQueue".
+     * Se preferisci la modalità event-driven invece del polling.
+     */
+    @RabbitListener(queues = "routerResponseQueue")
+    public void processRouterResponse(ArchiviazioneTransizioni transizione) {
+        logger.info("Transizione ricevuta dalla routerResponseQueue: {}", transizione.getId());
+        // Logica personalizzata per gestire la risposta dal router
     }
 }

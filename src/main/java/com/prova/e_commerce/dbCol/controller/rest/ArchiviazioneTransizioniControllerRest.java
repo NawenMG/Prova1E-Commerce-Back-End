@@ -26,7 +26,7 @@ public class ArchiviazioneTransizioniControllerRest {
      * @return La transizione se trovata, altrimenti 404 Not Found
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")  
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ArchiviazioneTransizioni> getTransizione(@PathVariable String id) {
         ArchiviazioneTransizioni transizione = archiviazioneTransizioniService.findTransizioneById(id);
         if (transizione != null) {
@@ -58,7 +58,7 @@ public class ArchiviazioneTransizioniControllerRest {
      * @return Lista di transizioni che soddisfano la query
      */
     @PostMapping("/query")
-    @PreAuthorize("hasAnyRole('USER' , 'TRANSITIONUSER')")
+    @PreAuthorize("hasAnyRole('USER', 'TRANSITIONUSER')")
     public List<ArchiviazioneTransizioni> queryDinamica(
             @RequestBody ParamQueryCassandra paramQuery,
             @Valid @RequestBody ArchiviazioneTransizioni transizione) {
@@ -100,7 +100,8 @@ public class ArchiviazioneTransizioniControllerRest {
     /*
     // Aggiorna una transizione esistente
     @PutMapping("/put/{id}")
-    public ResponseEntity<Void> updateTransizione(@PathVariable String id, @Valid @RequestBody ArchiviazioneTransizioni transizione) {
+    public ResponseEntity<Void> updateTransizione(@PathVariable String id, 
+                                                  @Valid @RequestBody ArchiviazioneTransizioni transizione) {
         // Non hai un metodo update nel service, ma potresti implementarlo:
         // archiviazioneTransizioniService.updateTransizione(id, transizione);
         return ResponseEntity.ok().build();  // 200 OK
@@ -117,6 +118,24 @@ public class ArchiviazioneTransizioniControllerRest {
     @GetMapping("/receiveFromRabbitMQ")
     public ResponseEntity<ArchiviazioneTransizioni> receiveFromRabbitMQ() {
         ArchiviazioneTransizioni received = archiviazioneTransizioniService.receiveFromRabbitMQ();
+        if (received != null) {
+            return ResponseEntity.ok(received);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Spedire al router
+    @PostMapping("/sendToRouterQueue")
+    public ResponseEntity<Void> sendToRouterQueue(@RequestBody ArchiviazioneTransizioni transizione) {
+        archiviazioneTransizioniService.sendToRouterQueue(transizione);
+        return ResponseEntity.ok().build();
+    }
+
+    // Ricevere dal router (polling)
+    @GetMapping("/receiveFromRouterResponseQueue")
+    public ResponseEntity<ArchiviazioneTransizioni> receiveFromRouterResponseQueue() {
+        ArchiviazioneTransizioni received = archiviazioneTransizioniService.receiveFromRouterResponseQueue();
         if (received != null) {
             return ResponseEntity.ok(received);
         } else {

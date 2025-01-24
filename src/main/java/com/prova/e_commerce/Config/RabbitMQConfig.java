@@ -1,5 +1,4 @@
 package com.prova.e_commerce.Config;
-
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -126,5 +125,60 @@ public class RabbitMQConfig {
     @Bean
     public Binding bindingShippingRouterResponseQueue(Queue shippingRouterResponseQueue, TopicExchange shippingRouterExchange) {
         return BindingBuilder.bind(shippingRouterResponseQueue).to(shippingRouterExchange).with(SHIPPING_ROUTER_RESPONSE_QUEUE);
+    }
+
+    // ================================
+    // INTEGRAZIONE DEL ROUTER PER LE TRANSIZIONI
+    // ================================
+    // Code usate dal codice router C++: "routerQueue", "paypalQueue", "stripeQueue", "routerResponseQueue"
+    public static final String ROUTER_QUEUE = "routerQueue";
+    public static final String PAYPAL_QUEUE = "paypalQueue";
+    public static final String STRIPE_QUEUE = "stripeQueue";
+    public static final String ROUTER_RESPONSE_QUEUE = "routerResponseQueue";
+    public static final String ROUTER_EXCHANGE = "routerExchange";
+
+    @Bean
+    public Queue routerQueue() {
+        return new Queue(ROUTER_QUEUE, true);
+    }
+
+    @Bean
+    public Queue paypalQueue() {
+        return new Queue(PAYPAL_QUEUE, true);
+    }
+
+    @Bean
+    public Queue stripeQueue() {
+        return new Queue(STRIPE_QUEUE, true);
+    }
+
+    @Bean
+    public Queue routerResponseQueue() {
+        return new Queue(ROUTER_RESPONSE_QUEUE, true);
+    }
+
+    @Bean
+    public TopicExchange routerExchange() {
+        return new TopicExchange(ROUTER_EXCHANGE);
+    }
+
+    @Bean
+    public Binding bindingRouterQueue(Queue routerQueue, TopicExchange routerExchange) {
+        return BindingBuilder.bind(routerQueue).to(routerExchange).with(ROUTER_QUEUE);
+    }
+
+    @Bean
+    public Binding bindingPaypalQueue(Queue paypalQueue, TopicExchange routerExchange) {
+        return BindingBuilder.bind(paypalQueue).to(routerExchange).with(PAYPAL_QUEUE);
+    }
+
+    @Bean
+    public Binding bindingStripeQueue(Queue stripeQueue, TopicExchange routerExchange) {
+        return BindingBuilder.bind(stripeQueue).to(routerExchange).with(STRIPE_QUEUE);
+    }
+
+    @Bean
+    public Binding bindingRouterResponseQueue(Queue routerResponseQueue, TopicExchange routerExchange) {
+        return BindingBuilder.bind(routerResponseQueue).to(routerExchange).with(ROUTER_RESPONSE_QUEUE);
     }
 }

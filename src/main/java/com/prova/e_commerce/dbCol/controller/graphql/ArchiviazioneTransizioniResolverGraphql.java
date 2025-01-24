@@ -20,12 +20,14 @@ public class ArchiviazioneTransizioniResolverGraphql {
 
     /**
      * Query per ottenere tutte le transizioni.
-     * Mappata su schema GraphQL, ad esempio:
+     * Esempio di schema GraphQL:
      * <pre>
      * type Query {
      *   findAllTransizioni: [ArchiviazioneTransizioni]
      * }
      * </pre>
+     *
+     * @return la lista di tutte le transizioni
      */
     @QueryMapping
     public List<ArchiviazioneTransizioni> findAllTransizioni() {
@@ -34,14 +36,15 @@ public class ArchiviazioneTransizioniResolverGraphql {
 
     /**
      * Query per ottenere una transizione per ID.
+     * Esempio di schema GraphQL:
      * <pre>
      * type Query {
      *   findTransizioneById(id: String!): ArchiviazioneTransizioni
      * }
      * </pre>
      *
-     * @param id l'ID della transizione
-     * @return l'oggetto ArchiviazioneTransizioni corrispondente
+     * @param id L'ID della transizione da cercare
+     * @return L'oggetto ArchiviazioneTransizioni corrispondente (o null se non trovato)
      */
     @QueryMapping
     public ArchiviazioneTransizioni findTransizioneById(String id) {
@@ -50,15 +53,16 @@ public class ArchiviazioneTransizioniResolverGraphql {
 
     /**
      * Query dinamica per eseguire query personalizzate sulle transizioni.
+     * Esempio di schema GraphQL:
      * <pre>
      * type Query {
      *   queryDinamica(paramQuery: ParamQueryCassandraInput, transizione: ArchiviazioneTransizioniInput): [ArchiviazioneTransizioni]
      * }
      * </pre>
      *
-     * @param paramQuery  parametri generici di ricerca (paginazione, filtri, ecc.)
-     * @param transizione oggetto parziale per i criteri di filtraggio
-     * @return lista di transizioni che soddisfano i criteri
+     * @param paramQuery  parametri generici di ricerca (ad es. filtri e ordering)
+     * @param transizione criteri di filtraggio aggiuntivi
+     * @return Lista di ArchiviazioneTransizioni che soddisfano i criteri
      */
     @QueryMapping
     public List<ArchiviazioneTransizioni> queryDinamica(ParamQueryCassandra paramQuery,

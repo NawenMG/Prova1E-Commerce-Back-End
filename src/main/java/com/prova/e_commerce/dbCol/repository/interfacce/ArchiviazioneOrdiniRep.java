@@ -7,7 +7,7 @@ import java.util.List;
 public interface ArchiviazioneOrdiniRep {
 
     // Metodo per eseguire una query dinamica sugli ordini
-    List<ArchiviazioneOrdini> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneOrdini ordine);
+    List<ArchiviazioneOrdini> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneOrdini ordini);
 
     // Metodo per salvare un nuovo ordine
     void saveOrdine(ArchiviazioneOrdini ordine, String UserName);
@@ -23,4 +23,5 @@ public interface ArchiviazioneOrdiniRep {
 
     // Metodo per trovare tutti gli ordini
     List<ArchiviazioneOrdini> findAllOrdini();
+
 }
