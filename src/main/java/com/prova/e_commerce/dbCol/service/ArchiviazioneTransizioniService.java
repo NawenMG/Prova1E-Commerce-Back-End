@@ -9,6 +9,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,8 +25,6 @@ public class ArchiviazioneTransizioniService {
     private static final Logger logger = LoggerFactory.getLogger(ArchiviazioneTransizioniService.class);
 
     private static final String TOPIC_TRANSIZIONI_SAVE = "transizioni-topic-save";
-    //private static final String TOPIC_TRANSIZIONI_UPDATE = "transizioni-topic-update";
-
     private static final String INPUT_QUEUE = "transizioniInputQueue";
     private static final String OUTPUT_QUEUE = "transizioniOutputQueue";
 
@@ -52,6 +51,10 @@ public class ArchiviazioneTransizioniService {
         meterRegistry.counter("service.transizione.rabbitmq.send.count");
         meterRegistry.counter("service.transizione.rabbitmq.receive.count");
     }
+
+    // ===========================
+    // Metodi esistenti (invariati)
+    // ===========================
 
     @Cacheable(value = {"caffeine", "redis"}, key = "#paramQuery.toString() + #transizione.toString()")
     public List<ArchiviazioneTransizioni> queryDinamica(ParamQueryCassandra paramQuery, ArchiviazioneTransizioni transizione) {
@@ -112,11 +115,11 @@ public class ArchiviazioneTransizioniService {
     }
 
     // ===========================
-    // RabbitMQ Integration
+    // Nuova funzionalità RabbitMQ
     // ===========================
 
     /**
-     * Invio di una transizione a RabbitMQ (Input Queue).
+     * Invia una transizione a RabbitMQ (Input Queue).
      *
      * @param transizione Oggetto ArchiviazioneTransizioni da inviare.
      */
@@ -133,7 +136,7 @@ public class ArchiviazioneTransizioniService {
     }
 
     /**
-     * Ricezione di una transizione da RabbitMQ (Output Queue).
+     * Riceve una transizione da RabbitMQ (Output Queue).
      *
      * @return Transizione ricevuta da RabbitMQ.
      */
@@ -152,5 +155,16 @@ public class ArchiviazioneTransizioniService {
         } finally {
             span.end();
         }
+    }
+
+    /**
+     * Listener per ricevere messaggi dalla coda di output RabbitMQ.
+     *
+     * @param transizione Messaggio ricevuto dalla coda.
+     */
+    @RabbitListener(queues = OUTPUT_QUEUE)
+    public void processReceivedMessage(ArchiviazioneTransizioni transizione) {
+        logger.info("Transizione ricevuta dal listener RabbitMQ: {}", transizione.getId());
+        // Logica di elaborazione della transizione ricevuta
     }
 }

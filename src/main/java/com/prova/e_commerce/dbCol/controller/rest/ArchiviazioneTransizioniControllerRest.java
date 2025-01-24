@@ -3,9 +3,7 @@ package com.prova.e_commerce.dbCol.controller.rest;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneTransizioni;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.service.ArchiviazioneTransizioniService;
-
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,8 +18,15 @@ public class ArchiviazioneTransizioniControllerRest {
     @Autowired
     private ArchiviazioneTransizioniService archiviazioneTransizioniService;
 
-    // Recupera una transizione per ID
+    /**
+     * Recupera una transizione per ID.
+     * Esempio di chiamata: GET /api/archiviazioneTransizioni/123
+     *
+     * @param id L'ID della transizione
+     * @return La transizione se trovata, altrimenti 404 Not Found
+     */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")  
     public ResponseEntity<ArchiviazioneTransizioni> getTransizione(@PathVariable String id) {
         ArchiviazioneTransizioni transizione = archiviazioneTransizioniService.findTransizioneById(id);
         if (transizione != null) {
@@ -31,20 +36,43 @@ public class ArchiviazioneTransizioniControllerRest {
         }
     }
 
-    // Recupera tutte le transizioni
+    /**
+     * Recupera tutte le transizioni.
+     * Esempio di chiamata: GET /api/archiviazioneTransizioni/all
+     *
+     * @return Lista di transizioni
+     */
     @GetMapping("/all")
+    @PreAuthorize("hasRole('TRANSITIONUSER')")
     public List<ArchiviazioneTransizioni> getAllTransizioni() {
         return archiviazioneTransizioniService.findAllTransizioni();
     }
 
-    // Query dinamica per recuperare transizioni con parametri personalizzati
+    /**
+     * Esegue una query dinamica.
+     * Esempio di chiamata: POST /api/archiviazioneTransizioni/query
+     * con body JSON contenente ParamQueryCassandra e ArchiviazioneTransizioni.
+     *
+     * @param paramQuery  Parametri generici di ricerca
+     * @param transizione Criteri della transizione (filtri)
+     * @return Lista di transizioni che soddisfano la query
+     */
     @PostMapping("/query")
-    public List<ArchiviazioneTransizioni> queryDinamica(@RequestBody ParamQueryCassandra paramQuery, 
-                                                        @Valid @RequestBody ArchiviazioneTransizioni transizione) {
+    @PreAuthorize("hasAnyRole('USER' , 'TRANSITIONUSER')")
+    public List<ArchiviazioneTransizioni> queryDinamica(
+            @RequestBody ParamQueryCassandra paramQuery,
+            @Valid @RequestBody ArchiviazioneTransizioni transizione) {
         return archiviazioneTransizioniService.queryDinamica(paramQuery, transizione);
     }
 
-    // Crea una nuova transizione
+    /**
+     * Crea una nuova transizione.
+     * Esempio di chiamata: POST /api/archiviazioneTransizioni/post
+     * Necessita del ruolo ROLE_USER.
+     *
+     * @param transizione Oggetto da creare
+     * @return 201 Created se tutto ok
+     */
     @PostMapping("/post")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createTransizione(@Valid @RequestBody ArchiviazioneTransizioni transizione) {
@@ -52,17 +80,48 @@ public class ArchiviazioneTransizioniControllerRest {
         return ResponseEntity.status(201).build();  // 201 Created
     }
 
-    /* // Aggiorna una transizione esistente
-    @PutMapping("/put/{id}")
-    public ResponseEntity<Void> updateTransizione(@PathVariable String id, @Valid @RequestBody ArchiviazioneTransizioni transizione) {
-        archiviazioneTransizioniService.updateTransizione(id, transizione);
-        return ResponseEntity.ok().build();  // 200 OK
-    } */
-
-    // Elimina una transizione per ID
+    /**
+     * Elimina una transizione per ID.
+     * Esempio di chiamata: DELETE /api/archiviazioneTransizioni/delete/123
+     *
+     * @param id ID della transizione da eliminare
+     * @return 204 No Content se eliminazione effettuata
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTransizione(@PathVariable String id) {
         archiviazioneTransizioniService.deleteTransizione(id);
         return ResponseEntity.noContent().build();  // 204 No Content
     }
+
+    // ================================
+    // Esempi aggiuntivi (opzionali)
+    // ================================
+
+    /*
+    // Aggiorna una transizione esistente
+    @PutMapping("/put/{id}")
+    public ResponseEntity<Void> updateTransizione(@PathVariable String id, @Valid @RequestBody ArchiviazioneTransizioni transizione) {
+        // Non hai un metodo update nel service, ma potresti implementarlo:
+        // archiviazioneTransizioniService.updateTransizione(id, transizione);
+        return ResponseEntity.ok().build();  // 200 OK
+    }
+
+    // Invio a RabbitMQ
+    @PostMapping("/sendToRabbitMQ")
+    public ResponseEntity<Void> sendToRabbitMQ(@RequestBody ArchiviazioneTransizioni transizione) {
+        archiviazioneTransizioniService.sendToRabbitMQ(transizione);
+        return ResponseEntity.ok().build();
+    }
+
+    // Ricezione da RabbitMQ (polling)
+    @GetMapping("/receiveFromRabbitMQ")
+    public ResponseEntity<ArchiviazioneTransizioni> receiveFromRabbitMQ() {
+        ArchiviazioneTransizioni received = archiviazioneTransizioniService.receiveFromRabbitMQ();
+        if (received != null) {
+            return ResponseEntity.ok(received);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    */
 }

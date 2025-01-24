@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -17,43 +18,47 @@ public class ShippingStatusWebSocketController {
     @Autowired
     private ShippingStatusService shippingStatusService;
 
-    // ==============================
-    // Operazioni sullo Stato della Spedizione
-    // ==============================
+    // ==================================================
+    //             OPERAZIONI SULLO SHIPPING STATUS
+    // ==================================================
 
     /**
-     * Crea un nuovo stato di spedizione.
-     * Riceve i dati del nuovo ShippingStatus dal client, lo crea, e invia una risposta al topic.
+     * Creazione di un nuovo ShippingStatus.
+     * - Il client invia un messaggio a "/app/createShippingStatus"
+     * - Il server risponde su "/topic/shippingStatus"
      *
-     * @param shippingStatus Oggetto ShippingStatus ricevuto.
-     * @return Messaggio di conferma con l'ID della spedizione creata.
+     * @param shippingStatus Dati dello stato di spedizione da creare
+     * @return Un messaggio di conferma
      */
     @MessageMapping("/createShippingStatus")
     @SendTo("/topic/shippingStatus")
     public CompletableFuture<String> createShippingStatus(@Valid ShippingStatus shippingStatus) {
         return shippingStatusService.createShippingStatus(shippingStatus)
-                .thenApply(v -> "Spedizione creata con successo! ID: " + shippingStatus.getId());
+            .thenApply(v -> "Spedizione creata con successo! ID: " + shippingStatus.getId());
     }
 
     /**
-     * Aggiorna uno stato di spedizione esistente.
-     * Riceve i dati aggiornati dal client e invia una risposta al topic.
+     * Aggiornamento di uno ShippingStatus esistente.
+     * - Il client invia un messaggio a "/app/updateShippingStatus"
+     * - Il server risponde su "/topic/shippingStatus"
      *
-     * @param shippingStatus Oggetto ShippingStatus con i dati aggiornati.
-     * @return Messaggio di conferma con l'ID della spedizione aggiornata.
+     * @param shippingStatus Dati aggiornati dello stato di spedizione
+     * @return Messaggio di conferma
      */
     @MessageMapping("/updateShippingStatus")
     @SendTo("/topic/shippingStatus")
     public CompletableFuture<String> updateShippingStatus(@Valid ShippingStatus shippingStatus) {
         return shippingStatusService.updateShippingStatus(shippingStatus)
-                .thenApply(v -> "Spedizione aggiornata con successo! ID: " + shippingStatus.getId());
+            .thenApply(v -> "Spedizione aggiornata con successo! ID: " + shippingStatus.getId());
     }
 
     /**
-     * Recupera uno stato di spedizione tramite il suo ID.
+     * Recupera uno ShippingStatus per ID.
+     * - Il client invia un messaggio a "/app/getShippingStatusById"
+     * - Il server risponde su "/topic/shippingStatus" con l'oggetto ShippingStatus
      *
-     * @param shippingStatusId ID dello stato di spedizione da recuperare.
-     * @return Oggetto ShippingStatus corrispondente all'ID fornito.
+     * @param shippingStatusId L'ID della spedizione
+     * @return L'oggetto ShippingStatus corrispondente
      */
     @MessageMapping("/getShippingStatusById")
     @SendTo("/topic/shippingStatus")
@@ -62,41 +67,48 @@ public class ShippingStatusWebSocketController {
     }
 
     /**
-     * Elimina uno stato di spedizione tramite il suo ID.
+     * Elimina uno ShippingStatus per ID.
+     * - Il client invia un messaggio a "/app/deleteShippingStatus"
+     * - Il server risponde su "/topic/shippingStatus" con un messaggio di conferma
      *
-     * @param shippingStatusId ID dello stato di spedizione da eliminare.
-     * @return Messaggio di conferma con l'ID della spedizione eliminata.
+     * @param shippingStatusId L'ID della spedizione da eliminare
+     * @return Messaggio di conferma
      */
     @MessageMapping("/deleteShippingStatus")
     @SendTo("/topic/shippingStatus")
     public CompletableFuture<String> deleteShippingStatus(String shippingStatusId) {
         return shippingStatusService.deleteShippingStatus(shippingStatusId)
-                .thenApply(v -> "Stato della spedizione eliminato con successo! ID: " + shippingStatusId);
+            .thenApply(v -> "Stato della spedizione eliminato con successo! ID: " + shippingStatusId);
     }
 
-    // ==============================
-    // Operazioni sulle Locazioni
-    // ==============================
+    // ==================================================
+    //           OPERAZIONI SULLE LOCAZIONI
+    // ==================================================
 
     /**
-     * Aggiunge una nuova locazione a uno stato di spedizione.
+     * Aggiunge una CurrentLocation a uno ShippingStatus esistente.
+     * - Il client invia un messaggio a "/app/addLocationToShipping"
+     * - Il server risponde su "/topic/shippingStatus" con messaggio di conferma
      *
-     * @param shippingStatusId ID dello stato di spedizione.
-     * @param location         Nuova locazione da aggiungere.
-     * @return Messaggio di conferma con l'ID della spedizione e la locazione aggiunta.
+     * @param shippingStatusId ID della spedizione
+     * @param location         L'oggetto CurrentLocation da aggiungere
+     * @return Messaggio di conferma
      */
     @MessageMapping("/addLocationToShipping")
     @SendTo("/topic/shippingStatus")
-    public CompletableFuture<String> addLocationToShipping(String shippingStatusId, @Valid ShippingStatus.CurrentLocation location) {
+    public CompletableFuture<String> addLocationToShipping(String shippingStatusId,
+                                                           @Valid ShippingStatus.CurrentLocation location) {
         return shippingStatusService.addLocationToShipping(shippingStatusId, location)
-                .thenApply(v -> "Locazione aggiunta con successo per la spedizione ID: " + shippingStatusId);
+            .thenApply(v -> "Locazione aggiunta con successo per la spedizione ID: " + shippingStatusId);
     }
 
     /**
-     * Recupera tutte le locazioni storiche di uno stato di spedizione.
+     * Recupera tutte le locazioni storiche di uno ShippingStatus.
+     * - Il client invia un messaggio a "/app/getLocationsForShipping"
+     * - Il server risponde su "/topic/shippingStatus" con la lista di locazioni storiche
      *
-     * @param shippingStatusId ID dello stato di spedizione.
-     * @return Lista delle locazioni storiche associate alla spedizione.
+     * @param shippingStatusId ID della spedizione
+     * @return La lista di HistoricalLocation
      */
     @MessageMapping("/getLocationsForShipping")
     @SendTo("/topic/shippingStatus")
@@ -105,44 +117,37 @@ public class ShippingStatusWebSocketController {
     }
 
     /**
-     * Elimina una locazione storica da uno stato di spedizione.
+     * Elimina una locazione (HistoricalLocation) da uno ShippingStatus esistente.
+     * - Il client invia un messaggio a "/app/deleteLocationFromShipping"
+     * - Il server risponde su "/topic/shippingStatus" con un messaggio di conferma
      *
-     * @param shippingStatusId ID dello stato di spedizione.
-     * @param locationId       ID della locazione da eliminare.
-     * @return Messaggio di conferma con l'ID della spedizione e della locazione eliminata.
+     * @param shippingStatusId L'ID della spedizione
+     * @param locationId       L'ID della locazione da eliminare
+     * @return Messaggio di conferma
      */
     @MessageMapping("/deleteLocationFromShipping")
     @SendTo("/topic/shippingStatus")
     public CompletableFuture<String> deleteLocationFromShipping(String shippingStatusId, String locationId) {
         return shippingStatusService.deleteLocationFromShipping(shippingStatusId, locationId)
-                .thenApply(v -> "Locazione eliminata con successo dalla spedizione ID: " + shippingStatusId);
+            .thenApply(v -> "Locazione eliminata con successo dalla spedizione ID: " + shippingStatusId);
     }
 
-    // ==============================
-    // Operazioni RabbitMQ
-    // ==============================
+    // ==================================================
+    //           FUNZIONALITÀ RABBITMQ (OPZIONALE)
+    // ==================================================
 
     /**
-     * Invia uno stato di spedizione a RabbitMQ.
+     * Invia una richiesta al router delle spedizioni tramite RabbitMQ.
+     * - Il client invia un messaggio a "/app/sendToShippingRouter"
+     * - Il server risponde su "/topic/shippingStatus" con un messaggio di conferma
      *
-     * @param shippingStatus Oggetto ShippingStatus da inviare.
-     * @return Messaggio di conferma per l'invio a RabbitMQ.
+     * @param requestData Mappa di dati da inoltrare
+     * @return Messaggio di conferma
      */
-    @MessageMapping("/sendToRabbitMQ")
+    @MessageMapping("/sendToShippingRouter")
     @SendTo("/topic/shippingStatus")
-    public CompletableFuture<String> sendToRabbitMQ(@Valid ShippingStatus shippingStatus) {
-        return shippingStatusService.sendToRabbitMQ(shippingStatus)
-                .thenApply(v -> "Stato di spedizione inviato a RabbitMQ con successo! ID: " + shippingStatus.getId());
-    }
-
-    /**
-     * Riceve uno stato di spedizione da RabbitMQ.
-     *
-     * @return Oggetto ShippingStatus ricevuto da RabbitMQ.
-     */
-    @MessageMapping("/receiveFromRabbitMQ")
-    @SendTo("/topic/shippingStatus")
-    public CompletableFuture<ShippingStatus> receiveFromRabbitMQ() {
-        return shippingStatusService.receiveFromRabbitMQ();
+    public CompletableFuture<String> sendToShippingRouter(Map<String, Object> requestData) {
+        return shippingStatusService.sendToShippingRouter(requestData)
+            .thenApply(v -> "Richiesta inviata al router delle spedizioni: " + requestData);
     }
 }

@@ -7,6 +7,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,6 +16,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -42,6 +44,8 @@ public class ShippingStatusService {
 
     private static final String INPUT_QUEUE = "shippingStatusInputQueue";
     private static final String OUTPUT_QUEUE = "shippingStatusOutputQueue";
+    private static final String SHIPPING_ROUTER_QUEUE = "shippingRouterQueue";
+    private static final String SHIPPING_ROUTER_RESPONSE_QUEUE = "shippingRouterResponseQueue";
 
     public ShippingStatusService(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
@@ -52,6 +56,10 @@ public class ShippingStatusService {
         meterRegistry.counter("service.shipping.rabbitmq.send.count");
         meterRegistry.counter("service.shipping.rabbitmq.receive.count");
     }
+
+    // ===========================
+    // Metodi di base (invariati)
+    // ===========================
 
     @CacheEvict(value = {"caffeine", "redis"}, allEntries = true)
     public CompletableFuture<Void> createShippingStatus(ShippingStatus shippingStatus) {
@@ -172,35 +180,38 @@ public class ShippingStatusService {
         }
     }
 
+    // ===========================
+    // Nuove funzionalità RabbitMQ
+    // ===========================
+
     /**
-     * Invio di uno stato di spedizione a RabbitMQ (Input Queue).
+     * Invio di una richiesta al router delle spedizioni tramite RabbitMQ.
      *
-     * @param shippingStatus Stato di spedizione da inviare.
+     * @param requestData Dati della richiesta da inviare al router delle spedizioni.
      * @return CompletableFuture<Void>.
      */
-    public CompletableFuture<Void> sendToRabbitMQ(ShippingStatus shippingStatus) {
-        logger.info("Invio stato di spedizione a RabbitMQ: {}", shippingStatus.getId());
+    public CompletableFuture<Void> sendToShippingRouter(Map<String, Object> requestData) {
+        logger.info("Invio richiesta al router delle spedizioni: {}", requestData);
         return CompletableFuture.runAsync(() -> {
-            rabbitTemplate.convertAndSend(INPUT_QUEUE, shippingStatus);
-            logger.info("Stato di spedizione inviato a RabbitMQ.");
+            rabbitTemplate.convertAndSend(SHIPPING_ROUTER_QUEUE, requestData);
+            logger.info("Richiesta inviata al router delle spedizioni tramite RabbitMQ.");
         });
     }
 
     /**
-     * Ricezione di uno stato di spedizione da RabbitMQ (Output Queue).
+     * Listener per ricevere risposte dal router delle spedizioni tramite RabbitMQ.
      *
-     * @return CompletableFuture<ShippingStatus>.
+     * @param response La risposta ricevuta dalla coda.
      */
-    public CompletableFuture<ShippingStatus> receiveFromRabbitMQ() {
-        logger.info("Ricezione stato di spedizione da RabbitMQ.");
-        return CompletableFuture.supplyAsync(() -> {
-            ShippingStatus receivedStatus = (ShippingStatus) rabbitTemplate.receiveAndConvert(OUTPUT_QUEUE);
-            if (receivedStatus != null) {
-                logger.info("Stato di spedizione ricevuto da RabbitMQ: {}", receivedStatus.getId());
-            } else {
-                logger.warn("Nessun messaggio presente nella coda RabbitMQ.");
-            }
-            return receivedStatus;
-        });
+    @RabbitListener(queues = SHIPPING_ROUTER_RESPONSE_QUEUE)
+    public void receiveFromShippingRouter(String response) {
+        logger.info("Risposta ricevuta dal router delle spedizioni: {}", response);
+
+        // Aggiungi la logica per elaborare la risposta ricevuta
+        try {
+            logger.info("Risposta elaborata con successo: {}", response);
+        } catch (Exception e) {
+            logger.error("Errore durante l'elaborazione della risposta: {}", e.getMessage());
+        }
     }
 }

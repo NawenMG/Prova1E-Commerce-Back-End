@@ -73,4 +73,58 @@ public class RabbitMQConfig {
     public Binding bindingShippingOutputQueue(Queue shippingOutputQueue, TopicExchange shippingExchange) {
         return BindingBuilder.bind(shippingOutputQueue).to(shippingExchange).with(SHIPPING_OUTPUT_QUEUE);
     }
+
+    // ================================
+    // Configurazione per i Vettori (UPS, FedEx, DHL)
+    // ================================
+    public static final String UPS_QUEUE = "upsShippingQueue";
+    public static final String FEDEX_QUEUE = "fedexShippingQueue";
+    public static final String DHL_QUEUE = "dhlShippingQueue";
+
+    @Bean
+    public Queue upsQueue() {
+        return new Queue(UPS_QUEUE, true);
+    }
+
+    @Bean
+    public Queue fedexQueue() {
+        return new Queue(FEDEX_QUEUE, true);
+    }
+
+    @Bean
+    public Queue dhlQueue() {
+        return new Queue(DHL_QUEUE, true);
+    }
+
+    // ================================
+    // Configurazione per il Router delle Spedizioni
+    // ================================
+    public static final String SHIPPING_ROUTER_QUEUE = "shippingRouterQueue";
+    public static final String SHIPPING_ROUTER_RESPONSE_QUEUE = "shippingRouterResponseQueue";
+    public static final String SHIPPING_ROUTER_EXCHANGE = "shippingRouterExchange";
+
+    @Bean
+    public Queue shippingRouterQueue() {
+        return new Queue(SHIPPING_ROUTER_QUEUE, true);
+    }
+
+    @Bean
+    public Queue shippingRouterResponseQueue() {
+        return new Queue(SHIPPING_ROUTER_RESPONSE_QUEUE, true);
+    }
+
+    @Bean
+    public TopicExchange shippingRouterExchange() {
+        return new TopicExchange(SHIPPING_ROUTER_EXCHANGE);
+    }
+
+    @Bean
+    public Binding bindingShippingRouterQueue(Queue shippingRouterQueue, TopicExchange shippingRouterExchange) {
+        return BindingBuilder.bind(shippingRouterQueue).to(shippingRouterExchange).with(SHIPPING_ROUTER_QUEUE);
+    }
+
+    @Bean
+    public Binding bindingShippingRouterResponseQueue(Queue shippingRouterResponseQueue, TopicExchange shippingRouterExchange) {
+        return BindingBuilder.bind(shippingRouterResponseQueue).to(shippingRouterExchange).with(SHIPPING_ROUTER_RESPONSE_QUEUE);
+    }
 }
