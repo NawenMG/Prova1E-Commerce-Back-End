@@ -6,11 +6,14 @@ import javax.validation.constraints.Size;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 
+import org.springframework.data.cassandra.core.mapping.Table;
+
 import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
+@Table("ArchiviazioneOrdini") // Nome della tabella in Cassandra
 public class ArchiviazioneOrdini {
 
     @PrimaryKeyColumn(name = "orders_id", type = PrimaryKeyType.PARTITIONED)

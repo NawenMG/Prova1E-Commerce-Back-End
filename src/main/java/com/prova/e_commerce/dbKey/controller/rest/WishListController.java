@@ -21,8 +21,8 @@ public class WishListController {
     @Autowired
     private WishListService wishListService;
 
-    @PostMapping("/{userId}/prodotti")
-    public ResponseEntity<?> aggiungiProdotti(@PathVariable String userId, @Valid @RequestBody List<Prodotto> prodotti) {
+    @PostMapping("/post/{userId}/prodotti")
+    public ResponseEntity<?> aggiungiProdotti(@Valid @PathVariable String userId, @Valid @RequestBody List<Prodotto> prodotti) {
         try {
             wishListService.aggiungiProdotti(userId, prodotti);
             return ResponseEntity.ok("Prodotti aggiunti con successo alla wishlist.");
@@ -33,8 +33,8 @@ public class WishListController {
         }
     }
 
-    @GetMapping("/{userId}")
-public ResponseEntity<?> trovaWishList(@PathVariable String userId) {
+    @GetMapping("/get/{userId}")
+public ResponseEntity<?> trovaWishList(@Valid @PathVariable String userId) {
     try {
         Optional<WishList> wishList = wishListService.trovaWishList(userId);
         
@@ -56,8 +56,8 @@ public ResponseEntity<?> trovaWishList(@PathVariable String userId) {
 
 
 
-    @DeleteMapping("/{userId}/prodotti/{prodottoId}")
-    public ResponseEntity<?> rimuoviProdotto(@PathVariable String userId, @PathVariable String prodottoId) {
+    @DeleteMapping("/delete/{userId}/prodotti/{prodottoId}")
+    public ResponseEntity<?> rimuoviProdotto(@Valid @PathVariable String userId, @Valid @PathVariable String prodottoId) {
         try {
             wishListService.rimuoviProdotto(userId, prodottoId);
             return ResponseEntity.ok("Prodotto rimosso con successo dalla wishlist.");
@@ -68,8 +68,8 @@ public ResponseEntity<?> trovaWishList(@PathVariable String userId) {
         }
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<?> resetWishList(@PathVariable String userId) {
+    @DeleteMapping("/reset/{userId}")
+    public ResponseEntity<?> resetWishList(@Valid @PathVariable String userId) {
         try {
             wishListService.resetWishList(userId);
             return ResponseEntity.ok("Wishlist resettata con successo.");

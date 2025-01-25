@@ -1,6 +1,7 @@
 package com.prova.e_commerce.dbRel.oracle.jdbc.controller.graphql;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class CategorieResolverGraphql {
     private CategorieService categorieService;
 
     @QueryMapping
-    public List<Categorie> categorie(ParamQuery paramQuery, @Valid Categorie categorie) {
+    public List<Categorie> categorie(@Valid @Argument ParamQuery paramQuery, @Valid @Argument Categorie categorie) {
         return categorieService.queryCategorie(paramQuery, categorie);
     }
 }

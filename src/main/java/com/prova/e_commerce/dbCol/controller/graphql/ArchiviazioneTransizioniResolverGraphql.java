@@ -3,6 +3,8 @@ package com.prova.e_commerce.dbCol.controller.graphql;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneTransizioni;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.service.ArchiviazioneTransizioniService;
+
+import org.springframework.graphql.data.method.annotation.Argument;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -47,7 +49,7 @@ public class ArchiviazioneTransizioniResolverGraphql {
      * @return L'oggetto ArchiviazioneTransizioni corrispondente (o null se non trovato)
      */
     @QueryMapping
-    public ArchiviazioneTransizioni findTransizioneById(String id) {
+    public ArchiviazioneTransizioni findTransizioneById(@Valid @Argument String id) {
         return archiviazioneTransizioniService.findTransizioneById(id);
     }
 
@@ -65,8 +67,8 @@ public class ArchiviazioneTransizioniResolverGraphql {
      * @return Lista di ArchiviazioneTransizioni che soddisfano i criteri
      */
     @QueryMapping
-    public List<ArchiviazioneTransizioni> queryDinamica(ParamQueryCassandra paramQuery,
-                                                        @Valid ArchiviazioneTransizioni transizione) {
+    public List<ArchiviazioneTransizioni> queryDinamica(@Valid @Argument ParamQueryCassandra paramQuery,
+                                                        @Valid @Argument ArchiviazioneTransizioni transizione) {
         return archiviazioneTransizioniService.queryDinamica(paramQuery, transizione);
     }
 }

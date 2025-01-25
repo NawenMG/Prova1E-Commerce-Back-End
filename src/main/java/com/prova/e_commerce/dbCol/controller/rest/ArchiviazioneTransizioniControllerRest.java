@@ -27,7 +27,7 @@ public class ArchiviazioneTransizioniControllerRest {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ArchiviazioneTransizioni> getTransizione(@PathVariable String id) {
+    public ResponseEntity<ArchiviazioneTransizioni> getTransizione(@Valid @PathVariable String id) {
         ArchiviazioneTransizioni transizione = archiviazioneTransizioniService.findTransizioneById(id);
         if (transizione != null) {
             return ResponseEntity.ok(transizione);
@@ -60,7 +60,7 @@ public class ArchiviazioneTransizioniControllerRest {
     @PostMapping("/query")
     @PreAuthorize("hasAnyRole('USER', 'TRANSITIONUSER')")
     public List<ArchiviazioneTransizioni> queryDinamica(
-            @RequestBody ParamQueryCassandra paramQuery,
+            @Valid @RequestBody ParamQueryCassandra paramQuery,
             @Valid @RequestBody ArchiviazioneTransizioni transizione) {
         return archiviazioneTransizioniService.queryDinamica(paramQuery, transizione);
     }
@@ -88,7 +88,7 @@ public class ArchiviazioneTransizioniControllerRest {
      * @return 204 No Content se eliminazione effettuata
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteTransizione(@PathVariable String id) {
+    public ResponseEntity<Void> deleteTransizione(@Valid @PathVariable String id) {
         archiviazioneTransizioniService.deleteTransizione(id);
         return ResponseEntity.noContent().build();  // 204 No Content
     }

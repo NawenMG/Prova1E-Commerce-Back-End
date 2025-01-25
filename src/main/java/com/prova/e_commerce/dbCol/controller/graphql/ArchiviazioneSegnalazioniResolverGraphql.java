@@ -7,6 +7,7 @@ import com.prova.e_commerce.dbCol.service.ArchiviazioneSegnalazioniService;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -28,13 +29,13 @@ public class ArchiviazioneSegnalazioniResolverGraphql {
 
     // Query per ottenere una segnalazione per ID
     @QueryMapping
-    public ArchiviazioneSegnalazioni findSegnalazioneById(String id) {
+    public ArchiviazioneSegnalazioni findSegnalazioneById(@Valid @Argument String id) {
         return archiviazioneSegnalazioniService.findSegnalazioneById(id);
     }
 
     // Query dinamica per eseguire query personalizzate sulle segnalazioni
     @QueryMapping
-    public List<ArchiviazioneSegnalazioni> queryDinamica(ParamQueryCassandra paramQuery, @Valid ArchiviazioneSegnalazioni segnalazione) {
+    public List<ArchiviazioneSegnalazioni> queryDinamica(@Valid @Argument ParamQueryCassandra paramQuery, @Valid @Argument ArchiviazioneSegnalazioni segnalazione) {
         return archiviazioneSegnalazioniService.queryDinamica(paramQuery, segnalazione);
     }
 }

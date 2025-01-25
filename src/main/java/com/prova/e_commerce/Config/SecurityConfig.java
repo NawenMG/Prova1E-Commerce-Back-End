@@ -1,4 +1,4 @@
-package com.prova.e_commerce.Config;
+/* package com.prova.e_commerce.Config;
 
 import com.prova.e_commerce.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,3 +53,4 @@ public class SecurityConfig {
                 .build();
     }
 }
+ */

@@ -1,6 +1,7 @@
 package com.prova.e_commerce.dbDoc.controller.graphql;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class SchedeProdottiResolverGraphql {
     private SchedeProdottiService schedeProdottiService;
 
     @QueryMapping
-    public List<SchedeProdotti> schedeprodotti(ParamQueryDbDoc paramQuery, @Valid SchedeProdotti schedeProdotti) {
+    public List<SchedeProdotti> schedeprodotti(@Valid @Argument ParamQueryDbDoc paramQuery, @Valid @Argument SchedeProdotti schedeProdotti) {
         return schedeProdottiService.queryDynamic(paramQuery, schedeProdotti);
     }
 }

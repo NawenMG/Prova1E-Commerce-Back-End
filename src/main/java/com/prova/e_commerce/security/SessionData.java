@@ -1,4 +1,4 @@
-package com.prova.e_commerce.security;
+/* package com.prova.e_commerce.security;
 
 import lombok.Data;
 
@@ -8,3 +8,4 @@ public class SessionData {
     private String role;
     private long lastAccessTime;
 }
+ */

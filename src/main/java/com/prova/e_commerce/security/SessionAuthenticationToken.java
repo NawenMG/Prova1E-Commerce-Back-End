@@ -1,4 +1,4 @@
-package com.prova.e_commerce.security;
+/* package com.prova.e_commerce.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,3 +37,4 @@ public class SessionAuthenticationToken extends AbstractAuthenticationToken {
         return sessionData;
     }
 }
+ */

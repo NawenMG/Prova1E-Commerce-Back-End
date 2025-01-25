@@ -24,9 +24,9 @@ public class CarrelloController {
     /**
      * Aggiungi prodotti al carrello.
      */
-    @PostMapping("/{userId}/prodotti")
+    @PostMapping("/post/{userId}/prodotti")
     public ResponseEntity<String> aggiungiProdotti(
-            @PathVariable String userId,
+            @Valid @PathVariable String userId,
             @Valid @RequestBody List<Prodotto> nuoviProdotti) {
         try {
             carrelloService.aggiungiProdotti(userId, nuoviProdotti);
@@ -41,8 +41,8 @@ public class CarrelloController {
     /**
      * Recupera il carrello dell'utente.
      */
-    @GetMapping("/{userId}")
-public ResponseEntity<?> getCarrello(@PathVariable String userId) {
+    @GetMapping("/get/{userId}")
+public ResponseEntity<?> getCarrello(@Valid @PathVariable String userId) {
     try {
         Optional<Carrello> carrello = carrelloService.getCarrello(userId);
         if (carrello.isPresent()) {
@@ -61,10 +61,10 @@ public ResponseEntity<?> getCarrello(@PathVariable String userId) {
     /**
      * Rimuove un prodotto dal carrello.
      */
-    @DeleteMapping("/{userId}/prodotti/{prodottoId}")
+    @DeleteMapping("/delete/{userId}/prodotti/{prodottoId}")
     public ResponseEntity<String> rimuoviProdotto(
-            @PathVariable String userId,
-            @PathVariable String prodottoId) {
+            @Valid @PathVariable String userId,
+            @Valid @PathVariable String prodottoId) {
         try {
             carrelloService.rimuoviProdotto(userId, prodottoId);
             return ResponseEntity.ok("Prodotto rimosso dal carrello con successo.");
@@ -78,8 +78,8 @@ public ResponseEntity<?> getCarrello(@PathVariable String userId) {
     /**
      * Svuota il carrello dell'utente.
      */
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> svuotaCarrello(@PathVariable String userId) {
+    @DeleteMapping("/svuota/{userId}")
+    public ResponseEntity<String> svuotaCarrello(@Valid @PathVariable String userId) {
         try {
             carrelloService.svuotaCarrello(userId);
             return ResponseEntity.ok("Carrello svuotato con successo.");

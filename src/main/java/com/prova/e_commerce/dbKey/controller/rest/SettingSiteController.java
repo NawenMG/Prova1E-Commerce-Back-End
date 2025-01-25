@@ -21,8 +21,8 @@ public class SettingSiteController {
      * @param userId L'ID dell'utente
      * @return Le impostazioni dell'utente o un 404 se non esistono
      */
-    @GetMapping("/{userId}")
-    public ResponseEntity<SettingSite> getImpostazioni(@PathVariable String userId) {
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<SettingSite> getImpostazioni(@Valid @PathVariable String userId) {
         // Chiamata al service per trovare le impostazioni
         return settingSiteService.trovaImpostazioni(userId)
                 .map(ResponseEntity::ok) // Se le impostazioni sono trovate
@@ -35,8 +35,8 @@ public class SettingSiteController {
      * @param settings Le nuove impostazioni da salvare
      * @return Risposta di successo o errore
      */
-    @PostMapping("/save/{userId}")
-    public ResponseEntity<String> salvaImpostazioni(@PathVariable String userId, @Valid @RequestBody SettingSite settings) {
+    @PostMapping("/post/{userId}")
+    public ResponseEntity<String> salvaImpostazioni(@Valid @PathVariable String userId, @Valid @RequestBody SettingSite settings) {
         // Salva o aggiorna le impostazioni
         settingSiteService.salvaImpostazioni(userId, settings);
         return ResponseEntity.ok("Impostazioni salvate con successo");
@@ -48,7 +48,7 @@ public class SettingSiteController {
      * @return Risposta di successo
      */
     @DeleteMapping("/reset/{userId}")
-    public ResponseEntity<String> resetImpostazioni(@PathVariable String userId) {
+    public ResponseEntity<String> resetImpostazioni(@Valid @PathVariable String userId) {
         // Resetta le impostazioni
         settingSiteService.resetImpostazioni(userId);
         return ResponseEntity.ok("Impostazioni resettate con successo");

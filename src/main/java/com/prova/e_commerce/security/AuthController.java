@@ -1,4 +1,4 @@
-package com.prova.e_commerce.security;
+/* package com.prova.e_commerce.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +27,12 @@ public class AuthController {
     private SessionService sessionService;
 
     // Mock database
-    private final ConcurrentHashMap<String, String> userStore = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> userStore = new ConcurrentHashMap<>(); */
 
     /**
      * Registrazione di un nuovo utente
      */
-    @PostMapping("/register")
+/*     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestParam @NotBlank String username, @RequestParam @NotBlank String password) {
         logger.info("Registering new user: {}", username);
 
@@ -45,11 +45,11 @@ public class AuthController {
         logger.info("User {} registered successfully", username);
         return ResponseEntity.ok("User registered successfully!");
     }
-
+ */
     /**
      * Login dell'utente
      */
-    @PostMapping("/login")
+/*     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam @NotBlank String username, @RequestParam @NotBlank String password) {
         logger.info("Login attempt for user: {}", username);
 
@@ -71,12 +71,12 @@ public class AuthController {
 
         logger.warn("Invalid credentials for user: {}", username);
         return ResponseEntity.status(401).body("Invalid credentials");
-    }
+    } */
 
     /**
      * Logout dell'utente
      */
-    @PostMapping("/logout")
+  /*   @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
@@ -91,12 +91,12 @@ public class AuthController {
 
         logger.warn("Logout failed: Invalid or missing JWT token");
         return ResponseEntity.badRequest().body("Invalid or missing token");
-    }
+    } */
 
     /**
      * Endpoint per ottenere i dettagli dell'utente OAuth2
      */
-    @GetMapping("/oauth2/userinfo")
+  /*   @GetMapping("/oauth2/userinfo")
     public ResponseEntity<?> getOAuth2UserInfo(@AuthenticationPrincipal OAuth2User oauth2User) {
         if (oauth2User == null) {
             return ResponseEntity.status(401).body("User not authenticated via OAuth2");
@@ -107,11 +107,11 @@ public class AuthController {
 
         return ResponseEntity.ok(oauth2User.getAttributes());
     }
-
+ */
     /**
      * Classe di supporto per la risposta del login
      */
-    public static class LoginResponse {
+    /* public static class LoginResponse {
         private String token;
         private String message;
 
@@ -128,4 +128,4 @@ public class AuthController {
             return message;
         }
     }
-}
+} */

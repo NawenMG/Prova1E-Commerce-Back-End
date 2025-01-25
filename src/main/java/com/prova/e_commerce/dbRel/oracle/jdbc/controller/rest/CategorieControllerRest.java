@@ -22,7 +22,7 @@ public class CategorieControllerRest {
     /**
      * Endpoint per ottenere una lista di categorie in base a parametri di query dinamici.
      */
-    @GetMapping("/query")
+    @GetMapping("/get")
     public ResponseEntity<List<Categorie>> queryCategorie(@RequestBody ParamQuery paramQuery, @Valid @RequestBody Categorie categorie) {
         List<Categorie> categorieList = categorieService.queryCategorie(paramQuery, categorie);
         return new ResponseEntity<>(categorieList, HttpStatus.OK);
@@ -31,7 +31,7 @@ public class CategorieControllerRest {
     /**
      * Endpoint per inserire una nuova categoria.
      */
-    @PostMapping("/inserisci")
+    @PostMapping("/post")
     public ResponseEntity<String> inserisciCategoria(@Valid @RequestBody Categorie categorie) {
         String response = categorieService.inserisciCategoria(categorie);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -40,7 +40,7 @@ public class CategorieControllerRest {
     /**
      * Endpoint per aggiornare una categoria esistente.
      */
-    @PutMapping("/aggiorna/{categoryID}")
+    @PutMapping("/put/{categoryID}")
     public ResponseEntity<String> aggiornaCategoria(@PathVariable String categoryID, @Valid @RequestBody Categorie categorie) {
         String response = categorieService.aggiornaCategoria(categoryID, categorie);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -49,7 +49,7 @@ public class CategorieControllerRest {
     /**
      * Endpoint per eliminare una categoria in base all'ID.
      */
-    @DeleteMapping("/elimina/{categoryID}")
+    @DeleteMapping("/delete/{categoryID}")
     public ResponseEntity<String> eliminaCategoria(@PathVariable String categoryID) {
         String response = categorieService.eliminaCategoria(categoryID);
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
@@ -58,7 +58,7 @@ public class CategorieControllerRest {
     /**
      * Endpoint per salvare un numero specificato di categorie generate casualmente.
      */
-    @PostMapping("/salva-casuali/{numero}")
+    @PostMapping("/random/{numero}")
     public ResponseEntity<String> salvaCategorieCasuali(@PathVariable int numero) {
         String response = categorieService.salvaCategorieCasuali(numero);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

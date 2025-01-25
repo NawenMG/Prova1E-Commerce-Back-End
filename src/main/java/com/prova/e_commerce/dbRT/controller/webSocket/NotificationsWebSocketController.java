@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
  * I client comunicano su "/app/..." e ricevono aggiornamenti su "/topic/...".
  */
 @Controller
+@PreAuthorize("hasRole('USER')")
 public class NotificationsWebSocketController {
 
     @Autowired

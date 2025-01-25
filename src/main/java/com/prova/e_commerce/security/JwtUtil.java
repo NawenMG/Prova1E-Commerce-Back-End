@@ -1,4 +1,4 @@
-package com.prova.e_commerce.security;
+/* package com.prova.e_commerce.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,31 +18,31 @@ public class JwtUtil {
     // Carica la chiave segreta dal file di configurazione
     public JwtUtil(@Value("${jwt.secret}") String jwtSecret) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-    }
+    } */
 
     /**
      * Genera un JWT con un determinato sessionId e durata.
      */
-    public String generateToken(String sessionId, long expiration) {
+    /* public String generateToken(String sessionId, long expiration) {
         return Jwts.builder()
                 .setSubject(sessionId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256) // Firma sicura con chiave segreta
                 .compact();
-    }
+    } */
 
     /**
      * Estrae il sessionId dal token JWT.
      */
-    public String extractSessionId(String token) {
+    /* public String extractSessionId(String token) {
         return getClaims(token).getSubject();
     }
-
+ */
     /**
      * Valida il token JWT.
      */
-    public boolean validateToken(String token) {
+   /*  public boolean validateToken(String token) {
         try {
             getClaims(token);
             return true;
@@ -50,12 +50,12 @@ public class JwtUtil {
             System.out.println("Invalid JWT Token: " + e.getMessage());
             return false;
         }
-    }
+    } */
 
     /**
      * Estrae i Claims dal token.
      */
-    private Claims getClaims(String token) {
+    /* private Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
@@ -63,3 +63,4 @@ public class JwtUtil {
                 .getBody();
     }
 }
+ */

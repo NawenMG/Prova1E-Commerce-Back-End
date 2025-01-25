@@ -1,4 +1,4 @@
-package com.prova.e_commerce.security;
+/* package com.prova.e_commerce.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,3 +53,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+ */

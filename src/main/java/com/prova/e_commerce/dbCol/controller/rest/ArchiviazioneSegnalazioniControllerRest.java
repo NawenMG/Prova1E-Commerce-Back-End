@@ -28,7 +28,7 @@ public class ArchiviazioneSegnalazioniControllerRest {
      * Metodo per eseguire una query dinamica sulle segnalazioni.
      */
     @PostMapping("/query")
-    public ResponseEntity<List<ArchiviazioneSegnalazioni>> queryDinamica(@RequestBody ParamQueryCassandra paramQuery,
+    public ResponseEntity<List<ArchiviazioneSegnalazioni>> queryDinamica(@Valid @RequestBody ParamQueryCassandra paramQuery,
                                                                          @Valid  @RequestBody ArchiviazioneSegnalazioni segnalazione) {
         List<ArchiviazioneSegnalazioni> result = archiviazioneSegnalazioniService.queryDinamica(paramQuery, segnalazione);
         return ResponseEntity.ok(result);
@@ -47,7 +47,7 @@ public class ArchiviazioneSegnalazioniControllerRest {
      * Metodo per ottenere una segnalazione in base al suo ID.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ArchiviazioneSegnalazioni> getSegnalazioneById(@PathVariable String id) {
+    public ResponseEntity<ArchiviazioneSegnalazioni> getSegnalazioneById(@Valid @PathVariable String id) {
         ArchiviazioneSegnalazioni segnalazione = archiviazioneSegnalazioniService.findSegnalazioneById(id);
         if (segnalazione == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -81,7 +81,7 @@ public class ArchiviazioneSegnalazioniControllerRest {
      */
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteSegnalazione(@PathVariable String id) {
+    public ResponseEntity<Void> deleteSegnalazione(@Valid @PathVariable String id) {
         archiviazioneSegnalazioniService.deleteSegnalazione(id);
         return ResponseEntity.noContent().build();
     }

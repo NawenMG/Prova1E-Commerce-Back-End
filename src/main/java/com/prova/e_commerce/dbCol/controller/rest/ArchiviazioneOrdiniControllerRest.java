@@ -24,7 +24,7 @@ public class ArchiviazioneOrdiniControllerRest {
 
     // Recupera un ordine per ID
     @GetMapping("/{id}")
-    public ResponseEntity<ArchiviazioneOrdini> getOrdineById(@PathVariable String id) {
+    public ResponseEntity<ArchiviazioneOrdini> getOrdineById(@Valid @PathVariable String id) {
         ArchiviazioneOrdini ordine = archiviazioneOrdiniService.findOrdineById(id);
         if (ordine != null) {
             return ResponseEntity.ok(ordine);  // Restituisce 200 OK se trovato
@@ -59,14 +59,14 @@ public class ArchiviazioneOrdiniControllerRest {
     // Elimina un ordine per ID
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Void> deleteOrdine(@PathVariable String id) {
+    public ResponseEntity<Void> deleteOrdine(@Valid @PathVariable String id) {
         archiviazioneOrdiniService.deleteOrdine(id);
         return ResponseEntity.noContent().build();  // Restituisce 204 No Content se l'ordine è stato eliminato
     }
 
     // Esegui una query dinamica sugli ordini
     @PostMapping("/query")
-    public ResponseEntity<List<ArchiviazioneOrdini>> queryDinamica(@RequestBody ParamQueryCassandra paramQuery,
+    public ResponseEntity<List<ArchiviazioneOrdini>> queryDinamica(@Valid @RequestBody ParamQueryCassandra paramQuery,
                                                                   @Valid @RequestBody ArchiviazioneOrdini ordine) {
         List<ArchiviazioneOrdini> ordini = archiviazioneOrdiniService.queryDinamica(paramQuery, ordine);
         return ResponseEntity.ok(ordini);  // Restituisce 200 OK con il risultato della query

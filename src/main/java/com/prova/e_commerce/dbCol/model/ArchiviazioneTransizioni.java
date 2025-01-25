@@ -6,10 +6,13 @@ import javax.validation.constraints.Size;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 
+import org.springframework.data.cassandra.core.mapping.Table;
+
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+@Table("ArchiviazioneTransizioni") 
 public class ArchiviazioneTransizioni {
 
     @PrimaryKeyColumn(name = "transitions_id", type = PrimaryKeyType.PARTITIONED)

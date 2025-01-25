@@ -3,6 +3,9 @@ package com.prova.e_commerce.dbCol.controller.graphql;
 import com.prova.e_commerce.dbCol.model.ArchiviazioneResi;
 import com.prova.e_commerce.dbCol.parametri.ParamQueryCassandra;
 import com.prova.e_commerce.dbCol.service.ArchiviazioneResiService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -22,7 +25,7 @@ public class ArchiviazioneResiGraphQLController {
      * @return Il reso corrispondente.
      */
     @QueryMapping
-    public ArchiviazioneResi getResoByID(@Argument String id) {
+    public ArchiviazioneResi getResoByID(@Valid @Argument String id) {
         return archiviazioneResiService.getResoByID(id);
     }
 
@@ -34,8 +37,8 @@ public class ArchiviazioneResiGraphQLController {
      */
     @QueryMapping
     public List<ArchiviazioneResi> queryDinamica(
-            @Argument ParamQueryCassandra paramQuery,
-            @Argument ArchiviazioneResi reso) {
+           @Valid @Argument ParamQueryCassandra paramQuery,
+           @Valid @Argument ArchiviazioneResi reso) {
         return archiviazioneResiService.queryDinamica(paramQuery, reso);
     }
 }

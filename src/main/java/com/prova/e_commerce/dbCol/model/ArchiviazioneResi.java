@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
-@Table("Resi") // Nome della tabella in Cassandra
+@Table("ArchiviazioneResi") // Nome della tabella in Cassandra
 public class ArchiviazioneResi {
 
     @PrimaryKeyColumn(name = "returns_id", type = PrimaryKeyType.PARTITIONED)

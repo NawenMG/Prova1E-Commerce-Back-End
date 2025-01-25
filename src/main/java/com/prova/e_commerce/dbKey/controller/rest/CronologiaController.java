@@ -28,9 +28,9 @@ public class CronologiaController {
      * @param prodotti La lista di prodotti da aggiungere
      * @return Risposta con status 200 OK
      */
-    @PostMapping("/aggiungi/{userId}")
+    @PostMapping("/post/{userId}")
     public ResponseEntity<Void> aggiungiProdottiCronologia(
-            @PathVariable String userId, @Valid @RequestBody List<Prodotto> prodotti) {
+           @Valid @PathVariable String userId, @Valid @RequestBody List<Prodotto> prodotti) {
         cronologiaService.aggiungiDatiCronologici(userId, prodotti);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -41,8 +41,8 @@ public class CronologiaController {
      * @param userId L'ID dell'utente
      * @return La cronologia dell'utente, se esiste
      */
-    @GetMapping("/visualizza/{userId}")
-    public ResponseEntity<Cronologia> visualizzaCronologia(@PathVariable String userId) {
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<Cronologia> visualizzaCronologia(@Valid @PathVariable String userId) {
         Optional<Cronologia> cronologiaOpt = cronologiaService.visualizzaCronologia(userId);
 
         return cronologiaOpt.map(ResponseEntity::ok)
@@ -56,9 +56,9 @@ public class CronologiaController {
      * @param productId L'ID del prodotto da eliminare
      * @return Risposta con status 200 OK se prodotto eliminato, 404 se non trovato
      */
-    @DeleteMapping("/elimina/{userId}/{productId}")
+    @DeleteMapping("/delete/{userId}/{productId}")
     public ResponseEntity<Void> eliminaSingolaRicerca(
-            @PathVariable String userId, @PathVariable String productId) {
+            @Valid @PathVariable String userId, @Valid @PathVariable String productId) {
         cronologiaService.eliminaSingolaRicerca(userId, productId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -69,8 +69,8 @@ public class CronologiaController {
      * @param userId L'ID dell'utente
      * @return Risposta con status 200 OK
      */
-    @DeleteMapping("/eliminaTutte/{userId}")
-    public ResponseEntity<Void> eliminaTutteLeRicerche(@PathVariable String userId) {
+    @DeleteMapping("/svuota/{userId}")
+    public ResponseEntity<Void> eliminaTutteLeRicerche(@Valid @PathVariable String userId) {
         cronologiaService.eliminaTutteLeRicerche(userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

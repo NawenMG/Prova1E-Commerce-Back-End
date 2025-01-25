@@ -26,7 +26,7 @@ public class RecensioniControllerRest {
 
     // Endpoint per ottenere recensioni per un determinato productId
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<Recensioni>> getRecensioniByProductId(@PathVariable String productId) {
+    public ResponseEntity<List<Recensioni>> getRecensioniByProductId(@Valid @PathVariable String productId) {
         List<Recensioni> recensioni = recensioniService.findByProductId(productId);
         if (recensioni.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -36,7 +36,7 @@ public class RecensioniControllerRest {
 
     // Endpoint per ottenere recensioni per un determinato userId
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Recensioni>> getRecensioniByUserId(@PathVariable String userId) {
+    public ResponseEntity<List<Recensioni>> getRecensioniByUserId(@Valid @PathVariable String userId) {
         List<Recensioni> recensioni = recensioniService.findByUserId(userId);
         if (recensioni.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -46,7 +46,7 @@ public class RecensioniControllerRest {
 
     // Endpoint per ottenere recensioni con criteri dinamici
     @PostMapping("/query")
-    public ResponseEntity<List<Recensioni>> queryRecensioni(@RequestBody ParamQueryDbDoc paramQueryDbDoc, @Valid @RequestBody Recensioni recensioni) {
+    public ResponseEntity<List<Recensioni>> queryRecensioni(@Valid @RequestBody ParamQueryDbDoc paramQueryDbDoc, @Valid @RequestBody Recensioni recensioni) {
         List<Recensioni> recensioniList = recensioniService.queryDynamic(paramQueryDbDoc, recensioni);
         return new ResponseEntity<>(recensioniList, HttpStatus.OK);
     }
@@ -54,7 +54,7 @@ public class RecensioniControllerRest {
     // Endpoint per creare una nuova recensione
     @PostMapping("/post")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Recensioni> createRecensione(@RequestBody Recensioni recensione) {
+    public ResponseEntity<Recensioni> createRecensione(@Valid @RequestBody Recensioni recensione) {
         Recensioni savedRecensione = recensioniService.saveRecensione(recensione);
         return new ResponseEntity<>(savedRecensione, HttpStatus.CREATED);
     }
@@ -62,7 +62,7 @@ public class RecensioniControllerRest {
     // Endpoint per aggiornare una recensione esistente
     @PutMapping("/put/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Recensioni> updateRecensione(@PathVariable String id, @Valid @RequestBody Recensioni recensione) {
+    public ResponseEntity<Recensioni> updateRecensione(@Valid @PathVariable String id, @Valid @RequestBody Recensioni recensione) {
         Recensioni updatedRecensione = recensioniService.updateRecensione(id, recensione);
         if (updatedRecensione == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -73,7 +73,7 @@ public class RecensioniControllerRest {
     // Endpoint per eliminare una recensione
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Void> deleteRecensione(@PathVariable String id) {
+    public ResponseEntity<Void> deleteRecensione(@Valid @PathVariable String id) {
         boolean deleted = recensioniService.deleteRecensione(id);
         if (!deleted) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

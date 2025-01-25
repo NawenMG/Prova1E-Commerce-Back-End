@@ -6,9 +6,12 @@ import javax.validation.constraints.Size;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 
+import org.springframework.data.cassandra.core.mapping.Table;
+
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 
+@Table("ArchiviazioneSegnalazioni")  
 public class ArchiviazioneSegnalazioni {
 
     @PrimaryKeyColumn(name = "segnaltions_id", type = PrimaryKeyType.PARTITIONED)
